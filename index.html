@@ -37,7 +37,7 @@
             min-height: 200px;
             white-space: pre-wrap; /* Preserve whitespace and wrap text */
             word-wrap: break-word; /* Break long words */
-            line-height: 1.2; /* Linhas mais coladas para a visualização */
+            line-height: 1.5; /* Adjusted for better readability */
         }
         .paste-zone {
             @apply flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 cursor-pointer;
@@ -144,7 +144,7 @@
             <h2 class="section-title">Adicionar Imagens (Cole com Ctrl+V)</h2>
             <p class="text-sm text-gray-600 mb-4">As imagens serão redimensionadas automaticamente para se ajustarem ao documento, mantendo a proporção.</p>
             <div id="imageInputs" class="space-y-4">
-                <!-- Imagem 1: Área de Interesse -->
+                <!-- Imagem 1: Área de Interesse (Initial image block) -->
                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 1 (Área de Interesse):</label>
                     <div id="pasteZone1" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
@@ -154,49 +154,10 @@
                     <img id="imagePreview1" class="image-preview hidden" alt="Pré-visualização da Imagem 1">
                     <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="1">Limpar Imagem 1</button>
                 </div>
-                <!-- Imagem 2: Quick Look em Catálogo -->
-                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 2 (Quick Look em Catálogo):</label>
-                    <div id="pasteZone2" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
-                    <input type="hidden" id="hiddenImageData2" data-image-pasted="false">
-                    <label for="imageCaption2" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem 2 (Figura 2 – Imagem de satélite Quick Look em catálogo.):</label>
-                    <input type="text" id="imageCaption2" value="Figura 2 – Imagem de satélite Quick Look em catálogo." placeholder="Legenda descritiva para a imagem">
-                    <label for="image2Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem 2):</label>
-                    <input type="text" id="image2Sat" placeholder="Ex: Pleiades Neo">
-                    <label for="image2Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem 2):</label>
-                    <input type="text" id="image2Date" placeholder="Ex: 15/06/2024">
-                    <label for="image2Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem 2):</label>
-                    <input type="text" id="image2Res" placeholder="Ex: 0.3m">
-                    <img id="imagePreview2" class="image-preview hidden" alt="Pré-visualização da Imagem 2">
-                    <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="2">Limpar Imagem 2</button>
-                </div>
-                <!-- Imagem 3 to 15 -->
-                <script>
-                    // JavaScript to dynamically add image input blocks (3 to 15)
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const imageInputsContainer = document.getElementById('imageInputs');
-                        for (let i = 3; i <= 15; i++) {
-                            const newImageBlock = document.createElement('div');
-                            newImageBlock.className = 'p-4 border border-gray-200 rounded-lg bg-gray-50';
-                            newImageBlock.innerHTML = `
-                                <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem ${i}:</label>
-                                <div id="pasteZone${i}" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
-                                <input type="hidden" id="hiddenImageData${i}" data-image-pasted="false">
-                                <label for="imageCaption${i}" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem ${i} (Figura ${i} – Imagem de satélite Quick Look em catálogo.):</label>
-                                <input type="text" id="imageCaption${i}" value="Figura ${i} – Imagem de satélite Quick Look em catálogo." placeholder="Legenda descritiva para a imagem">
-                                <label for="image${i}Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem ${i}):</label>
-                                <input type="text" id="image${i}Sat" placeholder="Ex: WorldView 3">
-                                <label for="image${i}Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem ${i}):</label>
-                                <input type="text" id="image${i}Date" placeholder="Ex: 01/01/2024">
-                                <label for="image${i}Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem ${i}):</label>
-                                <input type="text" id="image${i}Res" placeholder="Ex: 0.5m">
-                                <img id="imagePreview${i}" class="image-preview hidden" alt="Pré-visualização da Imagem ${i}">
-                                <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="${i}">Limpar Imagem ${i}</button>
-                            `;
-                            imageInputsContainer.appendChild(newImageBlock);
-                        }
-                    });
-                </script>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                <button id="addOneImageBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 sm:w-1/2">Adicionar outra imagem</button>
+                <button id="addMultipleImagesBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg py-3 sm:w-1/2">Adicionar mais 5 imagens</button>
             </div>
         </div>
 
@@ -235,6 +196,10 @@
 
     <script>
         window.onload = () => {
+            // Variável para controlar o número de imagens
+            let currentImageCount = 1;
+            const MAX_IMAGES = 15;
+
             // Função para exibir o modal customizado
             function showCustomAlert(message) {
                 document.getElementById('customAlertMessage').textContent = message;
@@ -253,8 +218,8 @@
                 "Pleiades": "https://www.engesat.com.br/imagem-de-satelite/pleiades/",
                 "Pleiades Neo": "https://www.engesat.com.br/imagem-de-satelite/pleiades-neo/",
                 "Jilin": "https://www.engesat.com.br/imagem-de-satelite/jilin-1/",
-                "Sentinel-2": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2", // Exemplo de link para Sentinel-2
-                "Landsat 8": "https://landsat.gsfc.nasa.gov/landsat-8/" // Exemplo de link para Landsat 8
+                "Sentinel-2": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2",
+                "Landsat 8": "https://landsat.gsfc.nasa.gov/landsat-8/"
             };
 
             // Event listener para o select de satélites
@@ -280,7 +245,7 @@
 
             // Função para lidar com a colagem de imagens
             function handleImagePaste(event, pasteZoneId, hiddenInputId, previewImgId) {
-                event.preventDefault(); // Impede o comportamento padrão de colar
+                event.preventDefault();
 
                 const items = (event.clipboardData || event.originalEvent.clipboardData).items;
                 let imageFound = false;
@@ -296,21 +261,18 @@
                             const hiddenInput = document.getElementById(hiddenInputId);
                             const previewImg = document.getElementById(previewImgId);
 
-                            // Atualiza o input escondido com a Data URL
                             hiddenInput.value = imageDataUrl;
                             hiddenInput.setAttribute('data-image-pasted', 'true');
 
-                            // Atualiza a pré-visualização da imagem
                             previewImg.src = imageDataUrl;
                             previewImg.classList.remove('hidden');
 
-                            // Atualiza a zona de colar
                             pasteZone.textContent = 'Imagem colada com sucesso!';
                             pasteZone.classList.add('has-image');
                         };
                         reader.readAsDataURL(file);
                         imageFound = true;
-                        break; // Processa apenas a primeira imagem encontrada
+                        break;
                     }
                 }
 
@@ -351,33 +313,64 @@
 
                 if (id === 1) {
                     imageCaption.value = "Figura 1 - Área de interesse com informação de metragem.";
-                } else if (id === 2) {
-                    imageCaption.value = "Figura 2 – Imagem de satélite Quick Look em catálogo.";
                 } else {
                     imageCaption.value = `Figura ${id} – Imagem de satélite Quick Look em catálogo.`;
                 }
 
-                // Limpa os novos campos
                 if (imageSat) imageSat.value = '';
                 if (imageDate) imageDate.value = '';
                 if (imageRes) imageRes.value = '';
             }
 
-            // Adiciona listeners para as zonas de colar (agora até 15)
-            for (let i = 1; i <= 15; i++) {
-                // Ensure the element exists before adding listener
-                const pasteZoneElement = document.getElementById(`pasteZone${i}`);
-                if (pasteZoneElement) {
-                    pasteZoneElement.addEventListener('paste', (e) => handleImagePaste(e, `pasteZone${i}`, `hiddenImageData${i}`, `imagePreview${i}`));
-                }
-                const clearButtonElement = document.querySelector(`.clear-image-btn[data-target-id="${i}"]`);
-                if (clearButtonElement) {
-                    clearButtonElement.addEventListener('click', (e) => {
+            // Função para adicionar um novo bloco de imagem
+            function addImageInput(numToAdd = 1) {
+                const imageInputsContainer = document.getElementById('imageInputs');
+                for (let k = 0; k < numToAdd; k++) {
+                    if (currentImageCount >= MAX_IMAGES) {
+                        showCustomAlert(`Limite máximo de ${MAX_IMAGES} imagens atingido.`);
+                        return;
+                    }
+                    currentImageCount++;
+                    const newImageBlock = document.createElement('div');
+                    newImageBlock.className = 'p-4 border border-gray-200 rounded-lg bg-gray-50';
+                    newImageBlock.innerHTML = `
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem ${currentImageCount}:</label>
+                        <div id="pasteZone${currentImageCount}" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
+                        <input type="hidden" id="hiddenImageData${currentImageCount}" data-image-pasted="false">
+                        <label for="imageCaption${currentImageCount}" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem ${currentImageCount} (Figura ${currentImageCount} – Imagem de satélite Quick Look em catálogo.):</label>
+                        <input type="text" id="imageCaption${currentImageCount}" value="Figura ${currentImageCount} – Imagem de satélite Quick Look em catálogo." placeholder="Legenda descritiva para a imagem">
+                        <label for="image${currentImageCount}Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem ${currentImageCount}):</label>
+                        <input type="text" id="image${currentImageCount}Sat" placeholder="Ex: WorldView 3">
+                        <label for="image${currentImageCount}Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem ${currentImageCount}):</label>
+                        <input type="text" id="image${currentImageCount}Date" placeholder="Ex: 01/01/2024">
+                        <label for="image${currentImageCount}Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem ${currentImageCount}):</label>
+                        <input type="text" id="image${currentImageCount}Res" placeholder="Ex: 0.5m">
+                        <img id="imagePreview${currentImageCount}" class="image-preview hidden" alt="Pré-visualização da Imagem ${currentImageCount}">
+                        <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="${currentImageCount}">Limpar Imagem ${currentImageCount}</button>
+                    `;
+                    imageInputsContainer.appendChild(newImageBlock);
+
+                    // Add event listeners to the newly created elements
+                    document.getElementById(`pasteZone${currentImageCount}`).addEventListener('paste', (e) => handleImagePaste(e, `pasteZone${currentImageCount}`, `hiddenImageData${currentImageCount}`, `imagePreview${currentImageCount}`));
+                    document.querySelector(`.clear-image-btn[data-target-id="${currentImageCount}"]`).addEventListener('click', (e) => {
                         const targetId = e.target.dataset.targetId;
                         clearImage(targetId);
                     });
                 }
             }
+
+            // Add event listeners for the new buttons
+            document.getElementById('addOneImageBtn').addEventListener('click', () => addImageInput(1));
+            document.getElementById('addMultipleImagesBtn').addEventListener('click', () => addImageInput(5));
+
+
+            // Add listeners for the initial image block
+            document.getElementById(`pasteZone1`).addEventListener('paste', (e) => handleImagePaste(e, `pasteZone1`, `hiddenImageData1`, `imagePreview1`));
+            document.querySelector(`.clear-image-btn[data-target-id="1"]`).addEventListener('click', (e) => {
+                const targetId = e.target.dataset.targetId;
+                clearImage(targetId);
+            });
+
 
             // Função para formatar a data de ISO (YYYY-MM-DD) para DD/MM/YYYY ou manter DD/MM/YYYY
             function formatarData(dateString) {
@@ -446,7 +439,7 @@
                 let imagesHtmlFigura1 = '';
                 let imagesHtmlFigurasAlternativas = '';
 
-                for (let i = 1; i <= 15; i++) {
+                for (let i = 1; i <= currentImageCount; i++) {
                     const hiddenInput = document.getElementById(`hiddenImageData${i}`);
                     // Check if the element exists (for dynamically added images)
                     if (!hiddenInput) continue;
@@ -527,11 +520,11 @@
 
                     <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
                         <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin-bottom: 12px;">Dados do Cliente</h3>
-                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Empresa:</strong> ${empresaCliente}</p>
-                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Contato:</strong> ${contatoCliente}</p>
-                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>CPF/CNPJ:</strong> ${cpfCliente}</p>
-                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Endereço:</strong> ${enderecoCliente}</p>
-                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Processo Vinculado:</strong> ${processoVinculado}</p>
+                        <p style="margin-bottom: 4px;"><strong>Empresa:</strong> ${empresaCliente}</p>
+                        <p style="margin-bottom: 4px;"><strong>Contato:</strong> ${contatoCliente}</p>
+                        <p style="margin-bottom: 4px;"><strong>CPF/CNPJ:</strong> ${cpfCliente}</p>
+                        <p style="margin-bottom: 4px;"><strong>Endereço:</strong> ${enderecoCliente}</p>
+                        <p style="margin-bottom: 4px;"><strong>Processo Vinculado:</strong> ${processoVinculado}</p>
                     </div>
 
                     <p style="margin-bottom: 16px;">As ilustrações aqui apresentadas são <span style="color: red; font-weight: bold;">somente prévias</span>, também
