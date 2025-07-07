@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Proposta Comercial</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 900px;
+        }
+        input[type="text"], input[type="date"], input[type="number"], select, textarea {
+            @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200;
+        }
+        button {
+            @apply px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200;
+        }
+        .section-title {
+            @apply text-xl font-semibold text-gray-800 mb-4;
+        }
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .output-area {
+            @apply bg-white p-6 rounded-lg shadow-lg border border-gray-200 overflow-auto;
+            min-height: 200px;
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-wrap: break-word; /* Break long words */
+            line-height: 1.2; /* Linhas mais coladas para a visualização */
+        }
+        .paste-zone {
+            @apply flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 cursor-pointer;
+            transition: border-color 0.2s ease-in-out;
+        }
+        .paste-zone.has-image {
+            @apply border-green-500 text-green-700;
+        }
+        .paste-zone:hover {
+            @apply border-blue-500;
+        }
+
+        /* Estilos para o modal customizado */
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8 lg:p-10 flex justify-center items-start min-h-screen">
+    <div class="container bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl space-y-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-8">Gerador de Proposta Comercial de Imagens de Satélite</h1>
+
+        <!-- Botão Temporário para Preencher Dados de Teste -->
+        <button id="fillDataBtn" class="w-full bg-purple-600 hover:bg-purple-700 mb-6">Preencher com Dados de Teste (Temporário)</button>
+
+        <!-- Seção de Dados da Proposta -->
+        <div class="space-y-6">
+            <h2 class="section-title">Dados da Proposta</h2>
+            <div>
+                <label for="dataProposta" class="block text-gray-700 text-sm font-medium mb-2">Data da Proposta:</label>
+                <input type="date" id="dataProposta" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="empresaCliente" class="block text-gray-700 text-sm font-medium mb-2">Empresa Cliente:</label>
+                <input type="text" id="empresaCliente" placeholder="Nome da Empresa" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="contatoCliente" class="block text-gray-700 text-sm font-medium mb-2">Contato Cliente:</label>
+                <input type="text" id="contatoCliente" placeholder="Nome do Contato" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="cpfCliente" class="block text-gray-700 text-sm font-medium mb-2">CPF/CNPJ Cliente:</label>
+                <input type="text" id="cpfCliente" placeholder="CPF ou CNPJ do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="enderecoCliente" class="block text-gray-700 text-sm font-medium mb-2">Endereço Cliente:</label>
+                <input type="text" id="enderecoCliente" placeholder="Endereço completo do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="processoVinculado" class="block text-gray-700 text-sm font-medium mb-2">Processo Vinculado:</label>
+                <input type="text" id="processoVinculado" placeholder="Número do processo vinculado" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="extensaoArea" class="block text-gray-700 text-sm font-medium mb-2">Extensão da Área (km²):</label>
+                <input type="number" id="extensaoArea" placeholder="Ex: 100" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="dataImageamentoInicio" class="block text-gray-700 text-sm font-medium mb-2">Data de Imageamento Início:</label>
+                <input type="date" id="dataImageamentoInicio" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="dataImageamentoFim" class="block text-gray-700 text-sm font-medium mb-2">Data de Imageamento Fim:</label>
+                <input type="date" id="dataImageamentoFim" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="cenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Cena Recomendada:</label>
+                <input type="text" id="cenaRecomendada" placeholder="Ex: Cena 12345" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="resolucaoColorida" class="block text-gray-700 text-sm font-medium mb-2">Resolução Colorida:</label>
+                <input type="text" id="resolucaoColorida" placeholder="Ex: 0.5m" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="dataCenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Data(s) da Cena Recomendada (separadas por vírgula):</label>
+                <input type="text" id="dataCenaRecomendada" placeholder="Ex: 15/06/2024, 20/07/2024" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="sateliteOpcoes" class="block text-gray-700 text-sm font-medium mb-2">Satélite(s) (Opções - Ctrl+clique para múltiplos):</label>
+                <select id="sateliteOpcoes" multiple size="5" class="w-full p-3 border border-gray-300 rounded-lg">
+                    <option value="WorldView 2">WorldView 2</option>
+                    <option value="WorldView 3">WorldView 3</option>
+                    <option value="Pleiades">Pleiades</option>
+                    <option value="Pleiades Neo">Pleiades Neo</option>
+                    <option value="Jilin">Jilin</option>
+                    <option value="Sentinel-2">Sentinel-2</option>
+                    <option value="Landsat 8">Landsat 8</option>
+                </select>
+            </div>
+            <div id="sateliteLinkOutput" class="text-blue-600 text-sm mt-2" style="display: none;"></div>
+
+            <div>
+                <label for="pedidoMinimoKm2" class="block text-gray-700 text-sm font-medium mb-2">Pedido Mínimo (Km²):</label>
+                <input type="number" id="pedidoMinimoKm2" placeholder="Ex: 50" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="custoRs" class="block text-gray-700 text-sm font-medium mb-2">Custo (R$):</label>
+                <input type="number" id="custoRs" placeholder="Ex: 15000" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <label for="diasEntrega" class="block text-gray-700 text-sm font-medium mb-2">Entrega (dias):</label>
+                <input type="number" id="diasEntrega" placeholder="Ex: 7" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+        </div>
+
+        <!-- Seção de Imagens -->
+        <div class="space-y-6">
+            <h2 class="section-title">Adicionar Imagens (Cole com Ctrl+V)</h2>
+            <p class="text-sm text-gray-600 mb-4">Opcional: Defina a largura e altura em pixels para controlar o tamanho da imagem no documento final. Se apenas um for preenchido, a proporção será mantida. Se ambos vazios, a largura máxima será de 500px.</p>
+            <div id="imageInputs" class="space-y-4">
+                <!-- Imagem 1: Área de Interesse -->
+                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 1 (Área de Interesse):</label>
+                    <div id="pasteZone1" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
+                    <input type="hidden" id="hiddenImageData1" data-image-pasted="false">
+                    <div class="flex space-x-4 mt-4">
+                        <div class="flex-1">
+                            <label for="imageWidth1" class="block text-gray-700 text-sm font-medium mb-2">Largura (px):</label>
+                            <input type="number" id="imageWidth1" placeholder="Ex: 400">
+                        </div>
+                        <div class="flex-1">
+                            <label for="imageHeight1" class="block text-gray-700 text-sm font-medium mb-2">Altura (px):</label>
+                            <input type="number" id="imageHeight1" placeholder="Ex: 250">
+                        </div>
+                    </div>
+                    <label for="imageCaption1" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem 1 (Figura 1 - Área de interesse com informação de metragem.):</label>
+                    <input type="text" id="imageCaption1" value="Figura 1 - Área de interesse com informação de metragem." placeholder="Legenda descritiva para a imagem">
+                    <img id="imagePreview1" class="image-preview hidden" alt="Pré-visualização da Imagem 1">
+                    <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="1">Limpar Imagem 1</button>
+                </div>
+                <!-- Imagem 2: Quick Look em Catálogo -->
+                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 2 (Quick Look em Catálogo):</label>
+                    <div id="pasteZone2" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
+                    <input type="hidden" id="hiddenImageData2" data-image-pasted="false">
+                    <div class="flex space-x-4 mt-4">
+                        <div class="flex-1">
+                            <label for="imageWidth2" class="block text-gray-700 text-sm font-medium mb-2">Largura (px):</label>
+                            <input type="number" id="imageWidth2" placeholder="Ex: 400">
+                        </div>
+                        <div class="flex-1">
+                            <label for="imageHeight2" class="block text-gray-700 text-sm font-medium mb-2">Altura (px):</label>
+                            <input type="number" id="imageHeight2" placeholder="Ex: 250">
+                        </div>
+                    </div>
+                    <label for="imageCaption2" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem 2 (Figura 2 – Imagem de satélite Quick Look em catálogo.):</label>
+                    <input type="text" id="imageCaption2" value="Figura 2 – Imagem de satélite Quick Look em catálogo." placeholder="Legenda descritiva para a imagem">
+                    <label for="image2Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem 2):</label>
+                    <input type="text" id="image2Sat" placeholder="Ex: Pleiades Neo">
+                    <label for="image2Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem 2):</label>
+                    <input type="text" id="image2Date" placeholder="Ex: 15/06/2024">
+                    <label for="image2Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem 2):</label>
+                    <input type="text" id="image2Res" placeholder="Ex: 0.3m">
+                    <img id="imagePreview2" class="image-preview hidden" alt="Pré-visualização da Imagem 2">
+                    <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="2">Limpar Imagem 2</button>
+                </div>
+                <!-- Imagem 3 -->
+                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 3:</label>
+                    <div id="pasteZone3" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
+                    <input type="hidden" id="hiddenImageData3" data-image-pasted="false">
+                    <div class="flex space-x-4 mt-4">
+                        <div class="flex-1">
+                            <label for="imageWidth3" class="block text-gray-700 text-sm font-medium mb-2">Largura (px):</label>
+                            <input type="number" id="imageWidth3" placeholder="Ex: 400">
+                        </div>
+                        <div class="flex-1">
+                            <label for="imageHeight3" class="block text-gray-700 text-sm font-medium mb-2">Altura (px):</label>
+                            <input type="number" id="imageHeight3" placeholder="Ex: 250">
+                        </div>
+                    </div>
+                    <label for="imageCaption3" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem 3:</label>
+                    <input type="text" id="imageCaption3" placeholder="Legenda descritiva para a imagem">
+                    <label for="image3Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem 3):</label>
+                    <input type="text" id="image3Sat" placeholder="Ex: WorldView 2">
+                    <label for="image3Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem 3):</label>
+                    <input type="text" id="image3Date" placeholder="Ex: 01/01/2024">
+                    <label for="image3Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem 3):</label>
+                    <input type="text" id="image3Res" placeholder="Ex: 0.5m">
+                    <img id="imagePreview3" class="image-preview hidden" alt="Pré-visualização da Imagem 3">
+                    <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="3">Limpar Imagem 3</button>
+                </div>
+                <!-- Imagem 4 -->
+                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 4:</label>
+                    <div id="pasteZone4" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
+                    <input type="hidden" id="hiddenImageData4" data-image-pasted="false">
+                    <div class="flex space-x-4 mt-4">
+                        <div class="flex-1">
+                            <label for="imageWidth4" class="block text-gray-700 text-sm font-medium mb-2">Largura (px):</label>
+                            <input type="number" id="imageWidth4" placeholder="Ex: 400">
+                        </div>
+                        <div class="flex-1">
+                            <label for="imageHeight4" class="block text-gray-700 text-sm font-medium mb-2">Altura (px):</label>
+                            <input type="number" id="imageHeight4" placeholder="Ex: 250">
+                        </div>
+                    </div>
+                    <label for="imageCaption4" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem 4:</label>
+                    <input type="text" id="imageCaption4" placeholder="Legenda descritiva para a imagem">
+                    <label for="image4Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem 4):</label>
+                    <input type="text" id="image4Sat" placeholder="Ex: Jilin">
+                    <label for="image4Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem 4):</label>
+                    <input type="text" id="image4Date" placeholder="Ex: 10/02/2024">
+                    <label for="image4Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem 4):</label>
+                    <input type="text" id="image4Res" placeholder="Ex: 0.75m">
+                    <img id="imagePreview4" class="image-preview hidden" alt="Pré-visualização da Imagem 4">
+                    <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="4">Limpar Imagem 4</button>
+                </div>
+                <!-- Imagem 5 -->
+                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 5:</label>
+                    <div id="pasteZone5" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
+                    <input type="hidden" id="hiddenImageData5" data-image-pasted="false">
+                    <div class="flex space-x-4 mt-4">
+                        <div class="flex-1">
+                            <label for="imageWidth5" class="block text-gray-700 text-sm font-medium mb-2">Largura (px):</label>
+                            <input type="number" id="imageWidth5" placeholder="Ex: 400">
+                        </div>
+                        <div class="flex-1">
+                            <label for="imageHeight5" class="block text-gray-700 text-sm font-medium mb-2">Altura (px):</label>
+                            <input type="number" id="imageHeight5" placeholder="Ex: 250">
+                        </div>
+                    </div>
+                    <label for="imageCaption5" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem 5:</label>
+                    <input type="text" id="imageCaption5" placeholder="Legenda descritiva para a imagem">
+                    <label for="image5Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem 5):</label>
+                    <input type="text" id="image5Sat" placeholder="Ex: Sentinel-2">
+                    <label for="image5Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem 5):</label>
+                    <input type="text" id="image5Date" placeholder="Ex: 05/03/2024">
+                    <label for="image5Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem 5):</label>
+                    <input type="text" id="image5Res" placeholder="Ex: 10m">
+                    <img id="imagePreview5" class="image-preview hidden" alt="Pré-visualização da Imagem 5">
+                    <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="5">Limpar Imagem 5</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botão Gerar Pré-visualização -->
+        <button id="generatePreviewBtn" class="w-full">Gerar Pré-visualização</button>
+
+        <!-- Seção de Pré-visualização -->
+        <div class="space-y-6">
+            <h2 class="section-title">Pré-visualização da Proposta</h2>
+            <div id="previewOutput" class="output-area">
+                <p class="text-gray-500">A pré-visualização da sua proposta aparecerá aqui.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                <button id="copyHtmlBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg py-3 sm:w-1/2" style="display: none;">Copiar HTML</button>
+                <button id="downloadDocxBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3 sm:w-1/2" style="display: none;">Baixar como .DOCX</button>
+            </div>
+        </div>
+
+        <p class="text-center text-sm text-gray-600 mt-8">
+            <strong>Nota:</strong> Este gerador cria conteúdo em HTML. Para obter um arquivo .docx com formatação mais consistente, clique em "Baixar como .DOCX". As imagens coladas serão incorporadas diretamente no HTML.
+            <br/><br/>
+            **Atenção:** As quebras de página são sugestões e podem variar dependendo do editor de texto e das configurações de impressão.
+        </p>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="customAlertModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden modal">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <p id="customAlertMessage" class="text-lg font-semibold text-gray-800 mb-4"></p>
+            <button id="customAlertCloseBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">OK</button>
+        </div>
+    </div>
+
+    <!-- Exportar HTML como .docx -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.0/dist/html-docx.min.js"></script>
+
+    <script>
+        window.onload = () => {
+            // Função para exibir o modal customizado
+            function showCustomAlert(message) {
+                document.getElementById('customAlertMessage').textContent = message;
+                document.getElementById('customAlertModal').classList.remove('hidden');
+            }
+
+            // Event listener para fechar o modal
+            document.getElementById('customAlertCloseBtn').addEventListener('click', () => {
+                document.getElementById('customAlertModal').classList.add('hidden');
+            });
+
+            // Objeto para mapear opções de satélite para URLs
+            const satelliteLinks = {
+                "WorldView 2": "https://www.engesat.com.br/imagem-de-satelite/world-view-2/",
+                "WorldView 3": "https://www.engesat.com.br/imagem-de-satelite/world-view-3/",
+                "Pleiades": "https://www.engesat.com.br/imagem-de-satelite/pleiades/",
+                "Pleiades Neo": "https://www.engesat.com.br/imagem-de-satelite/pleiades-neo/",
+                "Jilin": "https://www.engesat.com.br/imagem-de-satelite/jilin-1/",
+                "Sentinel-2": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2", // Exemplo de link para Sentinel-2
+                "Landsat 8": "https://landsat.gsfc.nasa.gov/landsat-8/" // Exemplo de link para Landsat 8
+            };
+
+            // Event listener para o select de satélites
+            document.getElementById('sateliteOpcoes').addEventListener('change', () => {
+                const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(option => option.value);
+                const linkOutput = document.getElementById('sateliteLinkOutput');
+                let linksHtml = '';
+                if (selectedSatellites.length > 0) {
+                    linksHtml += 'Links dos Satélites Selecionados:<br>';
+                    selectedSatellites.forEach(sat => {
+                        const link = satelliteLinks[sat];
+                        if (link) {
+                            linksHtml += `<a href="${link}" target="_blank" style="color: #2563eb; text-decoration: underline;">${sat}: ${link}</a><br>`;
+                        }
+                    });
+                    linkOutput.innerHTML = linksHtml;
+                    linkOutput.style.display = 'block';
+                } else {
+                    linkOutput.innerHTML = '';
+                    linkOutput.style.display = 'none';
+                }
+            });
+
+            // Função para lidar com a colagem de imagens
+            function handleImagePaste(event, pasteZoneId, hiddenInputId, previewImgId) {
+                event.preventDefault(); // Impede o comportamento padrão de colar
+
+                const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+                let imageFound = false;
+
+                for (const item of items) {
+                    if (item.kind === 'file' && item.type.startsWith('image/')) {
+                        const file = item.getAsFile();
+                        const reader = new FileReader();
+
+                        reader.onload = (e) => {
+                            const imageDataUrl = e.target.result;
+                            const pasteZone = document.getElementById(pasteZoneId);
+                            const hiddenInput = document.getElementById(hiddenInputId);
+                            const previewImg = document.getElementById(previewImgId);
+
+                            // Atualiza o input escondido com a Data URL
+                            hiddenInput.value = imageDataUrl;
+                            hiddenInput.setAttribute('data-image-pasted', 'true');
+
+                            // Atualiza a pré-visualização da imagem
+                            previewImg.src = imageDataUrl;
+                            previewImg.classList.remove('hidden');
+
+                            // Atualiza a zona de colar
+                            pasteZone.textContent = 'Imagem colada com sucesso!';
+                            pasteZone.classList.add('has-image');
+                        };
+                        reader.readAsDataURL(file);
+                        imageFound = true;
+                        break; // Processa apenas a primeira imagem encontrada
+                    }
+                }
+
+                if (!imageFound) {
+                    const pasteZone = document.getElementById(pasteZoneId);
+                    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+                    if (pastedText) {
+                        pasteZone.textContent = pastedText.substring(0, 50) + (pastedText.length > 50 ? '...' : '');
+                        pasteZone.classList.remove('has-image');
+                        const hiddenInput = document.getElementById(hiddenInputId);
+                        hiddenInput.value = '';
+                        hiddenInput.setAttribute('data-image-pasted', 'false');
+                        document.getElementById(previewImgId).classList.add('hidden');
+                    } else {
+                        pasteZone.textContent = 'Nenhuma imagem ou texto válido colado.';
+                        pasteZone.classList.remove('has-image');
+                    }
+                }
+            }
+
+            // Função para limpar a imagem colada
+            function clearImage(id) {
+                const pasteZone = document.getElementById(`pasteZone${id}`);
+                const hiddenInput = document.getElementById(`hiddenImageData${id}`);
+                const previewImg = document.getElementById(`imagePreview${id}`);
+                const imageCaption = document.getElementById(`imageCaption${id}`);
+                const imageWidth = document.getElementById(`imageWidth${id}`);
+                const imageHeight = document.getElementById(`imageHeight${id}`);
+                const imageSat = document.getElementById(`image${id}Sat`);
+                const imageDate = document.getElementById(`image${id}Date`);
+                const imageRes = document.getElementById(`image${id}Res`);
+
+
+                pasteZone.textContent = 'Cole sua imagem aqui (Ctrl+V)';
+                pasteZone.classList.remove('has-image');
+                hiddenInput.value = '';
+                hiddenInput.setAttribute('data-image-pasted', 'false');
+                previewImg.src = '';
+                previewImg.classList.add('hidden');
+                imageWidth.value = '';
+                imageHeight.value = '';
+
+                if (id === 1) {
+                    imageCaption.value = "Figura 1 - Área de interesse com informação de metragem.";
+                } else if (id === 2) {
+                    imageCaption.value = "Figura 2 – Imagem de satélite Quick Look em catálogo.";
+                } else {
+                    imageCaption.value = ''; // Limpa a legenda para outras imagens
+                }
+
+                // Limpa os novos campos
+                if (imageSat) imageSat.value = '';
+                if (imageDate) imageDate.value = '';
+                if (imageRes) imageRes.value = '';
+            }
+
+            // Adiciona listeners para as zonas de colar (agora até 5)
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`pasteZone${i}`).addEventListener('paste', (e) => handleImagePaste(e, `pasteZone${i}`, `hiddenImageData${i}`, `imagePreview${i}`));
+            }
+
+            // Adiciona listeners para os botões de limpar
+            document.querySelectorAll('.clear-image-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const targetId = e.target.dataset.targetId;
+                    clearImage(targetId);
+                });
+            });
+
+            // Função para formatar a data de ISO (YYYY-MM-DD) para DD/MM/YYYY ou manter DD/MM/YYYY
+            function formatarData(dateString) {
+                if (!dateString) return '';
+                dateString = dateString.trim();
+                // Check if it's already in DD/MM/YYYY format
+                if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                    return dateString;
+                }
+                // Assume ISO (YYYY-MM-DD) for conversion
+                const [year, month, day] = dateString.split('-');
+                if (year && month && day) {
+                    return `${day}/${month}/${year}`;
+                }
+                return ''; // Return empty if format is unrecognized
+            }
+
+            // Função para preencher dados de teste
+            document.getElementById('fillDataBtn').addEventListener('click', () => {
+                document.getElementById('dataProposta').value = '2025-07-07';
+                document.getElementById('empresaCliente').value = 'Empresa Teste Ltda.';
+                document.getElementById('contatoCliente').value = 'João da Silva';
+                document.getElementById('cpfCliente').value = '123.456.789-00';
+                document.getElementById('enderecoCliente').value = 'Rua de Teste, 123 - Cidade Teste, UF';
+                document.getElementById('processoVinculado').value = 'TESTE-001/2025';
+                document.getElementById('extensaoArea').value = '150';
+                document.getElementById('dataImageamentoInicio').value = '2024-01-01';
+                document.getElementById('dataImageamentoFim').value = '2024-12-31';
+                document.getElementById('cenaRecomendada').value = 'Cena Exemplo XYZ';
+                document.getElementById('resolucaoColorida').value = '0.3m';
+                document.getElementById('dataCenaRecomendada').value = '15/06/2024, 20/07/2024'; // Múltiplas datas
+                document.getElementById('pedidoMinimoKm2').value = '75';
+                document.getElementById('custoRs').value = '25000.50';
+                document.getElementById('diasEntrega').value = '10';
+
+                // Selecionar múltiplos satélites no modo de teste
+                const sateliteSelect = document.getElementById('sateliteOpcoes');
+                Array.from(sateliteSelect.options).forEach(option => {
+                    option.selected = false; // Desseleciona tudo primeiro
+                });
+                // Seleciona alguns satélites de exemplo
+                sateliteSelect.options[1].selected = true; // WorldView 3
+                sateliteSelect.options[3].selected = true; // Pleiades Neo
+                sateliteSelect.options[5].selected = true; // Sentinel-2
+
+                // Dispara o evento de mudança para atualizar os links exibidos
+                sateliteSelect.dispatchEvent(new Event('change'));
+
+
+                // Preenche dados para imagens de exemplo (placeholders)
+                const dummyImageUrl1 = "https://placehold.co/400x250/FF5733/FFFFFF?text=Area+de+Interesse";
+                const dummyImageUrl2 = "https://placehold.co/400x250/33FF57/FFFFFF?text=Quick+Look";
+                const dummyImageUrl3 = "https://placehold.co/400x250/3357FF/FFFFFF?text=Imagem+Extra+1";
+
+                const pasteZone1 = document.getElementById('pasteZone1');
+                const hiddenImageData1 = document.getElementById('hiddenImageData1');
+                const imagePreview1 = document.getElementById('imagePreview1');
+                const imageWidth1 = document.getElementById('imageWidth1');
+                const imageHeight1 = document.getElementById('imageHeight1');
+
+                hiddenImageData1.value = dummyImageUrl1;
+                hiddenImageData1.setAttribute('data-image-pasted', 'true');
+                imagePreview1.src = dummyImageUrl1;
+                imagePreview1.classList.remove('hidden');
+                pasteZone1.textContent = 'Imagem colada com sucesso!';
+                pasteZone1.classList.add('has-image');
+                imageWidth1.value = '400';
+                imageHeight1.value = '250';
+
+
+                const pasteZone2 = document.getElementById('pasteZone2');
+                const hiddenImageData2 = document.getElementById('hiddenImageData2');
+                const imagePreview2 = document.getElementById('imagePreview2');
+                const imageWidth2 = document.getElementById('imageWidth2');
+                const imageHeight2 = document.getElementById('imageHeight2');
+                document.getElementById('image2Sat').value = 'Pleiades Neo';
+                document.getElementById('image2Date').value = '15/06/2024';
+                document.getElementById('image2Res').value = '0.3m';
+
+                hiddenImageData2.value = dummyImageUrl2;
+                hiddenImageData2.setAttribute('data-image-pasted', 'true');
+                imagePreview2.src = dummyImageUrl2;
+                imagePreview2.classList.remove('hidden');
+                pasteZone2.textContent = 'Imagem colada com sucesso!';
+                pasteZone2.classList.add('has-image');
+                imageWidth2.value = '400';
+                imageHeight2.value = '250';
+
+                const pasteZone3 = document.getElementById('pasteZone3');
+                const hiddenImageData3 = document.getElementById('hiddenImageData3');
+                const imagePreview3 = document.getElementById('imagePreview3');
+                const imageWidth3 = document = document.getElementById('imageWidth3');
+                const imageHeight3 = document.getElementById('imageHeight3');
+                document.getElementById('image3Sat').value = 'WorldView 2';
+                document.getElementById('image3Date').value = '01/01/2024';
+                document.getElementById('image3Res').value = '0.5m';
+
+                hiddenImageData3.value = dummyImageUrl3;
+                hiddenImageData3.setAttribute('data-image-pasted', 'true');
+                imagePreview3.src = dummyImageUrl3;
+                imagePreview3.classList.remove('hidden');
+                pasteZone3.textContent = 'Imagem colada com sucesso!';
+                pasteZone3.classList.add('has-image');
+                imageWidth3.value = '400';
+                imageHeight3.value = '250';
+            });
+
+
+            document.getElementById('generatePreviewBtn').addEventListener('click', () => {
+                const dataProposta = formatarData(document.getElementById('dataProposta').value);
+                const empresaCliente = document.getElementById('empresaCliente').value;
+                const contatoCliente = document.getElementById('contatoCliente').value;
+                const cpfCliente = document.getElementById('cpfCliente').value;
+                const enderecoCliente = document.getElementById('enderecoCliente').value;
+                const processoVinculado = document.getElementById('processoVinculado').value;
+                const extensaoArea = document.getElementById('extensaoArea').value;
+                const dataImageamentoInicio = formatarData(document.getElementById('dataImageamentoInicio').value);
+                const dataImageamentoFim = formatarData(document.getElementById('dataImageamentoFim').value);
+                const cenaRecomendada = document.getElementById('cenaRecomendada').value;
+                const resolucaoColorida = document.getElementById('resolucaoColorida').value;
+
+                // Processa múltiplas datas da cena recomendada
+                const dataCenaRecomendadaInput = document.getElementById('dataCenaRecomendada').value;
+                const formattedCenaDates = dataCenaRecomendadaInput.split(',').map(dateStr => formatarData(dateStr.trim())).filter(Boolean).join(', ');
+
+                // Processa múltiplos satélites e constrói a seção de amostras
+                const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(option => option.value);
+                let samplesHtml = '';
+                if (selectedSatellites.length > 0) {
+                    samplesHtml += `
+                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Amostras das Imagens de Satélite:</h4>
+                        <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
+                    `;
+                    selectedSatellites.forEach(sat => {
+                        const link = satelliteLinks[sat];
+                        if (link) {
+                            samplesHtml += `<li style="margin-bottom: 4px;"><strong>${sat}:</strong> <a href="${link}" target="_blank" style="color: #2563eb; text-decoration: underline;">${link}</a></li>`;
+                        } else {
+                            samplesHtml += `<li style="margin-bottom: 4px;"><strong>${sat}</strong></li>`;
+                        }
+                    });
+                    samplesHtml += `</ul>`;
+                }
+
+
+                const pedidoMinimoKm2 = document.getElementById('pedidoMinimoKm2').value;
+                const custoRs = parseFloat(document.getElementById('custoRs').value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '####';
+                const diasEntrega = document.getElementById('diasEntrega').value;
+
+                const previewOutput = document.getElementById('previewOutput');
+                const copyHtmlBtn = document.getElementById('copyHtmlBtn');
+                const downloadDocxBtn = document.getElementById('downloadDocxBtn'); // Get the new button
+
+                // Define as dimensões máximas para as imagens no DOCX em cm
+                const MAX_PAGE_IMAGE_WIDTH_CM = 15; // Largura máxima em cm
+                const MAX_PAGE_IMAGE_HEIGHT_CM = 8.45; // Altura máxima em cm
+
+                let imagesHtmlFigura1 = '';
+                let imagesHtmlFigurasAlternativas = '';
+
+                for (let i = 1; i <= 5; i++) {
+                    const hiddenInput = document.getElementById(`hiddenImageData${i}`);
+                    const imageDataUrl = hiddenInput.value;
+                    const imageCaption = document.getElementById(`imageCaption${i}`).value;
+                    let customWidth = parseInt(document.getElementById(`imageWidth${i}`).value);
+                    let customHeight = parseInt(document.getElementById(`imageHeight${i}`).value);
+
+                    // Novos campos de detalhes da imagem
+                    const imageSat = document.getElementById(`image${i}Sat`) ? document.getElementById(`image${i}Sat`).value : '';
+                    const imageDate = document.getElementById(`image${i}Date`) ? document.getElementById(`image${i}Date`).value : '';
+                    const imageRes = document.getElementById(`image${i}Res`) ? document.getElementById(`image${i}Res`).value : '';
+
+                    // Converte as dimensões personalizadas para cm, se existirem
+                    let finalWidthCm = '';
+                    let finalHeightCm = '';
+
+                    if (!isNaN(customWidth)) {
+                        // Aproximação: 1px = 0.0264583 cm (96 DPI)
+                        finalWidthCm = `width: ${Math.min(customWidth * 0.0264583, MAX_PAGE_IMAGE_WIDTH_CM)}cm;`;
+                    }
+                    if (!isNaN(customHeight)) {
+                        finalHeightCm = `height: ${Math.min(customHeight * 0.0264583, MAX_PAGE_IMAGE_HEIGHT_CM)}cm;`;
+                    }
+
+                    // Se nenhuma dimensão personalizada foi fornecida, usa as máximas em cm
+                    if (finalWidthCm === '' && finalHeightCm === '') {
+                        finalWidthCm = `max-width: ${MAX_PAGE_IMAGE_WIDTH_CM}cm;`;
+                        finalHeightCm = `max-height: ${MAX_PAGE_IMAGE_HEIGHT_CM}cm;`;
+                    } else if (finalWidthCm === '') { // Se só altura foi dada, limita largura
+                         finalWidthCm = `max-width: ${MAX_PAGE_IMAGE_WIDTH_CM}cm;`;
+                    } else if (finalHeightCm === '') { // Se só largura foi dada, limita altura
+                        finalHeightCm = `max-height: ${MAX_PAGE_IMAGE_HEIGHT_CM}cm;`;
+                    }
+
+
+                    let imageStyle = `${finalWidthCm} ${finalHeightCm} height: auto; border-radius: 8px; display: block; margin: 0 auto;`;
+
+                    if (imageDataUrl && hiddenInput.getAttribute('data-image-pasted') === 'true') {
+                        let imageBlock = `
+                            <div style="margin-bottom: 20px; text-align: center; page-break-inside: avoid;">
+                        `;
+                        // Adiciona os novos detalhes da imagem se existirem e não for a Figura 1
+                        if (i !== 1) {
+                            if (imageSat) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Satélite:</strong> ${imageSat}</p>`;
+                            if (imageDate) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Data:</strong> ${imageDate}</p>`;
+                            if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 5px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
+                        }
+                        imageBlock += `
+                                <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}">
+                                ${imageCaption ? `<p style="font-size: 0.9em; text-align: center; color: #555; margin-top: 8px; font-style: italic;">${imageCaption}</p>` : ''}
+                            </div>
+                        `;
+
+                        if (i === 1) {
+                            imagesHtmlFigura1 = imageBlock;
+                        } else {
+                            imagesHtmlFigurasAlternativas += imageBlock;
+                        }
+                    }
+                }
+
+                // Conteúdo das Especificações Técnicas
+                const especificacoesTecnicasHtml = `
+                    <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas das Imagens:</h4>
+                    <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
+                        <li style="margin-bottom: 4px;">Ortoretificada</li>
+                        <li style="margin-bottom: 4px;">Sistema de coordenadas UTM Sirgas 2000</li>
+                        <li style="margin-bottom: 4px;">Formato GeoTIFF, com 3 ou 4 bandas</li>
+                    </ul>
+                `;
+
+                // Conteúdo dos Detalhes do Pedido
+                const detalhesPedidoHtml = `
+                    <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Detalhes do Pedido</h4>
+                    <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
+                        <li style="margin-bottom: 4px;">Pedido mínimo de ${pedidoMinimoKm2} Km2</li>
+                        <li style="margin-bottom: 4px;">Custo de R$ ${custoRs}</li>
+                        <li style="margin-bottom: 4px;">Entrega em ${diasEntrega} dias</li>
+                        <li style="margin-bottom: 4px;">Pagamento na confirmação do pedido</li>
+                    </ul>
+                `;
+
+                // Texto sobre visualização preliminar
+                const quickLookDisclaimer = `
+                    <p style="margin-bottom: 16px;">As ilustrações acima são <span style="color: red; font-weight: bold;">visualizações preliminares</span>
+                    (<span style="color: red; font-weight: bold;">Quick Look</span>), utilizadas apenas para verificar a localização da área e a
+                    presença de nuvens. Elas <span style="color: red; font-weight: bold;">não representam a qualidade final da imagem que será entregue</span>.</p>
+                `;
+
+                // Logo da Engesat
+                const engesatLogoUrl = "https://www.engesat.com.br/wp-content/uploads/2024/12/engesat-logomarca.png";
+
+
+                const htmlContent = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="${engesatLogoUrl}" alt="Logo Engesat" style="max-width: 120px; height: auto; border-radius: 8px; display: block; margin: 0 auto 10px auto;">
+                        <h1 style="font-size: 2.5em; font-weight: bold; margin-bottom: 5px;">Proposta Comercial</h1>
+                        <p style="margin-top: 10px;">Curitiba, ${dataProposta}</p>
+                    </div>
+
+                    <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin-bottom: 12px;">Dados do Cliente</h3>
+                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Empresa:</strong> ${empresaCliente}</p>
+                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Contato:</strong> ${contatoCliente}</p>
+                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>CPF/CNPJ:</strong> ${cpfCliente}</p>
+                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Endereço:</strong> ${enderecoCliente}</p>
+                        <p style="margin-bottom: 4px; font-size: 0.9em; color: #4b5563;"><strong>Processo Vinculado:</strong> ${processoVinculado}</p>
+                    </div>
+
+                    <p style="margin-bottom: 16px;">As ilustrações aqui apresentadas são <span style="color: red; font-weight: bold;">somente prévias</span>, também
+                    chamadas de <span style="color: red; font-weight: bold;">Quick Look</span>, usadas para conferir a localização e eventual presença de nuvens e <span style="color: red; font-weight: bold;">não retratam a qualidade final da imagem entregue</span>.</p>
+                    <p style="margin-bottom: 16px;"><strong>Link para acesso de amostras reais dos satélites:</strong> <a href="https://www.engesat.com.br/imagem-de-satelite/" target="_blank" style="color: #2563eb; text-decoration: underline;">https://www.engesat.com.br/imagem-de-satelite/</a></p>
+                    <p style="margin-bottom: 16px;">Boa tarde,</p>
+                    <p style="margin-bottom: 16px;">Segue proposta para fornecimento de imagem de satélite,</p>
+
+                    <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.5em; font-weight: 600; color: #1f2937; text-align: center; margin-bottom: 12px;">Detalhes da Imagem</h3>
+                        <p style="margin-bottom: 4px;"><strong>Extensão da Área:</strong> ${extensaoArea} km²</p>
+                        ${imagesHtmlFigura1}
+                        <!-- Sugestão de quebra de página 1 -->
+                        <div style="page-break-after: always;"></div>
+
+                        <p style="margin-bottom: 16px;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos a cena ${cenaRecomendada} de ${resolucaoColorida} de resolução colorida de ${formattedCenaDates} como segue:</p>
+
+                        ${imagesHtmlFigurasAlternativas}
+
+                        ${quickLookDisclaimer}
+
+                        ${samplesHtml}
+
+                        <!-- Forçar quebra de página para as seções abaixo -->
+                        <div style="page-break-before: always;"></div>
+
+                        ${especificacoesTecnicasHtml}
+                        ${detalhesPedidoHtml}
+
+                    </div>
+
+                    <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin-bottom: 12px;">Informações Administrativas e Bancárias</h3>
+                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">📄 Dados Administrativos – Engesat Imagens de Satélite</h4>
+                        <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
+                            <li style="margin-bottom: 4px;"><strong>Nome Fantasia:</strong> Engesat Imagens de Satélite</li>
+                            <li style="margin-bottom: 4px;"><strong>Razão Social:</strong> EISAT Imagens de Satélite Ltda. – EPP</li>
+                            <li style="margin-bottom: 4px;"><strong>CNPJ:</strong> 02.059.387/0001-87</li>
+                            <li style="margin-bottom: 4px;"><strong>Inscrição Estadual:</strong> ISENTO</li>
+                            <li style="margin-bottom: 4px;"><strong>Inscrição Municipal:</strong> 0701351363-2</li>
+                        </ul>
+
+                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">💳 Dados Bancários</h4>
+                        <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
+                            <li style="margin-bottom: 4px;"><strong>Banco:</strong> Banco Inter 077</li>
+                            <li style="margin-bottom: 4px;"><strong>Agência:</strong> 0001</li>
+                            <li style="margin-bottom: 4px;"><strong>Conta Corrente:</strong> 43930235-8</li>
+                            <li style="margin-bottom: 4px;"><strong>PIX (CNPJ):</strong> 02.059.387/0001-87</li>
+                        </ul>
+                    </div>
+
+                    <p style="margin-bottom: 8px;">Espero que ajude e que seja tecnicamente e comercialmente viável para o seu projeto</p>
+                    <p style="margin-bottom: 16px;">Permanecemos a sua disposição para maiores esclarecimentos.</p>
+                    <p style="margin-bottom: 4px;">Atenciosamente,</p>
+                    <p style="margin-bottom: 4px;">Laurent MARTIN,</p>
+                    <p>Diretor</p>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <img src="${engesatLogoUrl}" alt="Logo Engesat" style="width: 150px; height: auto; max-width: 150px; border-radius: 8px;">
+                    </div>
+                `;
+
+                previewOutput.innerHTML = htmlContent;
+                copyHtmlBtn.style.display = 'block'; // Mostra o botão de copiar após a geração
+                downloadDocxBtn.style.display = 'block'; // Show the new download button
+            });
+
+            document.getElementById('copyHtmlBtn').addEventListener('click', () => {
+                const previewOutput = document.getElementById('previewOutput');
+                const range = document.createRange();
+                range.selectNode(previewOutput);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                try {
+                    document.execCommand('copy');
+                    showCustomAlert('Conteúdo HTML copiado para a área de transferência! Cole no Word para verificar a formatação.');
+                } catch (err) {
+                    console.error('Falha ao copiar o HTML: ', err);
+                    showCustomAlert('Falha ao copiar o HTML. Por favor, selecione e copie manualmente.');
+                }
+                window.getSelection().removeAllRanges();
+            });
+
+            document.getElementById('downloadDocxBtn').addEventListener('click', () => {
+                const previewOutput = document.getElementById('previewOutput');
+                if (!previewOutput || !previewOutput.innerHTML.trim()) {
+                    showCustomAlert('Gere a pré-visualização antes de baixar o .docx.');
+                    return;
+                }
+
+                // Verifica se htmlDocx está definido antes de usar
+                if (typeof htmlDocx === 'undefined') {
+                    console.error('Erro: html-docx-js não está carregado ou acessível.');
+                    showCustomAlert('Erro ao tentar baixar o .docx. Por favor, tente novamente ou contacte o suporte.');
+                    return;
+                }
+
+                const content = `
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+                          xmlns:w="urn:schemas-microsoft-com:office:word"
+                          xmlns="http://www.w3.org/TR/REC-html40">\
+                    <head><meta charset="utf-8"></head>
+                    <body>${previewOutput.innerHTML}</body>
+                    </html>
+                `;
+
+                const blob = htmlDocx.asBlob(content, {
+                    orientation: 'portrait',
+                    margins: { top: 720, right: 720, bottom: 720, left: 720 }
+                });
+
+                saveAs(blob, 'proposta-comercial.docx');
+                showCustomAlert('Arquivo .docx gerado e pronto para download!');
+            });
+        };
+    </script>
+</body>
+</html>
