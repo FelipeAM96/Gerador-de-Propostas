@@ -170,6 +170,10 @@
             <div id="previewOutput" class="output-area">
                 <p class="text-gray-500">A pré-visualização da sua proposta aparecerá aqui.</p>
             </div>
+            <div class="mt-4">
+                <label for="docxFilename" class="block text-gray-700 text-sm font-medium mb-2">Nome do arquivo DOCX:</label>
+                <input type="text" id="docxFilename" value="Proposta Comercial de Imagens de Satélite" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
+            </div>
             <div class="flex flex-col sm:flex-row gap-4 mt-4">
                 <button id="downloadDocxBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3">Baixar como .DOCX</button>
             </div>
@@ -555,7 +559,7 @@
                         ${detalhesPedidoHtml}
 
                     </div>
-
+                    <div style="height: 20px;"></div> <!-- Blank line before this section -->
                     <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
                         <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin-bottom: 12px;">Informações Administrativas e Bancárias</h3>
                         <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">📄 Dados Administrativos – Engesat Imagens de Satélite</h4>
@@ -597,6 +601,13 @@
                     return;
                 }
 
+                // Get the filename from the input field
+                const filename = document.getElementById('docxFilename').value.trim();
+                if (!filename) {
+                    showCustomAlert('Por favor, insira um nome para o arquivo DOCX.');
+                    return;
+                }
+
                 // Verifica se htmlDocx está definido antes de usar
                 if (typeof htmlDocx === 'undefined') {
                     console.error('Erro: html-docx-js não está carregado ou acessível.');
@@ -618,7 +629,7 @@
                     margins: { top: 720, right: 720, bottom: 720, left: 720 }
                 });
 
-                saveAs(blob, 'proposta-comercial.docx');
+                saveAs(blob, filename + '.docx');
                 showCustomAlert('Arquivo .docx gerado e pronto para download!');
             });
         };
