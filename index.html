@@ -237,7 +237,7 @@
             // Variável para controlar o número de imagens
             let currentImageCount = 1;
             const MAX_IMAGES = 15;
-            const TARGET_IMAGE_WIDTH_PX = 700; // Largura alvo em pixels para imagens redimensionadas (aproximadamente 19cm a 96 DPI)
+            const TARGET_IMAGE_WIDTH_PX = 800; // Largura alvo em pixels para imagens redimensionadas (aproximadamente 19cm a 96 DPI)
 
             // Função para exibir o modal customizado
             function showCustomAlert(message) {
@@ -299,7 +299,7 @@
             document.getElementById('sateliteOpcoes').addEventListener('change', () => {
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(option => option.value);
                 const linkOutput = document.getElementById('sateliteLinkOutput');
-                let linksHtml = '';
+                let linksHtml = ''; // Declaração de linksHtml aqui
                 if (selectedSatellites.length > 0) {
                     linksHtml += 'Links dos Satélites Selecionados:<br>';
                     selectedSatellites.forEach(sat => {
@@ -614,8 +614,7 @@
 
                 const htmlContent = `
                     <div style="text-align: center; margin-bottom: 20px;">
-                        <img src="${engesatLogoUrl}" alt="Logo Engesat" style="max-width: 120px; height: auto; border-radius: 8px; display: block; margin: 0 auto 10px auto;">
-                        <h1 style="font-size: 2em; font-weight: bold; margin-bottom: 5px;">Proposta Comercial</h1>
+                        <h1 style="font-size: 2em; font-weight: bold; margin: 0;">Proposta Comercial</h1>
                         <p style="margin-top: 10px;">Curitiba, ${dataProposta}</p>
                     </div>
 
@@ -635,7 +634,6 @@
                     <p style="margin-bottom: 16px;">Segue proposta para fornecimento de imagem de satélite,</p>
 
                     <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
-                        <h3 style="font-size: 1.5em; font-weight: 600; color: #1f2937; text-align: center; margin-bottom: 12px;">Detalhes da Imagem</h3>
                         <p style="margin-bottom: 4px;"><strong>Extensão da Área:</strong> ${extensaoArea} km²</p>
                         ${imagesHtmlFigura1}
                         <!-- Sugestão de quebra de página 1 -->
@@ -683,7 +681,7 @@
                     <p style="margin-bottom: 4px;">Laurent MARTIN,</p>
                     <p>Diretor</p>
                     <div style="text-align: center; margin-top: 20px;">
-                        <img src="${engesatLogoUrl}" alt="Logo Engesat" style="width: 150px; height: auto; max-width: 150px; border-radius: 8px;">
+                        <img src="${engesatLogoUrl}" alt="Logo Engesat" style="width: 100px; height: auto; max-width: 100px; border-radius: 8px;">
                     </div>
                 `;
 
