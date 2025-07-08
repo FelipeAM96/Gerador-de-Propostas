@@ -114,13 +114,47 @@
             <div>
                 <label for="sateliteOpcoes" class="block text-gray-700 text-sm font-medium mb-2">Satélite(s) (Opções - Ctrl+clique para múltiplos):</label>
                 <select id="sateliteOpcoes" multiple size="5" class="w-full p-3 border border-gray-300 rounded-lg">
-                    <option value="WorldView 2">WorldView 2</option>
-                    <option value="WorldView 3">WorldView 3</option>
-                    <option value="Pleiades">Pleiades</option>
-                    <option value="Pleiades Neo">Pleiades Neo</option>
-                    <option value="Jilin">Jilin</option>
+                    <option value="ALOS AVNIR">ALOS AVNIR</option>
+                    <option value="ALOS Prism">ALOS Prism</option>
+                    <option value="Aster">Aster</option>
+                    <option value="AXEL GLOBE">AXEL GLOBE</option>
+                    <option value="BlackSky">BlackSky</option>
+                    <option value="Eros B">Eros B</option>
+                    <option value="FORMOSAT 2">FORMOSAT 2</option>
+                    <option value="Gaofen 2">Gaofen 2</option>
+                    <option value="Geoeye">Geoeye</option>
+                    <option value="GEOSAT 1">GEOSAT 1</option>
+                    <option value="Ikonos">Ikonos</option>
+                    <option value="Jilin-1">Jilin-1</option>
+                    <option value="KazEOSat-1">KazEOSat-1</option>
+                    <option value="Kompsat 2">Kompsat 2</option>
+                    <option value="Kompsat 3">Kompsat 3</option>
+                    <option value="Kompsat-3A">Kompsat-3A</option>
+                    <option value="LANDSAT 4 E 5 TM">LANDSAT 4 E 5 TM</option>
+                    <option value="LANDSAT 7 ETM +">LANDSAT 7 ETM +</option>
+                    <option value="LANDSAT 8">LANDSAT 8</option>
+                    <option value="PLANET">PLANET</option>
+                    <option value="PLEIADES">PLEIADES</option>
+                    <option value="PLEIADES NEO">PLEIADES NEO</option>
+                    <option value="Quick Bird">Quick Bird</option>
+                    <option value="RapidEye">RapidEye</option>
                     <option value="Sentinel-2">Sentinel-2</option>
-                    <option value="Landsat 8">Landsat 8</option>
+                    <option value="SKYSAT">SKYSAT</option>
+                    <option value="SPOT 6/7">SPOT 6/7</option>
+                    <option value="SPOT 1-2-3-4-5">SPOT 1-2-3-4-5</option>
+                    <option value="SUPERVIEW">SUPERVIEW</option>
+                    <option value="TerraSAR-X">TerraSAR-X</option>
+                    <option value="TH-01">TH-01</option>
+                    <option value="Triplesat">Triplesat</option>
+                    <option value="UK DMC-2">UK DMC-2</option>
+                    <option value="Vision-1">Vision-1</option>
+                    <option value="World View 1">World View 1</option>
+                    <option value="World View 2">World View 2</option>
+                    <option value="World View 3">World View 3</option>
+                    <option value="World View 4">World View 4</option>
+                    <option value="ALTIMETRIA WORLDDEM">ALTIMETRIA WORLDDEM</option>
+                    <option value="Altimetria WorldDEM NEO™">Altimetria WorldDEM NEO™</option>
+                    <option value="Altimetria AW3D">Altimetria AW3D</option>
                 </select>
             </div>
             <div id="sateliteLinkOutput" class="text-blue-600 text-sm mt-2" style="display: none;"></div>
@@ -203,6 +237,7 @@
             // Variável para controlar o número de imagens
             let currentImageCount = 1;
             const MAX_IMAGES = 15;
+            const TARGET_IMAGE_WIDTH_PX = 700; // Largura alvo em pixels para imagens redimensionadas (aproximadamente 19cm a 96 DPI)
 
             // Função para exibir o modal customizado
             function showCustomAlert(message) {
@@ -217,13 +252,47 @@
 
             // Objeto para mapear opções de satélite para URLs
             const satelliteLinks = {
-                "WorldView 2": "https://www.engesat.com.br/imagem-de-satelite/world-view-2/",
-                "WorldView 3": "https://www.engesat.com.br/imagem-de-satelite/world-view-3/",
-                "Pleiades": "https://www.engesat.com.br/imagem-de-satelite/pleiades/",
-                "Pleiades Neo": "https://www.engesat.com.br/imagem-de-satelite/pleiades-neo/",
-                "Jilin": "https://www.engesat.com.br/imagem-de-satelite/jilin-1/",
-                "Sentinel-2": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2",
-                "Landsat 8": "https://landsat.gsfc.nasa.gov/landsat-8/"
+                "ALOS AVNIR": "https://www.engesat.com.br/imagem-de-satelite/alos-1/",
+                "ALOS Prism": "https://www.engesat.com.br/imagem-de-satelite/alos-prism/",
+                "Aster": "https://www.engesat.com.br/imagem-de-satelite/aster/",
+                "AXEL GLOBE": "https://www.engesat.com.br/imagem-de-satelite/axel-globe/",
+                "BlackSky": "https://www.engesat.com.br/imagem-de-satelite/blacksky/",
+                "Eros B": "https://www.engesat.com.br/imagem-de-satelite/eros-b/",
+                "FORMOSAT 2": "https://www.engesat.com.br/imagem-de-satelite/formosat-2/",
+                "Gaofen 2": "https://www.engesat.com.br/imagem-de-satelite/gaofen-2/",
+                "Geoeye": "https://www.engesat.com.br/imagem-de-satelite/geoeye/",
+                "GEOSAT 1": "https://www.engesat.com.br/imagem-de-satelite/geosat1/",
+                "Ikonos": "https://www.engesat.com.br/imagem-de-satelite/ikonos/",
+                "Jilin-1": "https://www.engesat.com.br/imagem-de-satelite/jilin-1/",
+                "KazEOSat-1": "https://www.engesat.com.br/imagem-de-satelite/kazeosat-1/",
+                "Kompsat 2": "https://www.engesat.com.br/imagem-de-satelite/kompsat-2/",
+                "Kompsat 3": "https://www.engesat.com.br/imagem-de-satelite/kompsat-3/",
+                "Kompsat-3A": "https://www.engesat.com.br/imagem-de-satelite/kompsat-3a/",
+                "LANDSAT 4 E 5 TM": "https://www.engesat.com.br/imagem-de-satelite/landsat/",
+                "LANDSAT 7 ETM +": "https://www.engesat.com.br/imagem-de-satelite/landsat-7-etm/",
+                "LANDSAT 8": "https://www.engesat.com.br/imagem-de-satelite/landsat-8/",
+                "PLANET": "https://www.engesat.com.br/imagem-de-satelite/planetscope/",
+                "PLEIADES": "https://www.engesat.com.br/imagem-de-satelite/pleiades/",
+                "PLEIADES NEO": "https://www.engesat.com.br/imagem-de-satelite/pleiades-neo/",
+                "Quick Bird": "https://www.engesat.com.br/imagem-de-satelite/quick-bird/",
+                "RapidEye": "https://www.engesat.com.br/imagem-de-satelite/rapideye/",
+                "Sentinel-2": "https://www.engesat.com.br/sentinel-2/",
+                "SKYSAT": "https://www.engesat.com.br/imagem-de-satelite/skysat/",
+                "SPOT 6/7": "https://www.engesat.com.br/imagem-de-satelite/spot-67/",
+                "SPOT 1-2-3-4-5": "https://www.engesat.com.br/imagem-de-satelite/spot-1-2-3-4-5/",
+                "SUPERVIEW": "https://www.engesat.com.br/imagem-de-satelite/superview/",
+                "TerraSAR-X": "https://www.engesat.com.br/imagem-de-satelite/terrasar-x/",
+                "TH-01": "https://www.engesat.com.br/imagem-de-satelite/th-01/",
+                "Triplesat": "https://www.engesat.com.br/imagem-de-satelite/triplesat/",
+                "UK DMC-2": "https://www.engesat.com.br/imagem-de-satelite/uk-dmc-2/",
+                "Vision-1": "https://www.engesat.com.br/vision-1/",
+                "World View 1": "https://www.engesat.com.br/imagem-de-satelite/world-view-1/",
+                "World View 2": "https://www.engesat.com.br/imagem-de-satelite/world-view-2/",
+                "World View 3": "https://www.engesat.com.br/imagem-de-satelite/world-view-3/",
+                "World View 4": "https://www.engesat.com.br/imagem-de-satelite/world-view-4/",
+                "ALTIMETRIA WORLDDEM": "https://www.engesat.com.br/mercados/altimetria/",
+                "Altimetria WorldDEM NEO™": "https://www.engesat.com.br/mercados/altimetria-worlddem-neo/",
+                "Altimetria AW3D": "https://www.engesat.com.br/mercados/altimetria-aw3d/"
             };
 
             // Event listener para o select de satélites
@@ -247,8 +316,33 @@
                 }
             });
 
+            // Função para redimensionar a imagem usando Canvas
+            function resizeImage(imageDataUrl, maxWidthPx) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidthPx) {
+                            height = height * (maxWidthPx / width);
+                            width = maxWidthPx;
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        resolve(canvas.toDataURL('image/png')); // Convert to PNG for better quality
+                    };
+                    img.src = imageDataUrl;
+                });
+            }
+
             // Função para lidar com a colagem de imagens
-            function handleImagePaste(event, pasteZoneId, hiddenInputId, previewImgId) {
+            async function handleImagePaste(event, pasteZoneId, hiddenInputId, previewImgId) {
                 event.preventDefault();
 
                 const items = (event.clipboardData || event.originalEvent.clipboardData).items;
@@ -259,19 +353,22 @@
                         const file = item.getAsFile();
                         const reader = new FileReader();
 
-                        reader.onload = (e) => {
-                            const imageDataUrl = e.target.result;
+                        reader.onload = async (e) => {
+                            const originalImageDataUrl = e.target.result;
+                            // Redimensionar a imagem antes de armazenar e pré-visualizar
+                            const resizedImageDataUrl = await resizeImage(originalImageDataUrl, TARGET_IMAGE_WIDTH_PX);
+
                             const pasteZone = document.getElementById(pasteZoneId);
                             const hiddenInput = document.getElementById(hiddenInputId);
                             const previewImg = document.getElementById(previewImgId);
 
-                            hiddenInput.value = imageDataUrl;
+                            hiddenInput.value = resizedImageDataUrl;
                             hiddenInput.setAttribute('data-image-pasted', 'true');
 
-                            previewImg.src = imageDataUrl;
+                            previewImg.src = resizedImageDataUrl;
                             previewImg.classList.remove('hidden');
 
-                            pasteZone.textContent = 'Imagem colada com sucesso!';
+                            pasteZone.textContent = 'Imagem colada e redimensionada com sucesso!';
                             pasteZone.classList.add('has-image');
                         };
                         reader.readAsDataURL(file);
@@ -414,7 +511,7 @@
                 let samplesHtml = '';
                 if (selectedSatellites.length > 0) {
                     samplesHtml += `
-                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Amostras das Imagens de Satélite:</h4>
+                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Informações e Amostras de Imagens de Satélite:</h4>
                         <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
                     `;
                     selectedSatellites.forEach(sat => {
@@ -436,9 +533,8 @@
                 const previewOutput = document.getElementById('previewOutput');
                 const downloadDocxBtn = document.getElementById('downloadDocxBtn');
 
-                // Define as dimensões máximas para as imagens no DOCX em cm
-                const MAX_PAGE_IMAGE_WIDTH_CM = 15; // Largura máxima em cm
-                const MAX_PAGE_IMAGE_HEIGHT_CM = 8.45; // Altura máxima em cm
+                // Define as dimensões para as imagens no DOCX em cm
+                const IMAGE_WIDTH_CM = 19; // Largura fixa em cm
 
                 let imagesHtmlFigura1 = '';
                 let imagesHtmlFigurasAlternativas = '';
@@ -456,8 +552,9 @@
                     const imageDate = document.getElementById(`image${i}Date`) ? document.getElementById(`image${i}Date`).value : '';
                     const imageRes = document.getElementById(`image${i}Res`) ? document.getElementById(`image${i}Res`).value : '';
 
-                    // Always use max-width and auto height
-                    let imageStyle = `max-width: ${MAX_PAGE_IMAGE_WIDTH_CM}cm; height: auto; border-radius: 8px; display: block; margin: 0 auto;`;
+                    // Explicitly set width and auto height with !important for DOCX compatibility
+                    // Adding width and height attributes directly to the img tag for better DOCX conversion
+                    let imageStyle = `width: ${IMAGE_WIDTH_CM}cm !important; height: auto !important; border-radius: 8px; display: block; margin: 0 auto;`;
 
                     if (imageDataUrl && hiddenInput.getAttribute('data-image-pasted') === 'true') {
                         let imageBlock = `
@@ -470,7 +567,7 @@
                             if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 5px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
                         }
                         imageBlock += `
-                                <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}">
+                                <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}" width="${IMAGE_WIDTH_CM}cm">
                                 ${imageCaption ? `<p style="font-size: 0.9em; text-align: center; color: #555; margin-top: 8px; font-style: italic;">${imageCaption}</p>` : ''}
                             </div>
                         `;
@@ -518,7 +615,7 @@
                 const htmlContent = `
                     <div style="text-align: center; margin-bottom: 20px;">
                         <img src="${engesatLogoUrl}" alt="Logo Engesat" style="max-width: 120px; height: auto; border-radius: 8px; display: block; margin: 0 auto 10px auto;">
-                        <h1 style="font-size: 2.5em; font-weight: bold; margin-bottom: 5px;">Proposta Comercial</h1>
+                        <h1 style="font-size: 2em; font-weight: bold; margin-bottom: 5px;">Proposta Comercial</h1>
                         <p style="margin-top: 10px;">Curitiba, ${dataProposta}</p>
                     </div>
 
