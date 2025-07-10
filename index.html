@@ -15,7 +15,7 @@
             color: #1f2937;
         }
         .container {
-            max-width: 900px;
+            max-width: 1400px; /* Aumentado para acomodar duas colunas */
         }
         input[type="text"], input[type="date"], input[type="number"], select, textarea {
             @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200;
@@ -34,13 +34,14 @@
         }
         .output-area {
             @apply bg-white p-6 rounded-lg shadow-lg border border-gray-200 overflow-auto;
-            min-height: 200px;
+            min-height: 500px; /* Aumentado para melhor visualização na coluna direita */
             white-space: pre-wrap; /* Preserve whitespace and wrap text */
             word-wrap: break-word; /* Break long words */
-            line-height: 1.5; /* Adjusted for better readability */
+            line-height: 1.2; /* Ajustado para maior compactação */
+            font-size: 0.9em; /* Reduzido levemente para caber mais conteúdo */
         }
         .paste-zone {
-            @apply flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 cursor-pointer;
+            @apply flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 cursor-pointer;
             transition: border-color 0.2s ease-in-out;
         }
         .paste-zone.has-image {
@@ -54,162 +55,264 @@
         .modal {
             transition: opacity 0.3s ease-in-out;
         }
+
+        /* Estilos para o Acordeon (mantidos, mas as classes 'accordion-item' e 'accordion-content' foram removidas dos elementos HTML) */
+        .accordion-item {
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .accordion-header {
+            background-color: #f3f4f6; /* bg-gray-50 */
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+        }
+        .accordion-header:hover {
+            background-color: #e5e7eb; /* hover:bg-gray-200 */
+        }
+        .accordion-content {
+            padding: 1rem;
+            border-top: none;
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+        }
+        /* Opcional: Estilo para campos obrigatórios */
+        .required-label::after {
+            content: '*';
+            color: red;
+            margin-left: 4px;
+        }
+
+        /* Estilos para o layout de duas colunas */
+        @media (min-width: 1024px) { /* Aplica a partir de telas grandes (lg) */
+            .main-content-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Duas colunas de largura igual */
+                gap: 2rem; /* Espaçamento entre as colunas */
+            }
+            .left-column, .right-column {
+                padding: 0; /* Remove padding extra das colunas */
+            }
+        }
+
+        /* Estilos específicos para a pré-visualização */
+        #previewOutput h1 {
+            font-size: 1.5em !important; /* Ajuste para caber melhor na coluna */
+            margin-bottom: 10px !important;
+        }
+        #previewOutput h3, #previewOutput h4 {
+            font-size: 1em !important;
+            margin: 8px 0 4px 0 !important;
+        }
+        #previewOutput p, #previewOutput ul, #previewOutput li {
+            font-size: 0.85em !important; /* Fonte menor para mais compactação */
+            line-height: 1.1 !important; /* Linha mais apertada */
+            margin-bottom: 1px !important; /* Margem mínima entre parágrafos/itens */
+        }
+        #previewOutput ul {
+            padding-left: 15px !important;
+        }
+        #previewOutput strong {
+            font-weight: bold !important;
+        }
+        #previewOutput img {
+            max-width: 95% !important; /* Ajusta a largura da imagem na pré-visualização */
+            height: auto !important;
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8 lg:p-10 flex justify-center items-start min-h-screen">
     <div class="container bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl space-y-8">
         <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-8">Gerador de Proposta Comercial de Imagens de Satélite</h1>
 
-        <!-- Seção de Dados da Proposta -->
-        <div class="space-y-6">
-            <h2 class="section-title">Dados da Proposta</h2>
-            <div>
-                <label for="dataProposta" class="block text-gray-700 text-sm font-medium mb-2">Data da Proposta:</label>
-                <input type="date" id="dataProposta" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="empresaCliente" class="block text-gray-700 text-sm font-medium mb-2">Empresa Cliente:</label>
-                <input type="text" id="empresaCliente" placeholder="Nome da Empresa" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="contatoCliente" class="block text-gray-700 text-sm font-medium mb-2">Contato Cliente:</label>
-                <input type="text" id="contatoCliente" placeholder="Nome do Contato" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="cpfCliente" class="block text-gray-700 text-sm font-medium mb-2">CPF/CNPJ Cliente:</label>
-                <input type="text" id="cpfCliente" placeholder="CPF ou CNPJ do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="enderecoCliente" class="block text-gray-700 text-sm font-medium mb-2">Endereço Cliente:</label>
-                <input type="text" id="enderecoCliente" placeholder="Endereço completo do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="processoVinculado" class="block text-gray-700 text-sm font-medium mb-2">Processo Vinculado:</label>
-                <input type="text" id="processoVinculado" placeholder="Número do processo vinculado" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="extensaoArea" class="block text-gray-700 text-sm font-medium mb-2">Extensão da Área (km²):</label>
-                <input type="number" id="extensaoArea" placeholder="Ex: 100" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="dataImageamentoInicio" class="block text-gray-700 text-sm font-medium mb-2">Data de Imageamento Início:</label>
-                <input type="date" id="dataImageamentoInicio" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="dataImageamentoFim" class="block text-gray-700 text-sm font-medium mb-2">Data de Imageamento Fim:</label>
-                <input type="date" id="dataImageamentoFim" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="cenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Cena Recomendada:</label>
-                <input type="text" id="cenaRecomendada" placeholder="Ex: Cena 12345" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="resolucaoColorida" class="block text-gray-700 text-sm font-medium mb-2">Resolução Colorida:</label>
-                <input type="text" id="resolucaoColorida" placeholder="Ex: 0.5m" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="dataCenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Data(s) da Cena Recomendada (separadas por vírgula):</label>
-                <input type="text" id="dataCenaRecomendada" placeholder="Ex: 15/06/2024, 20/07/2024" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="sateliteOpcoes" class="block text-gray-700 text-sm font-medium mb-2">Satélite(s) (Opções - Ctrl+clique para múltiplos):</label>
-                <select id="sateliteOpcoes" multiple size="5" class="w-full p-3 border border-gray-300 rounded-lg">
-                    <option value="ALOS AVNIR">ALOS AVNIR</option>
-                    <option value="ALOS Prism">ALOS Prism</option>
-                    <option value="Aster">Aster</option>
-                    <option value="AXEL GLOBE">AXEL GLOBE</option>
-                    <option value="BlackSky">BlackSky</option>
-                    <option value="Eros B">Eros B</option>
-                    <option value="FORMOSAT 2">FORMOSAT 2</option>
-                    <option value="Gaofen 2">Gaofen 2</option>
-                    <option value="Geoeye">Geoeye</option>
-                    <option value="GEOSAT 1">GEOSAT 1</option>
-                    <option value="Ikonos">Ikonos</option>
-                    <option value="Jilin-1">Jilin-1</option>
-                    <option value="KazEOSat-1">KazEOSat-1</option>
-                    <option value="Kompsat 2">Kompsat 2</option>
-                    <option value="Kompsat 3">Kompsat 3</option>
-                    <option value="Kompsat-3A">Kompsat-3A</option>
-                    <option value="LANDSAT 4 E 5 TM">LANDSAT 4 E 5 TM</option>
-                    <option value="LANDSAT 7 ETM +">LANDSAT 7 ETM +</option>
-                    <option value="LANDSAT 8">LANDSAT 8</option>
-                    <option value="PLANET">PLANET</option>
-                    <option value="PLEIADES">PLEIADES</option>
-                    <option value="PLEIADES NEO">PLEIADES NEO</option>
-                    <option value="Quick Bird">Quick Bird</option>
-                    <option value="RapidEye">RapidEye</option>
-                    <option value="Sentinel-2">Sentinel-2</option>
-                    <option value="SKYSAT">SKYSAT</option>
-                    <option value="SPOT 6/7">SPOT 6/7</option>
-                    <option value="SPOT 1-2-3-4-5">SPOT 1-2-3-4-5</option>
-                    <option value="SUPERVIEW">SUPERVIEW</option>
-                    <option value="TerraSAR-X">TerraSAR-X</option>
-                    <option value="TH-01">TH-01</option>
-                    <option value="Triplesat">Triplesat</option>
-                    <option value="UK DMC-2">UK DMC-2</option>
-                    <option value="Vision-1">Vision-1</option>
-                    <option value="World View 1">World View 1</option>
-                    <option value="World View 2">World View 2</option>
-                    <option value="World View 3">World View 3</option>
-                    <option value="World View 4">World View 4</option>
-                    <option value="ALTIMETRIA WORLDDEM">ALTIMETRIA WORLDDEM</option>
-                    <option value="Altimetria WorldDEM NEO™">Altimetria WorldDEM NEO™</option>
-                    <option value="Altimetria AW3D">Altimetria AW3D</option>
-                </select>
-            </div>
-            <div id="sateliteLinkOutput" class="text-blue-600 text-sm mt-2" style="display: none;"></div>
+        <div class="main-content-grid">
+            <!-- Coluna da Esquerda: Dados da Proposta e Adicionar Imagens (sem acordeon) -->
+            <div class="left-column space-y-8 p-4 border border-gray-200 rounded-lg bg-white">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">1. Dados da Proposta</h2>
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="dataProposta" class="block text-gray-700 text-sm font-medium mb-2 required-label">Data da Proposta:</label>
+                            <input type="date" id="dataProposta" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="empresaCliente" class="block text-gray-700 text-sm font-medium mb-2 required-label">Empresa Cliente:</label>
+                            <input type="text" id="empresaCliente" placeholder="Nome da Empresa" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="contatoCliente" class="block text-gray-700 text-sm font-medium mb-2 required-label">Contato Cliente:</label>
+                            <input type="text" id="contatoCliente" placeholder="Nome do Contato" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="cpfCliente" class="block text-gray-700 text-sm font-medium mb-2">CPF/CNPJ Cliente:</label>
+                            <input type="text" id="cpfCliente" placeholder="CPF ou CNPJ do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="enderecoCliente" class="block text-gray-700 text-sm font-medium mb-2">Endereço Cliente:</label>
+                        <input type="text" id="enderecoCliente" placeholder="Endereço completo do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="processoVinculado" class="block text-gray-700 text-sm font-medium mb-2">Processo Vinculado:</label>
+                            <input type="text" id="processoVinculado" placeholder="Número do processo vinculado" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="extensaoArea" class="block text-gray-700 text-sm font-medium mb-2 required-label">Extensão da Área (km²):</label>
+                            <input type="number" id="extensaoArea" placeholder="Ex: 100" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="dataImageamentoInicio" class="block text-gray-700 text-sm font-medium mb-2 required-label">Data de Imageamento Início:</label>
+                            <input type="date" id="dataImageamentoInicio" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="dataImageamentoFim" class="block text-gray-700 text-sm font-medium mb-2 required-label">Data de Imageamento Fim:</label>
+                            <input type="date" id="dataImageamentoFim" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
 
-            <div>
-                <label for="pedidoMinimoKm2" class="block text-gray-700 text-sm font-medium mb-2">Pedido Mínimo (Km²):</label>
-                <input type="number" id="pedidoMinimoKm2" placeholder="Ex: 50" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="custoRs" class="block text-gray-700 text-sm font-medium mb-2">Custo (R$):</label>
-                <input type="number" id="custoRs" placeholder="Ex: 15000" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-                <label for="diasEntrega" class="block text-gray-700 text-sm font-medium mb-2">Entrega (dias):</label>
-                <input type="number" id="diasEntrega" placeholder="Ex: 7" class="w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-        </div>
+                    <!-- Seção "Adicionar Imagens" movida para cá -->
+                    <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">2. Adicionar Imagens</h2>
+                    <div class="space-y-6">
+                        <p class="text-sm text-gray-600 mb-4">Cole suas imagens (Ctrl+V) nas áreas indicadas. Elas serão redimensionadas automaticamente para se ajustarem ao documento, mantendo a proporção. A pré-visualização da imagem só estará visível na proposta final.</p>
+                        <div id="imageInputs" class="space-y-4">
+                            <!-- Imagem 1: Área de Interesse (Initial image block) -->
+                            <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem <span class="image-number">1</span> (Área de Interesse):</label>
+                                <div id="pasteZone1" class="paste-zone" tabindex="0">
+                                    <p class="text-center text-lg font-bold text-gray-500">Clique ou cole sua imagem aqui (Ctrl+V)</p>
+                                    <p class="text-center text-sm text-gray-400 mt-1">A imagem aparecerá na pré-visualização final.</p>
+                                </div>
+                                <input type="hidden" id="hiddenImageData1" data-image-pasted="false">
+                                <div class="mt-4 space-y-3">
+                                    <div>
+                                        <label for="imageCaption1" class="block text-gray-700 text-sm font-medium mb-1">Legenda da Imagem <span class="image-number">1</span>:</label>
+                                        <input type="text" id="imageCaption1" value="Figura 1 - Área de interesse com informação de metragem." placeholder="Legenda descritiva para a imagem">
+                                    </div>
+                                    <!-- Campos de Satélite, Data e Resolução removidos para Imagem 1 -->
+                                </div>
+                                <!-- A tag img está presente, mas sempre oculta no formulário -->
+                                <img id="imagePreview1" class="image-preview hidden" alt="Pré-visualização da Imagem 1">
+                                <button type="button" class="clear-image-btn mt-4 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="1">Limpar Imagem <span class="image-number">1</span></button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                            <button id="addOneImageBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 sm:w-1/2">Adicionar outra imagem</button>
+                            <button id="addMultipleImagesBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg py-3 sm:w-1/2">Adicionar mais 5 imagens</button>
+                        </div>
+                    </div>
+                    <!-- Fim da seção "Adicionar Imagens" movida -->
 
-        <!-- Seção de Imagens -->
-        <div class="space-y-6">
-            <h2 class="section-title">Adicionar Imagens (Cole com Ctrl+V)</h2>
-            <p class="text-sm text-gray-600 mb-4">As imagens serão redimensionadas automaticamente para se ajustarem ao documento, mantendo a proporção.</p>
-            <div id="imageInputs" class="space-y-4">
-                <!-- Imagem 1: Área de Interesse (Initial image block) -->
-                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem 1 (Área de Interesse):</label>
-                    <div id="pasteZone1" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
-                    <input type="hidden" id="hiddenImageData1" data-image-pasted="false">
-                    <label for="imageCaption1" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem 1 (Figura 1 - Área de interesse com informação de metragem.):</label>
-                    <input type="text" id="imageCaption1" value="Figura 1 - Área de interesse com informação de metragem." placeholder="Legenda descritiva para a imagem">
-                    <img id="imagePreview1" class="image-preview hidden" alt="Pré-visualização da Imagem 1">
-                    <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="1">Limpar Imagem 1</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="cenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Cena Recomendada:</label>
+                            <input type="text" id="cenaRecomendada" placeholder="Ex: Cena 12345" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="resolucaoColorida" class="block text-gray-700 text-sm font-medium mb-2">Resolução Colorida:</label>
+                            <input type="text" id="resolucaoColorida" placeholder="Ex: 0.5m" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="dataCenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Data(s) da Cena Recomendada (separadas por vírgula):</label>
+                        <input type="text" id="dataCenaRecomendada" placeholder="Ex: 15/06/2024, 20/07/2024" class="w-full p-3 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="sateliteOpcoes" class="block text-gray-700 text-sm font-medium mb-2">Satélite(s) (Opções - Ctrl+clique para múltiplos):</label>
+                        <select id="sateliteOpcoes" multiple size="5" class="w-full p-3 border border-gray-300 rounded-lg">
+                            <option value="ALOS AVNIR">ALOS AVNIR</option>
+                            <option value="ALOS Prism">ALOS Prism</option>
+                            <option value="Aster">Aster</option>
+                            <option value="AXEL GLOBE">AXEL GLOBE</option>
+                            <option value="BlackSky">BlackSky</option>
+                            <option value="Eros B">Eros B</option>
+                            <option value="FORMOSAT 2">FORMOSAT 2</option>
+                            <option value="Gaofen 2">Gaofen 2</option>
+                            <option value="Geoeye">Geoeye</option>
+                            <option value="GEOSAT 1">GEOSAT 1</option>
+                            <option value="Ikonos">Ikonos</option>
+                            <option value="Jilin-1">Jilin-1</option>
+                            <option value="KazEOSat-1">KazEOSat-1</option>
+                            <option value="Kompsat 2">Kompsat 2</option>
+                            <option value="Kompsat 3">Kompsat 3</option>
+                            <option value="Kompsat-3A">Kompsat-3A</option>
+                            <option value="LANDSAT 4 E 5 TM">LANDSAT 4 E 5 TM</option>
+                            <option value="LANDSAT 7 ETM +">LANDSAT 7 ETM +</option>
+                            <option value="LANDSAT 8">LANDSAT 8</option>
+                            <option value="PLANET">PLANET</option>
+                            <option value="PLEIADES">PLEIADES</option>
+                            <option value="PLEIADES NEO">PLEIADES NEO</option>
+                            <option value="Quick Bird">Quick Bird</option>
+                            <option value="RapidEye">RapidEye</option>
+                            <option value="Sentinel-2">Sentinel-2</option>
+                            <option value="SKYSAT">SKYSAT</option>
+                            <option value="SPOT 6/7">SPOT 6/7</option>
+                            <option value="SPOT 1-2-3-4-5">SPOT 1-2-3-4-5</option>
+                            <option value="SUPERVIEW">SUPERVIEW</option>
+                            <option value="TerraSAR-X">TerraSAR-X</option>
+                            <option value="TH-01">TH-01</option>
+                            <option value="Triplesat">Triplesat</option>
+                            <option value="UK DMC-2">UK DMC-2</option>
+                            <option value="Vision-1">Vision-1</option>
+                            <option value="World View 1">World View 1</option>
+                            <option value="World View 2">World View 2</option>
+                            <option value="World View 3">World View 3</option>
+                            <option value="World View 4">World View 4</option>
+                            <option value="ALTIMETRIA WORLDDEM">ALTIMETRIA WORLDDEM</option>
+                            <option value="Altimetria WorldDEM NEO™">Altimetria WorldDEM NEO™</option>
+                            <option value="Altimetria AW3D">Altimetria AW3D</option>
+                        </select>
+                    </div>
+                    <div id="sateliteLinkOutput" class="text-blue-600 text-sm mt-2" style="display: none;"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="pedidoMinimoKm2" class="block text-gray-700 text-sm font-medium mb-2 required-label">Pedido Mínimo (Km²):</label>
+                            <input type="number" id="pedidoMinimoKm2" placeholder="Ex: 50" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="custoRs" class="block text-gray-700 text-sm font-medium mb-2 required-label">Custo (R$):</label>
+                            <input type="number" id="custoRs" placeholder="Ex: 15000" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="diasEntrega" class="block text-gray-700 text-sm font-medium mb-2 required-label">Entrega (dias):</label>
+                        <input type="number" id="diasEntrega" placeholder="Ex: 7" class="w-full p-3 border border-gray-300 rounded-lg">
+                    </div>
                 </div>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-4 mt-4">
-                <button id="addOneImageBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 sm:w-1/2">Adicionar outra imagem</button>
-                <button id="addMultipleImagesBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg py-3 sm:w-1/2">Adicionar mais 5 imagens</button>
-            </div>
-        </div>
 
-        <!-- Botão Gerar Pré-visualização -->
-        <button id="generatePreviewBtn" class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200;">Gerar Pré-visualização</button>
+                <!-- Botão Gerar Pré-visualização na coluna esquerda -->
+                <button id="generatePreviewBtn" class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200;">Gerar Pré-visualização</button>
+            </div>
 
-        <!-- Seção de Pré-visualização -->
-        <div class="space-y-6">
-            <h2 class="section-title">Pré-visualização da Proposta</h2>
-            <div id="previewOutput" class="output-area">
-                <p class="text-gray-500">A pré-visualização da sua proposta aparecerá aqui.</p>
-            </div>
-            <div class="mt-4">
-                <label for="docxFilename" class="block text-gray-700 text-sm font-medium mb-2">Nome do arquivo DOCX:</label>
-                <input type="text" id="docxFilename" value="Proposta Comercial de Imagens de Satélite" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
-            </div>
-            <div class="flex flex-col sm:flex-row gap-4 mt-4">
-                <button id="downloadDocxBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3">Baixar como .DOCX</button>
+            <!-- Coluna da Direita: Pré-visualização e Download -->
+            <div class="right-column space-y-8 p-4 border border-gray-200 rounded-lg bg-white">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">3. Pré-visualização e Download</h2>
+                <div class="space-y-6">
+                    <div id="previewOutput" class="output-area">
+                        <p class="text-gray-500">A pré-visualização da sua proposta aparecerá aqui.</p>
+                    </div>
+                    <div class="mt-4">
+                        <label for="docxFilename" class="block text-gray-700 text-sm font-medium mb-2">Nome do arquivo DOCX:</label>
+                        <input type="text" id="docxFilename" value="Proposta Comercial de Imagens de Satélite" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                        <button id="downloadDocxBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3">Baixar como .DOCX</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -299,7 +402,7 @@
             document.getElementById('sateliteOpcoes').addEventListener('change', () => {
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(option => option.value);
                 const linkOutput = document.getElementById('sateliteLinkOutput');
-                let linksHtml = ''; // Declaração de linksHtml aqui
+                let linksHtml = '';
                 if (selectedSatellites.length > 0) {
                     linksHtml += 'Links dos Satélites Selecionados:<br>';
                     selectedSatellites.forEach(sat => {
@@ -365,10 +468,10 @@
                             hiddenInput.value = resizedImageDataUrl;
                             hiddenInput.setAttribute('data-image-pasted', 'true');
 
-                            previewImg.src = resizedImageDataUrl;
-                            previewImg.classList.remove('hidden');
+                            // A imagem não será exibida no formulário, apenas o texto de confirmação
+                            previewImg.classList.add('hidden'); // Garante que a pré-visualização no formulário permaneça oculta
 
-                            pasteZone.textContent = 'Imagem colada e redimensionada com sucesso!';
+                            pasteZone.innerHTML = '<p class="text-center text-lg font-bold text-green-700">Imagem colada com sucesso!</p><p class="text-center text-sm text-green-600 mt-1">A imagem aparecerá na pré-visualização final.</p>';
                             pasteZone.classList.add('has-image');
                         };
                         reader.readAsDataURL(file);
@@ -381,14 +484,14 @@
                     const pasteZone = document.getElementById(pasteZoneId);
                     const pastedText = (event.clipboardData || window.clipboardData).getData('text');
                     if (pastedText) {
-                        pasteZone.textContent = pastedText.substring(0, 50) + (pastedText.length > 50 ? '...' : '');
+                        pasteZone.innerHTML = `<p class="text-center text-lg font-bold text-gray-500">Texto colado (não é uma imagem):</p><p class="text-center text-sm text-gray-400 mt-1">${pastedText.substring(0, 50)}${pastedText.length > 50 ? '...' : ''}</p>`;
                         pasteZone.classList.remove('has-image');
                         const hiddenInput = document.getElementById(hiddenInputId);
                         hiddenInput.value = '';
                         hiddenInput.setAttribute('data-image-pasted', 'false');
                         document.getElementById(previewImgId).classList.add('hidden');
                     } else {
-                        pasteZone.textContent = 'Nenhuma imagem ou texto válido colado.';
+                        pasteZone.innerHTML = '<p class="text-center text-lg font-bold text-gray-500">Nenhuma imagem ou texto válido colado.</p><p class="text-center text-sm text-gray-400 mt-1">Tente novamente.</p>';
                         pasteZone.classList.remove('has-image');
                     }
                 }
@@ -400,17 +503,18 @@
                 const hiddenInput = document.getElementById(`hiddenImageData${id}`);
                 const previewImg = document.getElementById(`imagePreview${id}`);
                 const imageCaption = document.getElementById(`imageCaption${id}`);
+                // Campos de satélite, data e resolução só existem para id > 1
                 const imageSat = document.getElementById(`image${id}Sat`);
                 const imageDate = document.getElementById(`image${id}Date`);
                 const imageRes = document.getElementById(`image${id}Res`);
 
 
-                pasteZone.textContent = 'Cole sua imagem aqui (Ctrl+V)';
+                pasteZone.innerHTML = '<p class="text-center text-lg font-bold text-gray-500">Clique ou cole sua imagem aqui (Ctrl+V)</p><p class="text-center text-sm text-gray-400 mt-1">A imagem aparecerá na pré-visualização final.</p>';
                 pasteZone.classList.remove('has-image');
                 hiddenInput.value = '';
                 hiddenInput.setAttribute('data-image-pasted', 'false');
                 previewImg.src = '';
-                previewImg.classList.add('hidden');
+                previewImg.classList.add('hidden'); // Garante que a pré-visualização no formulário permaneça oculta
 
                 if (id === 1) {
                     imageCaption.value = "Figura 1 - Área de interesse com informação de metragem.";
@@ -418,6 +522,7 @@
                     imageCaption.value = `Figura ${id} – Imagem de satélite Quick Look em catálogo.`;
                 }
 
+                // Limpa os campos apenas se existirem (para id > 1)
                 if (imageSat) imageSat.value = '';
                 if (imageDate) imageDate.value = '';
                 if (imageRes) imageRes.value = '';
@@ -435,19 +540,35 @@
                     const newImageBlock = document.createElement('div');
                     newImageBlock.className = 'p-4 border border-gray-200 rounded-lg bg-gray-50';
                     newImageBlock.innerHTML = `
-                        <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem ${currentImageCount}:</label>
-                        <div id="pasteZone${currentImageCount}" class="paste-zone" tabindex="0">Cole sua imagem aqui (Ctrl+V)</div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem <span class="image-number">${currentImageCount}</span>:</label>
+                        <div id="pasteZone${currentImageCount}" class="paste-zone" tabindex="0">
+                            <p class="text-center text-lg font-bold text-gray-500">Clique ou cole sua imagem aqui (Ctrl+V)</p>
+                            <p class="text-center text-sm text-gray-400 mt-1">A imagem aparecerá na pré-visualização final.</p>
+                        </div>
                         <input type="hidden" id="hiddenImageData${currentImageCount}" data-image-pasted="false">
-                        <label for="imageCaption${currentImageCount}" class="block text-gray-700 text-sm font-medium mt-4 mb-2">Legenda da Imagem ${currentImageCount} (Figura ${currentImageCount} – Imagem de satélite Quick Look em catálogo.):</label>
-                        <input type="text" id="imageCaption${currentImageCount}" value="Figura ${currentImageCount} – Imagem de satélite Quick Look em catálogo." placeholder="Legenda descritiva para a imagem">
-                        <label for="image${currentImageCount}Sat" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Satélite (Imagem ${currentImageCount}):</label>
-                        <input type="text" id="image${currentImageCount}Sat" placeholder="Ex: WorldView 3">
-                        <label for="image${currentImageCount}Date" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Data (Imagem ${currentImageCount}):</label>
-                        <input type="text" id="image${currentImageCount}Date" placeholder="Ex: 01/01/2024">
-                        <label for="image${currentImageCount}Res" class="block text-gray-700 text-sm font-medium mt-2 mb-2">Resolução (Imagem ${currentImageCount}):</label>
-                        <input type="text" id="image${currentImageCount}Res" placeholder="Ex: 0.5m">
+                        <div class="mt-4 space-y-3">
+                            <div>
+                                <label for="imageCaption${currentImageCount}" class="block text-gray-700 text-sm font-medium mb-1">Legenda da Imagem <span class="image-number">${currentImageCount}</span>:</label>
+                                <input type="text" id="imageCaption${currentImageCount}" value="Figura ${currentImageCount} – Imagem de satélite Quick Look em catálogo." placeholder="Legenda descritiva para a imagem">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div>
+                                    <label for="image${currentImageCount}Sat" class="block text-gray-700 text-sm font-medium mb-1">Satélite:</label>
+                                    <input type="text" id="image${currentImageCount}Sat" placeholder="Ex: WorldView 3">
+                                </div>
+                                <div>
+                                    <label for="image${currentImageCount}Date" class="block text-gray-700 text-sm font-medium mb-1">Data:</label>
+                                    <input type="text" id="image${currentImageCount}Date" placeholder="Ex: 01/01/2024">
+                                </div>
+                                <div>
+                                    <label for="image${currentImageCount}Res" class="block text-gray-700 text-sm font-medium mb-1">Resolução:</label>
+                                    <input type="text" id="image${currentImageCount}Res" placeholder="Ex: 0.5m">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- A tag img está presente, mas sempre oculta no formulário -->
                         <img id="imagePreview${currentImageCount}" class="image-preview hidden" alt="Pré-visualização da Imagem ${currentImageCount}">
-                        <button type="button" class="clear-image-btn mt-2 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="${currentImageCount}">Limpar Imagem ${currentImageCount}</button>
+                        <button type="button" class="clear-image-btn mt-4 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="${currentImageCount}">Limpar Imagem <span class="image-number">${currentImageCount}</span></button>
                     `;
                     imageInputsContainer.appendChild(newImageBlock);
 
@@ -511,15 +632,15 @@
                 let samplesHtml = '';
                 if (selectedSatellites.length > 0) {
                     samplesHtml += `
-                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Informações e Amostras de Imagens de Satélite:</h4>
-                        <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
+                        <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Informações e Amostras de Imagens de Satélite:</h4>
+                        <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
                     `;
                     selectedSatellites.forEach(sat => {
                         const link = satelliteLinks[sat];
                         if (link) {
-                            samplesHtml += `<li style="margin-bottom: 4px;"><strong>${sat}:</strong> <a href="${link}" target="_blank" style="color: #2563eb; text-decoration: underline;">${link}</a></li>`;
+                            samplesHtml += `<li style="margin-bottom: 2px; font-size: 0.9em;"><strong>${sat}:</strong> <a href="${link}" target="_blank" style="color: #2563eb; text-decoration: underline;">${link}</a></li>`;
                         } else {
-                            samplesHtml += `<li style="margin-bottom: 4px;"><strong>${sat}</strong></li>`;
+                            samplesHtml += `<li style="margin-bottom: 2px; font-size: 0.9em;"><strong>${sat}</strong></li>`;
                         }
                     });
                     samplesHtml += `</ul>`;
@@ -558,17 +679,17 @@
 
                     if (imageDataUrl && hiddenInput.getAttribute('data-image-pasted') === 'true') {
                         let imageBlock = `
-                            <div style="margin-bottom: 20px; text-align: center; page-break-inside: avoid;">
+                            <div style="margin-bottom: 10px; text-align: center; page-break-inside: avoid;">
                         `;
                         // Adiciona os novos detalhes da imagem se existirem e não for a Figura 1
                         if (i !== 1) {
                             if (imageSat) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Satélite:</strong> ${imageSat}</p>`;
                             if (imageDate) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Data:</strong> ${imageDate}</p>`;
-                            if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 5px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
+                            if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 2px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
                         }
                         imageBlock += `
                                 <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}" width="${IMAGE_WIDTH_CM}cm">
-                                ${imageCaption ? `<p style="font-size: 0.9em; text-align: center; color: #555; margin-top: 8px; font-style: italic;">${imageCaption}</p>` : ''}
+                                ${imageCaption ? `<p style="font-size: 0.9em; text-align: center; color: #555; margin-top: 5px; font-style: italic;">${imageCaption}</p>` : ''}
                             </div>
                         `;
 
@@ -582,30 +703,23 @@
 
                 // Conteúdo das Especificações Técnicas
                 const especificacoesTecnicasHtml = `
-                    <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas das Imagens:</h4>
-                    <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
-                        <li style="margin-bottom: 4px;">Ortoretificada</li>
-                        <li style="margin-bottom: 4px;">Sistema de coordenadas UTM Sirgas 2000</li>
-                        <li style="margin-bottom: 4px;">Formato GeoTIFF, com 3 ou 4 bandas</li>
+                    <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas das Imagens:</h4>
+                    <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Ortoretificada</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Sistema de coordenadas UTM Sirgas 2000</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Formato GeoTIFF, com 3 ou 4 bandas</li>
                     </ul>
                 `;
 
                 // Conteúdo dos Detalhes do Pedido
                 const detalhesPedidoHtml = `
-                    <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">Detalhes do Pedido</h4>
-                    <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
-                        <li style="margin-bottom: 4px;">Pedido mínimo de ${pedidoMinimoKm2} Km2</li>
-                        <li style="margin-bottom: 4px;">Custo de R$ ${custoRs}</li>
-                        <li style="margin-bottom: 4px;">Entrega em ${diasEntrega} dias</li>
-                        <li style="margin-bottom: 4px;">Pagamento na confirmação do pedido</li>
+                    <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Detalhes do Pedido</h4>
+                    <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo de ${pedidoMinimoKm2} Km2</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Custo de R$ ${custoRs}</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Entrega em ${diasEntrega} dias</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pagamento na confirmação do pedido</li>
                     </ul>
-                `;
-
-                // Texto sobre visualização preliminar
-                const quickLookDisclaimer = `
-                    <p style="margin-bottom: 16px;">As ilustrações acima são <span style="color: red; font-weight: bold;">visualizações preliminares</span>
-                    (<span style="color: red; font-weight: bold;">Quick Look</span>), utilizadas apenas para verificar a localização da área e a
-                    presença de nuvens. Elas <span style="color: red; font-weight: bold;">não representam a qualidade final da imagem que será entregue</span>.</p>
                 `;
 
                 // Logo da Engesat
@@ -613,37 +727,37 @@
 
 
                 const htmlContent = `
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <h1 style="font-size: 2em; font-weight: bold; margin: 0;">Proposta Comercial</h1>
-                        <p style="margin-top: 10px;">Curitiba, ${dataProposta}</p>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h1 style="font-size: 1.8em; font-weight: bold; margin: 0;">Proposta Comercial</h1>
+                        <p style="margin-top: 5px; font-size: 0.9em;">Curitiba, ${dataProposta}</p>
                     </div>
 
-                    <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
-                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin-bottom: 12px;">Dados do Cliente</h3>
-                        <p style="margin-bottom: 4px;"><strong>Empresa:</strong> ${empresaCliente}</p>
-                        <p style="margin-bottom: 4px;"><strong>Contato:</strong> ${contatoCliente}</p>
-                        <p style="margin-bottom: 4px;"><strong>CPF/CNPJ:</strong> ${cpfCliente}</p>
-                        <p style="margin-bottom: 4px;"><strong>Endereço:</strong> ${enderecoCliente}</p>
-                        <p style="margin-bottom: 4px;"><strong>Processo Vinculado:</strong> ${processoVinculado}</p>
+                    <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin: 0 0 8px 0;">Dados do Cliente</h3>
+                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Empresa:</strong> ${empresaCliente}</p>
+                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Contato:</strong> ${contatoCliente}</p>
+                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>CPF/CNPJ:</strong> ${cpfCliente}</p>
+                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Endereço:</strong> ${enderecoCliente}</p>
+                        <p style="margin: 0; font-size: 0.9em; line-height: 1.2;"><strong>Processo Vinculado:</strong> ${processoVinculado}</p>
                     </div>
 
-                    <p style="margin-bottom: 16px;">As ilustrações aqui apresentadas são <span style="color: red; font-weight: bold;">somente prévias</span>, também
-                    chamadas de <span style="color: red; font-weight: bold;">Quick Look</span>, usadas para conferir a localização e eventual presença de nuvens e <span style="color: red; font-weight: bold;">não retratam a qualidade final da imagem entregue</span>.</p>
-                    <p style="margin-bottom: 16px;"><strong>Link para acesso de amostras reais dos satélites:</strong> <a href="https://www.engesat.com.br/imagem-de-satelite/" target="_blank" style="color: #2563eb; text-decoration: underline;">https://www.engesat.com.br/imagem-de-satelite/</a></p>
-                    <p style="margin-bottom: 16px;">Boa tarde,</p>
-                    <p style="margin-bottom: 16px;">Segue proposta para fornecimento de imagem de satélite,</p>
+                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações aqui apresentadas são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>, usadas para conferir a localização e eventual presença de nuvens e <span style="color: red; font-weight: bold;">não retratam a qualidade final da imagem entregue</span>.</p>
+                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;"><strong>Link para acesso de amostras reais dos satélites:</strong> <a href="https://www.engesat.com.br/imagem-de-satelite/" target="_blank" style="color: #2563eb; text-decoration: underline;">https://www.engesat.com.br/imagem-de-satelite/</a></p>
+                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Boa tarde,</p>
+                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Segue proposta para fornecimento de imagem de satélite,</p>
 
-                    <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
-                        <p style="margin-bottom: 4px;"><strong>Extensão da Área:</strong> ${extensaoArea} km²</p>
+                    <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <p style="margin: 0 0 5px 0; font-size: 0.9em; line-height: 1.2;"><strong>Extensão da Área:</strong> ${extensaoArea} km²</p>
                         ${imagesHtmlFigura1}
                         <!-- Sugestão de quebra de página 1 -->
                         <div style="page-break-after: always;"></div>
 
-                        <p style="margin-bottom: 16px;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos a cena ${cenaRecomendada} de ${resolucaoColorida} de resolução colorida de ${formattedCenaDates} como segue:</p>
+                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos a cena ${cenaRecomendada} de ${resolucaoColorida} de resolução colorida de ${formattedCenaDates} como segue:</p>
 
                         ${imagesHtmlFigurasAlternativas}
 
-                        ${quickLookDisclaimer}
+                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações acima são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>,
+                        utilizadas apenas para verificar a localização da área e a presença de nuvens. Elas <span style="color: red; font-weight: bold;">não representam a qualidade final da imagem que será entregue</span>.</p>
 
                         ${samplesHtml}
 
@@ -654,34 +768,33 @@
                         ${detalhesPedidoHtml}
 
                     </div>
-                    <div style="height: 20px;"></div> <!-- Blank line before this section -->
-                    <div style="margin-bottom: 24px; padding: 16px; border-radius: 8px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
-                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin-bottom: 12px;">Informações Administrativas e Bancárias</h3>
-                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">📄 Dados Administrativos – Engesat Imagens de Satélite</h4>
-                        <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
-                            <li style="margin-bottom: 4px;"><strong>Nome Fantasia:</strong> Engesat Imagens de Satélite</li>
-                            <li style="margin-bottom: 4px;"><strong>Razão Social:</strong> EISAT Imagens de Satélite Ltda. – EPP</li>
-                            <li style="margin-bottom: 4px;"><strong>CNPJ:</strong> 02.059.387/0001-87</li>
-                            <li style="margin-bottom: 4px;"><strong>Inscrição Estadual:</strong> ISENTO</li>
-                            <li style="margin-bottom: 4px;"><strong>Inscrição Municipal:</strong> 0701351363-2</li>
+                    <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin: 0 0 8px 0;">Informações Administrativas e Bancárias</h3>
+                        <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">📄 Dados Administrativos – Engesat Imagens de Satélite</h4>
+                        <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Nome Fantasia:</strong> Engesat Imagens de Satélite</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Razão Social:</strong> EISAT Imagens de Satélite Ltda. – EPP</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>CNPJ:</strong> 02.059.387/0001-87</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Inscrição Estadual:</strong> ISENTO</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Inscrição Municipal:</strong> 0701351363-2</li>
                         </ul>
 
-                        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 1em; font-weight: 500; color: #374151;">💳 Dados Bancários</h4>
-                        <ul style="list-style-type: disc; margin-left: 20px; margin-bottom: 16px;">
-                            <li style="margin-bottom: 4px;"><strong>Banco:</strong> Banco Inter 077</li>
-                            <li style="margin-bottom: 4px;"><strong>Agência:</strong> 0001</li>
-                            <li style="margin-bottom: 4px;"><strong>Conta Corrente:</strong> 43930235-8</li>
-                            <li style="margin-bottom: 4px;"><strong>PIX (CNPJ):</strong> 02.059.387/0001-87</li>
+                        <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">💳 Dados Bancários</h4>
+                        <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Banco:</strong> Banco Inter 077</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Agência:</strong> 0001</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Conta Corrente:</strong> 43930235-8</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>PIX (CNPJ):</strong> 02.059.387/0001-87</li>
                         </ul>
                     </div>
 
-                    <p style="margin-bottom: 8px;">Espero que ajude e que seja tecnicamente e comercialmente viável para o seu projeto</p>
-                    <p style="margin-bottom: 16px;">Permanecemos a sua disposição para maiores esclarecimentos.</p>
-                    <p style="margin-bottom: 4px;">Atenciosamente,</p>
-                    <p style="margin-bottom: 4px;">Laurent MARTIN,</p>
-                    <p>Diretor</p>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <img src="${engesatLogoUrl}" alt="Logo Engesat" style="width: 100px; height: auto; max-width: 100px; border-radius: 8px;">
+                    <p style="margin: 0 0 5px 0; line-height: 1.2; font-size: 0.9em;">Espero que ajude e que seja tecnicamente e comercialmente viável para o seu projeto</p>
+                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Permanecemos a sua disposição para maiores esclarecimentos.</p>
+                    <p style="margin: 0 0 2px 0; line-height: 1.2; font-size: 0.9em;">Atenciosamente,</p>
+                    <p style="margin: 0 0 2px 0; line-height: 1.2; font-size: 0.9em;">Laurent MARTIN,</p>
+                    <p style="margin: 0; font-size: 0.9em; line-height: 1.2;">Diretor</p>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <img src="${engesatLogoUrl}" alt="" style="width: 80px; height: auto; max-width: 80px; border-radius: 8px;">
                     </div>
                 `;
 
@@ -726,6 +839,17 @@
 
                 saveAs(blob, filename + '.docx');
                 showCustomAlert('Arquivo .docx gerado e pronto para download!');
+            });
+
+            // O código do acordeão foi removido, pois as seções agora estão sempre visíveis.
+            // As classes 'accordion-item', 'accordion-header', 'accordion-content', 'accordion-icon'
+            // foram removidas do HTML das seções de entrada para desativar o comportamento.
+            // A seção de pré-visualização continua com as classes para manter a aparência visual,
+            // mas sem a funcionalidade de recolher/expandir.
+
+            // Realce de campos obrigatórios (apenas visual, sem validação real aqui)
+            document.querySelectorAll('label[for="dataProposta"], label[for="empresaCliente"], label[for="contatoCliente"], label[for="extensaoArea"], label[for="dataImageamentoInicio"], label[for="dataImageamentoFim"], label[for="custoRs"], label[for="diasEntrega"]').forEach(label => {
+                label.classList.add('required-label');
             });
         };
     </script>
