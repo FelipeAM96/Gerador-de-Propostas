@@ -188,7 +188,7 @@
                     <!-- Seção "Adicionar Imagens" movida para cá -->
                     <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">2. Adicionar Imagens</h2>
                     <div class="space-y-6">
-                        <p class="text-sm text-gray-600 mb-4">Cole suas imagens (Ctrl+V) nas áreas indicadas. Elas serão redimensionadas automaticamente para se ajustarem ao documento, mantendo a proporção. A pré-visualização da imagem só estará visível na proposta final.</p>
+                        <p class="text-sm text-gray-600 mb-4">Cole suas imagens (Ctrl+V) nas áreas indicadas. Elas serão incorporadas no documento com sua resolução nativa. A pré-visualização da imagem só estará visível na proposta final.</p>
                         <div id="imageInputs" class="space-y-4">
                             <!-- Imagem 1: Área de Interesse (Initial image block) -->
                             <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
@@ -217,20 +217,7 @@
                     </div>
                     <!-- Fim da seção "Adicionar Imagens" movida -->
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="cenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Cena Recomendada:</label>
-                            <input type="text" id="cenaRecomendada" placeholder="Ex: Cena 12345" class="w-full p-3 border border-gray-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label for="resolucaoColorida" class="block text-gray-700 text-sm font-medium mb-2">Resolução Colorida:</label>
-                            <input type="text" id="resolucaoColorida" placeholder="Ex: 0.5m" class="w-full p-3 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="dataCenaRecomendada" class="block text-gray-700 text-sm font-medium mb-2">Data(s) da Cena Recomendada (separadas por vírgula):</label>
-                        <input type="text" id="dataCenaRecomendada" placeholder="Ex: 15/06/2024, 20/07/2024" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
+                    <!-- O campo de Cena Recomendada, Resolução Colorida e Data(s) da Cena Recomendada foram removidos daqui -->
                     <div>
                         <label for="sateliteOpcoes" class="block text-gray-700 text-sm font-medium mb-2">Satélite(s) (Opções - Ctrl+clique para múltiplos):</label>
                         <select id="sateliteOpcoes" multiple size="5" class="w-full p-3 border border-gray-300 rounded-lg">
@@ -291,7 +278,7 @@
                     <div>
                         <label for="diasEntrega" class="block text-gray-700 text-sm font-medium mb-2 required-label">Entrega (dias):</label>
                         <input type="number" id="diasEntrega" placeholder="Ex: 7" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
+                        </div>
                 </div>
 
                 <!-- Botão Gerar Pré-visualização na coluna esquerda -->
@@ -339,8 +326,8 @@
         window.onload = () => {
             // Variável para controlar o número de imagens
             let currentImageCount = 1;
-            const MAX_IMAGES = 15;
-            const TARGET_IMAGE_WIDTH_PX = 800; // Largura alvo em pixels para imagens redimensionadas (aproximadamente 19cm a 96 DPI)
+            // Removido o limite máximo de imagens
+            // const MAX_IMAGES = 15;
 
             // Função para exibir o modal customizado
             function showCustomAlert(message) {
@@ -419,31 +406,6 @@
                 }
             });
 
-            // Função para redimensionar a imagem usando Canvas
-            function resizeImage(imageDataUrl, maxWidthPx) {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > maxWidthPx) {
-                            height = height * (maxWidthPx / width);
-                            width = maxWidthPx;
-                        }
-
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        resolve(canvas.toDataURL('image/png')); // Convert to PNG for better quality
-                    };
-                    img.src = imageDataUrl;
-                });
-            }
-
             // Função para lidar com a colagem de imagens
             async function handleImagePaste(event, pasteZoneId, hiddenInputId, previewImgId) {
                 event.preventDefault();
@@ -458,14 +420,14 @@
 
                         reader.onload = async (e) => {
                             const originalImageDataUrl = e.target.result;
-                            // Redimensionar a imagem antes de armazenar e pré-visualizar
-                            const resizedImageDataUrl = await resizeImage(originalImageDataUrl, TARGET_IMAGE_WIDTH_PX);
+                            // Armazena a imagem na resolução nativa
+                            const imageDataUrlToStore = originalImageDataUrl;
 
                             const pasteZone = document.getElementById(pasteZoneId);
                             const hiddenInput = document.getElementById(hiddenInputId);
                             const previewImg = document.getElementById(previewImgId);
 
-                            hiddenInput.value = resizedImageDataUrl;
+                            hiddenInput.value = imageDataUrlToStore;
                             hiddenInput.setAttribute('data-image-pasted', 'true');
 
                             // A imagem não será exibida no formulário, apenas o texto de confirmação
@@ -504,6 +466,7 @@
                 const previewImg = document.getElementById(`imagePreview${id}`);
                 const imageCaption = document.getElementById(`imageCaption${id}`);
                 // Campos de satélite, data e resolução só existem para id > 1
+                const imageAreaTitle = document.getElementById(`image${id}AreaTitle`); // Novo campo
                 const imageSat = document.getElementById(`image${id}Sat`);
                 const imageDate = document.getElementById(`image${id}Date`);
                 const imageRes = document.getElementById(`image${id}Res`);
@@ -523,6 +486,7 @@
                 }
 
                 // Limpa os campos apenas se existirem (para id > 1)
+                if (imageAreaTitle) imageAreaTitle.value = ''; // Limpa o novo campo
                 if (imageSat) imageSat.value = '';
                 if (imageDate) imageDate.value = '';
                 if (imageRes) imageRes.value = '';
@@ -532,10 +496,11 @@
             function addImageInput(numToAdd = 1) {
                 const imageInputsContainer = document.getElementById('imageInputs');
                 for (let k = 0; k < numToAdd; k++) {
-                    if (currentImageCount >= MAX_IMAGES) {
-                        showCustomAlert(`Limite máximo de ${MAX_IMAGES} imagens atingido.`);
-                        return;
-                    }
+                    // Removido o limite de imagens
+                    // if (currentImageCount >= MAX_IMAGES) {
+                    //     showCustomAlert(`Limite máximo de ${MAX_IMAGES} imagens atingido.`);
+                    //     return;
+                    // }
                     currentImageCount++;
                     const newImageBlock = document.createElement('div');
                     newImageBlock.className = 'p-4 border border-gray-200 rounded-lg bg-gray-50';
@@ -550,6 +515,10 @@
                             <div>
                                 <label for="imageCaption${currentImageCount}" class="block text-gray-700 text-sm font-medium mb-1">Legenda da Imagem <span class="image-number">${currentImageCount}</span>:</label>
                                 <input type="text" id="imageCaption${currentImageCount}" value="Figura ${currentImageCount} – Imagem de satélite Quick Look em catálogo." placeholder="Legenda descritiva para a imagem">
+                            </div>
+                            <div class="mt-4">
+                                <label for="image${currentImageCount}AreaTitle" class="block text-gray-700 text-sm font-medium mb-1">Título da Área:</label>
+                                <input type="text" id="image${currentImageCount}AreaTitle" placeholder="Ex: Área 1 - Fazenda Exemplo">
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <div>
@@ -620,12 +589,12 @@
                 const extensaoArea = document.getElementById('extensaoArea').value;
                 const dataImageamentoInicio = formatarData(document.getElementById('dataImageamentoInicio').value);
                 const dataImageamentoFim = formatarData(document.getElementById('dataImageamentoFim').value);
-                const cenaRecomendada = document.getElementById('cenaRecomendada').value;
-                const resolucaoColorida = document.getElementById('resolucaoColorida').value;
+                // Removidos os campos de cena recomendada, resolução colorida e datas de cena recomendada
+                // const cenaRecomendada = document.getElementById('cenaRecomendada').value;
+                // const resolucaoColorida = document.getElementById('resolucaoColorida').value;
+                // const dataCenaRecomendadaInput = document.getElementById('dataCenaRecomendada').value;
+                // const formattedCenaDates = dataCenaRecomendadaInput.split(',').map(dateStr => formatarData(dateStr.trim())).filter(Boolean).join(', ');
 
-                // Processa múltiplas datas da cena recomendada
-                const dataCenaRecomendadaInput = document.getElementById('dataCenaRecomendada').value;
-                const formattedCenaDates = dataCenaRecomendadaInput.split(',').map(dateStr => formatarData(dateStr.trim())).filter(Boolean).join(', ');
 
                 // Processa múltiplos satélites e constrói a seção de amostras
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(option => option.value);
@@ -654,9 +623,6 @@
                 const previewOutput = document.getElementById('previewOutput');
                 const downloadDocxBtn = document.getElementById('downloadDocxBtn');
 
-                // Define as dimensões para as imagens no DOCX em cm
-                const IMAGE_WIDTH_CM = 19; // Largura fixa em cm
-
                 let imagesHtmlFigura1 = '';
                 let imagesHtmlFigurasAlternativas = '';
 
@@ -669,13 +635,13 @@
                     const imageCaption = document.getElementById(`imageCaption${i}`).value;
 
                     // Novos campos de detalhes da imagem
+                    const imageAreaTitle = document.getElementById(`image${i}AreaTitle`) ? document.getElementById(`image${i}AreaTitle`).value : ''; // Novo campo
                     const imageSat = document.getElementById(`image${i}Sat`) ? document.getElementById(`image${i}Sat`).value : '';
                     const imageDate = document.getElementById(`image${i}Date`) ? document.getElementById(`image${i}Date`).value : '';
                     const imageRes = document.getElementById(`image${i}Res`) ? document.getElementById(`image${i}Res`).value : '';
 
-                    // Explicitly set width and auto height with !important for DOCX compatibility
-                    // Adding width and height attributes directly to the img tag for better DOCX conversion
-                    let imageStyle = `width: ${IMAGE_WIDTH_CM}cm !important; height: auto !important; border-radius: 8px; display: block; margin: 0 auto;`;
+                    // Remove a largura fixa para permitir a resolução nativa no Word
+                    let imageStyle = `height: auto !important; border-radius: 8px; display: block; margin: 0 auto;`;
 
                     if (imageDataUrl && hiddenInput.getAttribute('data-image-pasted') === 'true') {
                         let imageBlock = `
@@ -683,12 +649,13 @@
                         `;
                         // Adiciona os novos detalhes da imagem se existirem e não for a Figura 1
                         if (i !== 1) {
+                            if (imageAreaTitle) imageBlock += `<p style="font-size: 0.9em; color: #333; margin: 0 0 5px 0; font-weight: bold;">${imageAreaTitle}</p>`; // Adiciona o título da área
                             if (imageSat) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Satélite:</strong> ${imageSat}</p>`;
                             if (imageDate) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Data:</strong> ${imageDate}</p>`;
                             if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 2px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
                         }
                         imageBlock += `
-                                <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}" width="${IMAGE_WIDTH_CM}cm">
+                                <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}">
                                 ${imageCaption ? `<p style="font-size: 0.9em; text-align: center; color: #555; margin-top: 5px; font-style: italic;">${imageCaption}</p>` : ''}
                             </div>
                         `;
@@ -752,7 +719,7 @@
                         <!-- Sugestão de quebra de página 1 -->
                         <div style="page-break-after: always;"></div>
 
-                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos a cena ${cenaRecomendada} de ${resolucaoColorida} de resolução colorida de ${formattedCenaDates} como segue:</p>
+                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos as cenas que seguem:</p>
 
                         ${imagesHtmlFigurasAlternativas}
 
