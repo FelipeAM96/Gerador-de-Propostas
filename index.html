@@ -588,7 +588,8 @@
                     const imageDate = document.getElementById(`image${i}Date`) ? document.getElementById(`image${i}Date`).value : '';
                     const imageRes = document.getElementById(`image${i}Res`) ? document.getElementById(`image${i}Res`).value : '';
 
-                    let imageStyle = `height: auto !important; border-radius: 8px; display: block; margin: 0 auto; max-width: 100%;`;
+                    // Adicionando inline CSS compatível com web e word (recolocando height: auto)
+                    let imageStyle = `border-radius: 8px; display: block; margin: 0 auto; max-width: 100%; height: auto;`;
 
                     if (imageDataUrl && hiddenInput.getAttribute('data-image-pasted') === 'true') {
                         let imageBlock = `
@@ -600,8 +601,10 @@
                             if (imageDate) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Data:</strong> ${imageDate}</p>`;
                             if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 2px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
                         }
+                        
+                        // O uso do width="620" fará com que no Word a imagem fique contida corretamente numa folha A4.
                         imageBlock += `
-                                <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}">
+                                <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}" width="620">
                                 ${imageCaption ? `<p style="font-size: 0.85em; text-align: center; color: #555; margin-top: 2px; font-style: italic;">${imageCaption}</p>` : ''}
                             </div>
                         `;
@@ -750,7 +753,7 @@
                     <p style="margin: 0 0 2px 0; line-height: 1.2; font-size: 0.9em;">Laurent MARTIN,</p>
                     <p style="margin: 0; font-size: 0.9em; line-height: 1.2;">Diretor</p>
                     <div style="text-align: center; margin-top: 10px;">
-                        <img src="${engesatLogoUrl}" alt="" style="width: 80px; height: auto; max-width: 80px; border-radius: 8px;">
+                        <img src="${engesatLogoUrl}" alt="Engesat Logo" style="max-width: 120px; height: auto; border-radius: 8px;">
                     </div>
                 `;
 
