@@ -254,6 +254,17 @@
                         <label for="diasEntrega" class="block text-gray-700 text-sm font-medium mb-2 required-label">Entrega (dias):</label>
                         <input type="number" id="diasEntrega" placeholder="Ex: 7" class="w-full p-3 border border-gray-300 rounded-lg">
                     </div>
+
+                    <div class="mt-4">
+                        <label for="condicaoPagamentoSelect" class="block text-gray-700 text-sm font-medium mb-2 required-label">Condições de Pagamento:</label>
+                        <select id="condicaoPagamentoSelect" class="w-full p-3 border border-gray-300 rounded-lg mb-2">
+                            <option value="Na confirmação do pedido">Na confirmação do pedido</option>
+                            <option value="dias">Prazo em dias (especificar)</option>
+                            <option value="parcelas">Parcelado (especificar)</option>
+                            <option value="outro">Outro (especificar)</option>
+                        </select>
+                        <input type="text" id="condicaoPagamentoCustom" placeholder="Ex: 30 dias após entrega" class="w-full p-3 border border-gray-300 rounded-lg hidden">
+                    </div>
                 </div>
 
                 <!-- Botão Gerar Pré-visualização -->
@@ -357,6 +368,19 @@
                 "Altimetria WorldDEM NEO™": "https://www.engesat.com.br/mercados/altimetria-worlddem-neo/",
                 "Altimetria AW3D": "https://www.engesat.com.br/mercados/altimetria-aw3d/"
             };
+
+            // Event listener para o campo de condição de pagamento
+            document.getElementById('condicaoPagamentoSelect').addEventListener('change', function() {
+                const customInput = document.getElementById('condicaoPagamentoCustom');
+                if (this.value !== 'Na confirmação do pedido') {
+                    customInput.classList.remove('hidden');
+                    if (this.value === 'dias') customInput.placeholder = 'Ex: 30 dias após entrega';
+                    else if (this.value === 'parcelas') customInput.placeholder = 'Ex: 3 parcelas de R$ 5.000';
+                    else customInput.placeholder = 'Ex: 50% de entrada e 50% na entrega';
+                } else {
+                    customInput.classList.add('hidden');
+                }
+            });
 
             // Event listener para o select de satélites
             document.getElementById('sateliteOpcoes').addEventListener('change', () => {
@@ -644,6 +668,10 @@
                 const custoRs = custoValor > 0 ? custoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '####';
                 const diasEntrega = document.getElementById('diasEntrega').value;
 
+                const condicaoSelect = document.getElementById('condicaoPagamentoSelect').value;
+                const condicaoCustom = document.getElementById('condicaoPagamentoCustom').value;
+                const condicaoPagamentoFinal = condicaoSelect === 'Na confirmação do pedido' ? 'Na confirmação do pedido' : (condicaoCustom || 'A combinar');
+
                 let pedidoMinimoAltimetriaKm2 = '';
                 let custoAltimetriaValor = 0;
                 let custoAltimetriaRs = '####';
@@ -680,7 +708,7 @@
 
                 detalhesPedidoHtml += `
                         <li style="margin-bottom: 2px; font-size: 0.9em;">Prazo de entrega: ${diasEntrega} dias úteis</li>
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Condições de pagamento: Na confirmação do pedido</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Condições de pagamento: ${condicaoPagamentoFinal}</li>
                     </ul>
                 `;
 
@@ -831,7 +859,7 @@
             });
 
             // Realce de campos obrigatórios
-            document.querySelectorAll('label[for="dataProposta"], label[for="empresaCliente"], label[for="nomeProjeto"], label[for="extensaoArea"], label[for="dataImageamentoInicio"], label[for="dataImageamentoFim"], label[for="custoRs"], label[for="diasEntrega"]').forEach(label => {
+            document.querySelectorAll('label[for="dataProposta"], label[for="empresaCliente"], label[for="nomeProjeto"], label[for="extensaoArea"], label[for="dataImageamentoInicio"], label[for="dataImageamentoFim"], label[for="custoRs"], label[for="diasEntrega"], label[for="condicaoPagamentoSelect"]').forEach(label => {
                 label.classList.add('required-label');
             });
         };
