@@ -36,7 +36,6 @@
         .output-area {
             @apply bg-white p-6 rounded-lg shadow-lg border border-gray-200 overflow-auto;
             min-height: 500px; /* Aumentado para melhor visualização na coluna direita */
-            white-space: pre-wrap; /* Preserve whitespace and wrap text */
             word-wrap: break-word; /* Break long words */
             line-height: 1.2; /* Ajustado para maior compactação */
             font-size: 0.9em; /* Reduzido levemente para caber mais conteúdo */
@@ -273,6 +272,7 @@
                         <input type="text" id="docxFilename" value="Proposta Comercial de Imagens de Satélite" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
                     </div>
                     <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                        <button id="copyHtmlBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg py-3" style="display: none;">Copiar para Email</button>
                         <button id="downloadDocxBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3" style="display: none;">Baixar como .DOCX</button>
                     </div>
                 </div>
@@ -595,14 +595,14 @@
                             <div style="margin-bottom: 10px; text-align: center; page-break-inside: avoid;">
                         `;
                         if (i !== 1) {
-                            if (imageAreaTitle) imageBlock += `<p style="font-size: 0.9em; color: #333; margin: 0 0 5px 0; font-weight: bold;">${imageAreaTitle}</p>`;
+                            if (imageAreaTitle) imageBlock += `<p style="font-size: 0.9em; color: #333; margin: 0 0 2px 0; font-weight: bold;">${imageAreaTitle}</p>`;
                             if (imageSat) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Satélite:</strong> ${imageSat}</p>`;
                             if (imageDate) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Data:</strong> ${imageDate}</p>`;
                             if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 2px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
                         }
                         imageBlock += `
                                 <img src="${imageDataUrl}" alt="${imageCaption || 'Imagem do Documento'}" style="${imageStyle}">
-                                ${imageCaption ? `<p style="font-size: 0.9em; text-align: center; color: #555; margin-top: 5px; font-style: italic;">${imageCaption}</p>` : ''}
+                                ${imageCaption ? `<p style="font-size: 0.85em; text-align: center; color: #555; margin-top: 2px; font-style: italic;">${imageCaption}</p>` : ''}
                             </div>
                         `;
 
@@ -615,10 +615,10 @@
                 }
 
                 const especificacoesTecnicasHtml = `
-                    <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas das Imagens:</h4>
+                    <h4 style="margin: 8px 0 4px 0; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas das Imagens:</h4>
                     <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Ortoretificada</li>
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Sistema de coordenadas UTM Sirgas 2000</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Ortorretificada</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Sistema de coordenadas UTM SIRGAS 2000</li>
                         <li style="margin-bottom: 2px; font-size: 0.9em;">Formato GeoTIFF, com 3 ou 4 bandas</li>
                     </ul>
                 `;
@@ -627,11 +627,11 @@
                 let especificacoesAltimetriaHtml = '';
                 if (temAltimetria) {
                     especificacoesAltimetriaHtml = `
-                        <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas do Modelo de Elevação:</h4>
+                        <h4 style="margin: 8px 0 4px 0; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas do Modelo de Elevação:</h4>
                         <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
-                            <li style="margin-bottom: 2px; font-size: 0.9em;">Modelo de elevação em GeoTiff 32 bits floating point</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;">Modelo de elevação em GeoTIFF (32 bits floating point)</li>
                             <li style="margin-bottom: 2px; font-size: 0.9em;">Nuvem de pontos em .las e .txt</li>
-                            <li style="margin-bottom: 2px; font-size: 0.9em;">Curvas de nível 2 m de equidistância em shp, dwg e kml</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;">Curvas de nível com 2 m de equidistância em .shp, .dwg e .kml</li>
                         </ul>
                     `;
                 }
@@ -656,64 +656,64 @@
                 }
 
                 let detalhesPedidoHtml = `
-                    <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Detalhes do Pedido</h4>
+                    <h4 style="margin: 8px 0 4px 0; font-size: 1em; font-weight: 500; color: #374151;">Detalhes do Pedido</h4>
                     <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
                 `;
 
                 if (temAltimetria) {
                     detalhesPedidoHtml += `
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo da Imagem: ${pedidoMinimoKm2} Km²</li>
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Custo da Imagem: R$ ${custoRs}</li>
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo do Modelo de Elevação: ${pedidoMinimoAltimetriaKm2} Km²</li>
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Custo do Modelo de Elevação: R$ ${custoAltimetriaRs}</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo da imagem: ${pedidoMinimoKm2} km²</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Custo da imagem: R$ ${custoRs}</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo do modelo de elevação: ${pedidoMinimoAltimetriaKm2} km²</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Custo do modelo de elevação: R$ ${custoAltimetriaRs}</li>
                         <li style="margin-bottom: 4px; margin-top: 4px; font-size: 0.9em; font-weight: bold; color: #111827;">Total (Imagem + Modelo de Elevação): R$ ${custoTotalRs}</li>
                     `;
                 } else {
                     detalhesPedidoHtml += `
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo de ${pedidoMinimoKm2} Km²</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo de ${pedidoMinimoKm2} km²</li>
                         <li style="margin-bottom: 2px; font-size: 0.9em;">Custo de R$ ${custoRs}</li>
                     `;
                 }
 
                 detalhesPedidoHtml += `
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Entrega em ${diasEntrega} dias</li>
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pagamento na confirmação do pedido</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Prazo de entrega: ${diasEntrega} dias úteis</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Condições de pagamento: Na confirmação do pedido</li>
                     </ul>
                 `;
 
                 const engesatLogoUrl = "https://www.engesat.com.br/wp-content/uploads/2024/12/engesat-logomarca.png";
 
-                const comentariosHtml = comentariosProposta ? `<p style="margin: 8px 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Comentários:</strong><br>${comentariosProposta.replace(/\n/g, '<br>')}</p>` : '';
+                const comentariosHtml = comentariosProposta ? `<p style="margin: 4px 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Comentários:</strong><br>${comentariosProposta.replace(/\n/g, '<br>')}</p>` : '';
 
                 const htmlContent = `
-                    <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="text-align: center; margin-bottom: 10px;">
                         <h1 style="font-size: 1.8em; font-weight: bold; margin: 0;">Proposta Comercial</h1>
-                        <p style="margin-top: 5px; font-size: 0.9em;">Curitiba, ${dataProposta}</p>
+                        <p style="margin-top: 2px; font-size: 0.9em;">Curitiba, ${dataProposta}</p>
                     </div>
 
-                    <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
-                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin: 0 0 8px 0;">Dados do Cliente</h3>
+                    <div style="margin-bottom: 10px; padding: 8px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin: 0 0 6px 0;">Dados do Cliente</h3>
                         <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Empresa:</strong> ${empresaCliente}</p>
                         <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Projeto:</strong> ${nomeProjeto}</p>
                         ${comentariosHtml}
                     </div>
 
-                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações aqui apresentadas são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>, usadas para conferir a localização e eventual presença de nuvens e <span style="color: red; font-weight: bold;">não retratam a qualidade final da imagem entregue</span>.</p>
-                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;"><strong>Link para acesso de amostras reais dos satélites:</strong> <a href="https://www.engesat.com.br/imagem-de-satelite/" target="_blank" style="color: #2563eb; text-decoration: underline;">https://www.engesat.com.br/imagem-de-satelite/</a></p>
-                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Boa tarde,</p>
-                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Segue proposta para fornecimento de imagem de satélite,</p>
+                    <p style="margin: 0 0 6px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações aqui apresentadas são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>, usadas para conferir a localização e a eventual presença de nuvens, e <span style="color: red; font-weight: bold;">não retratam a qualidade final da imagem entregue</span>.</p>
+                    <p style="margin: 0 0 6px 0; line-height: 1.2; font-size: 0.9em;"><strong>Link para acesso a amostras reais dos satélites:</strong> <a href="https://www.engesat.com.br/imagem-de-satelite/" target="_blank" style="color: #2563eb; text-decoration: underline;">https://www.engesat.com.br/imagem-de-satelite/</a></p>
+                    <p style="margin: 0 0 6px 0; line-height: 1.2; font-size: 0.9em;">Boa tarde,</p>
+                    <p style="margin: 0 0 6px 0; line-height: 1.2; font-size: 0.9em;">Segue a proposta para o fornecimento de imagens de satélite:</p>
 
-                    <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                    <div style="margin-bottom: 10px; padding: 8px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
                         <p style="margin: 0 0 5px 0; font-size: 0.9em; line-height: 1.2;"><strong>Extensão da Área:</strong> ${extensaoArea} km²</p>
                         ${imagesHtmlFigura1}
                         
                         <div style="page-break-after: always;"></div>
 
-                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos as cenas que seguem:</p>
+                        <p style="margin: 0 0 6px 0; line-height: 1.2; font-size: 0.9em;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos as cenas a seguir:</p>
 
                         ${imagesHtmlFigurasAlternativas}
 
-                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações acima são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>, utilizadas apenas para verificar a localização da área e a presença de nuvens. Elas <span style="color: red; font-weight: bold;">não representam a qualidade final da imagem que será entregue</span>.</p>
+                        <p style="margin: 0 0 6px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações acima são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>, utilizadas apenas para verificar a localização da área e a presença de nuvens. Elas <span style="color: red; font-weight: bold;">não representam a qualidade final da imagem que será entregue</span>.</p>
 
                         ${samplesHtml}
 
@@ -724,18 +724,18 @@
                         ${detalhesPedidoHtml}
 
                     </div>
-                    <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
-                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin: 0 0 8px 0;">Informações Administrativas e Bancárias</h3>
-                        <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">📄 Dados Administrativos – Engesat Imagens de Satélite</h4>
+                    <div style="margin-bottom: 10px; padding: 8px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin: 0 0 6px 0;">Informações Administrativas e Bancárias</h3>
+                        <h4 style="margin: 8px 0 4px 0; font-size: 1em; font-weight: 500; color: #374151;">📄 Dados Administrativos – Engesat Imagens de Satélite</h4>
                         <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
                             <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Nome Fantasia:</strong> Engesat Imagens de Satélite</li>
                             <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Razão Social:</strong> EISAT Imagens de Satélite Ltda. – EPP</li>
                             <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>CNPJ:</strong> 02.059.387/0001-87</li>
-                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Inscrição Estadual:</strong> ISENTO</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Inscrição Estadual:</strong> ISENTA</li>
                             <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Inscrição Municipal:</strong> 0701351363-2</li>
                         </ul>
 
-                        <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">💳 Dados Bancários</h4>
+                        <h4 style="margin: 8px 0 4px 0; font-size: 1em; font-weight: 500; color: #374151;">💳 Dados Bancários</h4>
                         <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
                             <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Banco:</strong> Banco Inter 077</li>
                             <li style="margin-bottom: 2px; font-size: 0.9em;"><strong>Agência:</strong> 0001</li>
@@ -744,17 +744,18 @@
                         </ul>
                     </div>
 
-                    <p style="margin: 0 0 5px 0; line-height: 1.2; font-size: 0.9em;">Espero que ajude e que seja tecnicamente e comercialmente viável para o seu projeto</p>
-                    <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Permanecemos a sua disposição para maiores esclarecimentos.</p>
+                    <p style="margin: 0 0 4px 0; line-height: 1.2; font-size: 0.9em;">Esperamos que esta proposta seja técnica e comercialmente viável para o seu projeto.</p>
+                    <p style="margin: 0 0 6px 0; line-height: 1.2; font-size: 0.9em;">Permanecemos à sua disposição para maiores esclarecimentos.</p>
                     <p style="margin: 0 0 2px 0; line-height: 1.2; font-size: 0.9em;">Atenciosamente,</p>
                     <p style="margin: 0 0 2px 0; line-height: 1.2; font-size: 0.9em;">Laurent MARTIN,</p>
                     <p style="margin: 0; font-size: 0.9em; line-height: 1.2;">Diretor</p>
-                    <div style="text-align: center; margin-top: 15px;">
+                    <div style="text-align: center; margin-top: 10px;">
                         <img src="${engesatLogoUrl}" alt="" style="width: 80px; height: auto; max-width: 80px; border-radius: 8px;">
                     </div>
                 `;
 
                 previewOutput.innerHTML = htmlContent;
+                document.getElementById('copyHtmlBtn').style.display = 'block';
                 downloadDocxBtn.style.display = 'block';
             });
 
@@ -793,6 +794,37 @@
 
                 saveAs(blob, filename + '.docx');
                 showCustomAlert('Arquivo .docx gerado e pronto para download!');
+            });
+
+            document.getElementById('copyHtmlBtn').addEventListener('click', () => {
+                const previewOutput = document.getElementById('previewOutput');
+                if (!previewOutput || !previewOutput.innerHTML.trim() || previewOutput.innerHTML.includes('A pré-visualização da sua proposta aparecerá aqui.')) {
+                    showCustomAlert('Gere a pré-visualização antes de copiar.');
+                    return;
+                }
+
+                // Cria um range para selecionar todo o conteúdo da div
+                const range = document.createRange();
+                range.selectNodeContents(previewOutput);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                try {
+                    // Executa o comando de cópia
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showCustomAlert('Proposta copiada com sucesso! Agora é só colar (Ctrl+V) no seu email.');
+                    } else {
+                        showCustomAlert('Seu navegador bloqueou a cópia automática. Selecione o texto e copie manualmente (Ctrl+C).');
+                    }
+                } catch (err) {
+                    console.error('Erro ao copiar:', err);
+                    showCustomAlert('Erro ao tentar copiar. Por favor, selecione e copie manualmente.');
+                }
+
+                // Limpa a seleção para não deixar o texto marcado na tela
+                selection.removeAllRanges();
             });
 
             // Realce de campos obrigatórios
