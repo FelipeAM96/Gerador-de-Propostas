@@ -16,6 +16,7 @@
         }
         .container {
             max-width: 1400px; /* Aumentado para acomodar duas colunas */
+            margin: 0 auto;
         }
         input[type="text"], input[type="date"], input[type="number"], select, textarea {
             @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200;
@@ -56,34 +57,6 @@
             transition: opacity 0.3s ease-in-out;
         }
 
-        /* Estilos para o Acordeon (mantidos, mas as classes 'accordion-item' e 'accordion-content' foram removidas dos elementos HTML) */
-        .accordion-item {
-            margin-bottom: 1rem;
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-        .accordion-header {
-            background-color: #f3f4f6; /* bg-gray-50 */
-            padding: 1rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
-        }
-        .accordion-header:hover {
-            background-color: #e5e7eb; /* hover:bg-gray-200 */
-        }
-        .accordion-content {
-            padding: 1rem;
-            border-top: none;
-        }
-        .accordion-icon {
-            transition: transform 0.3s ease;
-        }
-        .accordion-item.active .accordion-icon {
-            transform: rotate(45deg);
-        }
         /* Opcional: Estilo para campos obrigatórios */
         .required-label::after {
             content: '*';
@@ -136,7 +109,7 @@
         <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-8">Gerador de Proposta Comercial de Imagens de Satélite</h1>
 
         <div class="main-content-grid">
-            <!-- Coluna da Esquerda: Dados da Proposta e Adicionar Imagens (sem acordeon) -->
+            <!-- Coluna da Esquerda: Dados da Proposta e Adicionar Imagens -->
             <div class="left-column space-y-8 p-4 border border-gray-200 rounded-lg bg-white">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">1. Dados da Proposta</h2>
                 <div class="space-y-6">
@@ -152,22 +125,8 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="contatoCliente" class="block text-gray-700 text-sm font-medium mb-2 required-label">Contato Cliente:</label>
-                            <input type="text" id="contatoCliente" placeholder="Nome do Contato" class="w-full p-3 border border-gray-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label for="cpfCliente" class="block text-gray-700 text-sm font-medium mb-2">CPF/CNPJ Cliente:</label>
-                            <input type="text" id="cpfCliente" placeholder="CPF ou CNPJ do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="enderecoCliente" class="block text-gray-700 text-sm font-medium mb-2">Endereço Cliente:</label>
-                        <input type="text" id="enderecoCliente" placeholder="Endereço completo do Cliente" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="processoVinculado" class="block text-gray-700 text-sm font-medium mb-2">Processo Vinculado:</label>
-                            <input type="text" id="processoVinculado" placeholder="Número do processo vinculado" class="w-full p-3 border border-gray-300 rounded-lg">
+                            <label for="nomeProjeto" class="block text-gray-700 text-sm font-medium mb-2 required-label">Nome do Projeto:</label>
+                            <input type="text" id="nomeProjeto" placeholder="Ex: Monitoramento Agrícola" class="w-full p-3 border border-gray-300 rounded-lg">
                         </div>
                         <div>
                             <label for="extensaoArea" class="block text-gray-700 text-sm font-medium mb-2 required-label">Extensão da Área (km²):</label>
@@ -185,12 +144,17 @@
                         </div>
                     </div>
 
-                    <!-- Seção "Adicionar Imagens" movida para cá -->
+                    <div>
+                        <label for="comentariosProposta" class="block text-gray-700 text-sm font-medium mb-2">Comentários (Opcional):</label>
+                        <textarea id="comentariosProposta" rows="3" placeholder="Adicione observações ou comentários adicionais aqui..." class="w-full p-3 border border-gray-300 rounded-lg"></textarea>
+                    </div>
+
+                    <!-- Seção "Adicionar Imagens" -->
                     <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">2. Adicionar Imagens</h2>
                     <div class="space-y-6">
                         <p class="text-sm text-gray-600 mb-4">Cole suas imagens (Ctrl+V) nas áreas indicadas. Elas serão incorporadas no documento com sua resolução nativa. A pré-visualização da imagem só estará visível na proposta final.</p>
                         <div id="imageInputs" class="space-y-4">
-                            <!-- Imagem 1: Área de Interesse (Initial image block) -->
+                            <!-- Imagem 1: Área de Interesse -->
                             <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                                 <label class="block text-gray-700 text-sm font-medium mb-2">Área para Colar Imagem <span class="image-number">1</span> (Área de Interesse):</label>
                                 <div id="pasteZone1" class="paste-zone" tabindex="0">
@@ -203,9 +167,7 @@
                                         <label for="imageCaption1" class="block text-gray-700 text-sm font-medium mb-1">Legenda da Imagem <span class="image-number">1</span>:</label>
                                         <input type="text" id="imageCaption1" value="Figura 1 - Área de interesse com informação de metragem." placeholder="Legenda descritiva para a imagem">
                                     </div>
-                                    <!-- Campos de Satélite, Data e Resolução removidos para Imagem 1 -->
                                 </div>
-                                <!-- A tag img está presente, mas sempre oculta no formulário -->
                                 <img id="imagePreview1" class="image-preview hidden" alt="Pré-visualização da Imagem 1">
                                 <button type="button" class="clear-image-btn mt-4 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="1">Limpar Imagem <span class="image-number">1</span></button>
                             </div>
@@ -215,9 +177,7 @@
                             <button id="addMultipleImagesBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg py-3 sm:w-1/2">Adicionar mais 5 imagens</button>
                         </div>
                     </div>
-                    <!-- Fim da seção "Adicionar Imagens" movida -->
 
-                    <!-- O campo de Cena Recomendada, Resolução Colorida e Data(s) da Cena Recomendada foram removidos daqui -->
                     <div>
                         <label for="sateliteOpcoes" class="block text-gray-700 text-sm font-medium mb-2">Satélite(s) (Opções - Ctrl+clique para múltiplos):</label>
                         <select id="sateliteOpcoes" multiple size="5" class="w-full p-3 border border-gray-300 rounded-lg">
@@ -275,14 +235,30 @@
                             <input type="number" id="custoRs" placeholder="Ex: 15000" class="w-full p-3 border border-gray-300 rounded-lg">
                         </div>
                     </div>
+                    
+                    <!-- Bloco Dinâmico de Altimetria -->
+                    <div id="altimetriaInputs" style="display: none;" class="p-4 border border-blue-200 rounded-lg bg-blue-50 mt-4 mb-4">
+                        <h3 class="font-semibold text-blue-800 mb-4">Detalhes do Modelo de Elevação (Altimetria)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="pedidoMinimoAltimetriaKm2" class="block text-gray-700 text-sm font-medium mb-2 required-label">Pedido Mín. Altimetria (Km²):</label>
+                                <input type="number" id="pedidoMinimoAltimetriaKm2" placeholder="Ex: 50" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="custoAltimetriaRs" class="block text-gray-700 text-sm font-medium mb-2 required-label">Custo Altimetria (R$):</label>
+                                <input type="number" id="custoAltimetriaRs" placeholder="Ex: 5000" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <label for="diasEntrega" class="block text-gray-700 text-sm font-medium mb-2 required-label">Entrega (dias):</label>
                         <input type="number" id="diasEntrega" placeholder="Ex: 7" class="w-full p-3 border border-gray-300 rounded-lg">
-                        </div>
+                    </div>
                 </div>
 
-                <!-- Botão Gerar Pré-visualização na coluna esquerda -->
-                <button id="generatePreviewBtn" class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200;">Gerar Pré-visualização</button>
+                <!-- Botão Gerar Pré-visualização -->
+                <button id="generatePreviewBtn" class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200">Gerar Pré-visualização</button>
             </div>
 
             <!-- Coluna da Direita: Pré-visualização e Download -->
@@ -297,7 +273,7 @@
                         <input type="text" id="docxFilename" value="Proposta Comercial de Imagens de Satélite" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
                     </div>
                     <div class="flex flex-col sm:flex-row gap-4 mt-4">
-                        <button id="downloadDocxBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3">Baixar como .DOCX</button>
+                        <button id="downloadDocxBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3" style="display: none;">Baixar como .DOCX</button>
                     </div>
                 </div>
             </div>
@@ -306,7 +282,7 @@
         <p class="text-center text-sm text-gray-600 mt-8">
             <strong>Nota:</strong> Este gerador cria conteúdo em HTML. Para obter um arquivo .docx com formatação mais consistente, clique em "Baixar como .DOCX". As imagens coladas serão incorporadas diretamente no HTML.
             <br/><br/>
-            **Atenção:** As quebras de página são sugestões e podem variar dependendo do editor de texto e das configurações de impressão.
+            <strong>Atenção:</strong> As quebras de página são sugestões e podem variar dependendo do editor de texto e das configurações de impressão.
         </p>
     </div>
 
@@ -318,16 +294,13 @@
         </div>
     </div>
 
-    <!-- Exportar HTML como .docx -->
+    <!-- Bibliotecas Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.0/dist/html-docx.min.js"></script>
 
     <script>
         window.onload = () => {
-            // Variável para controlar o número de imagens
             let currentImageCount = 1;
-            // Removido o limite máximo de imagens
-            // const MAX_IMAGES = 15;
 
             // Função para exibir o modal customizado
             function showCustomAlert(message) {
@@ -404,6 +377,15 @@
                     linkOutput.innerHTML = '';
                     linkOutput.style.display = 'none';
                 }
+
+                // Mostrar/Esconder campos de Altimetria dinamicamente
+                const temAltimetria = selectedSatellites.some(sat => sat.toLowerCase().includes('altimetria'));
+                const altimetriaInputs = document.getElementById('altimetriaInputs');
+                if (temAltimetria) {
+                    altimetriaInputs.style.display = 'block';
+                } else {
+                    altimetriaInputs.style.display = 'none';
+                }
             });
 
             // Função para lidar com a colagem de imagens
@@ -420,7 +402,6 @@
 
                         reader.onload = async (e) => {
                             const originalImageDataUrl = e.target.result;
-                            // Armazena a imagem na resolução nativa
                             const imageDataUrlToStore = originalImageDataUrl;
 
                             const pasteZone = document.getElementById(pasteZoneId);
@@ -430,8 +411,7 @@
                             hiddenInput.value = imageDataUrlToStore;
                             hiddenInput.setAttribute('data-image-pasted', 'true');
 
-                            // A imagem não será exibida no formulário, apenas o texto de confirmação
-                            previewImg.classList.add('hidden'); // Garante que a pré-visualização no formulário permaneça oculta
+                            previewImg.classList.add('hidden'); // Permanece oculta
 
                             pasteZone.innerHTML = '<p class="text-center text-lg font-bold text-green-700">Imagem colada com sucesso!</p><p class="text-center text-sm text-green-600 mt-1">A imagem aparecerá na pré-visualização final.</p>';
                             pasteZone.classList.add('has-image');
@@ -465,28 +445,25 @@
                 const hiddenInput = document.getElementById(`hiddenImageData${id}`);
                 const previewImg = document.getElementById(`imagePreview${id}`);
                 const imageCaption = document.getElementById(`imageCaption${id}`);
-                // Campos de satélite, data e resolução só existem para id > 1
-                const imageAreaTitle = document.getElementById(`image${id}AreaTitle`); // Novo campo
+                const imageAreaTitle = document.getElementById(`image${id}AreaTitle`);
                 const imageSat = document.getElementById(`image${id}Sat`);
                 const imageDate = document.getElementById(`image${id}Date`);
                 const imageRes = document.getElementById(`image${id}Res`);
-
 
                 pasteZone.innerHTML = '<p class="text-center text-lg font-bold text-gray-500">Clique ou cole sua imagem aqui (Ctrl+V)</p><p class="text-center text-sm text-gray-400 mt-1">A imagem aparecerá na pré-visualização final.</p>';
                 pasteZone.classList.remove('has-image');
                 hiddenInput.value = '';
                 hiddenInput.setAttribute('data-image-pasted', 'false');
                 previewImg.src = '';
-                previewImg.classList.add('hidden'); // Garante que a pré-visualização no formulário permaneça oculta
+                previewImg.classList.add('hidden');
 
-                if (id === 1) {
+                if (id == 1) {
                     imageCaption.value = "Figura 1 - Área de interesse com informação de metragem.";
                 } else {
                     imageCaption.value = `Figura ${id} – Imagem de satélite Quick Look em catálogo.`;
                 }
 
-                // Limpa os campos apenas se existirem (para id > 1)
-                if (imageAreaTitle) imageAreaTitle.value = ''; // Limpa o novo campo
+                if (imageAreaTitle) imageAreaTitle.value = '';
                 if (imageSat) imageSat.value = '';
                 if (imageDate) imageDate.value = '';
                 if (imageRes) imageRes.value = '';
@@ -496,11 +473,6 @@
             function addImageInput(numToAdd = 1) {
                 const imageInputsContainer = document.getElementById('imageInputs');
                 for (let k = 0; k < numToAdd; k++) {
-                    // Removido o limite de imagens
-                    // if (currentImageCount >= MAX_IMAGES) {
-                    //     showCustomAlert(`Limite máximo de ${MAX_IMAGES} imagens atingido.`);
-                    //     return;
-                    // }
                     currentImageCount++;
                     const newImageBlock = document.createElement('div');
                     newImageBlock.className = 'p-4 border border-gray-200 rounded-lg bg-gray-50';
@@ -535,13 +507,11 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- A tag img está presente, mas sempre oculta no formulário -->
                         <img id="imagePreview${currentImageCount}" class="image-preview hidden" alt="Pré-visualização da Imagem ${currentImageCount}">
                         <button type="button" class="clear-image-btn mt-4 px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600" data-target-id="${currentImageCount}">Limpar Imagem <span class="image-number">${currentImageCount}</span></button>
                     `;
                     imageInputsContainer.appendChild(newImageBlock);
 
-                    // Add event listeners to the newly created elements
                     document.getElementById(`pasteZone${currentImageCount}`).addEventListener('paste', (e) => handleImagePaste(e, `pasteZone${currentImageCount}`, `hiddenImageData${currentImageCount}`, `imagePreview${currentImageCount}`));
                     document.querySelector(`.clear-image-btn[data-target-id="${currentImageCount}"]`).addEventListener('click', (e) => {
                         const targetId = e.target.dataset.targetId;
@@ -550,53 +520,38 @@
                 }
             }
 
-            // Add event listeners for the new buttons
             document.getElementById('addOneImageBtn').addEventListener('click', () => addImageInput(1));
             document.getElementById('addMultipleImagesBtn').addEventListener('click', () => addImageInput(5));
 
-
-            // Add listeners for the initial image block
             document.getElementById(`pasteZone1`).addEventListener('paste', (e) => handleImagePaste(e, `pasteZone1`, `hiddenImageData1`, `imagePreview1`));
             document.querySelector(`.clear-image-btn[data-target-id="1"]`).addEventListener('click', (e) => {
                 const targetId = e.target.dataset.targetId;
                 clearImage(targetId);
             });
 
-
-            // Função para formatar a data de ISO (YYYY-MM-DD) para DD/MM/YYYY ou manter DD/MM/YYYY
+            // Formatação de data
             function formatarData(dateString) {
                 if (!dateString) return '';
                 dateString = dateString.trim();
-                // Check if it's already in DD/MM/YYYY format
                 if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
                     return dateString;
                 }
-                // Assume ISO (YYYY-MM-DD) for conversion
                 const [year, month, day] = dateString.split('-');
                 if (year && month && day) {
                     return `${day}/${month}/${year}`;
                 }
-                return ''; // Return empty if format is unrecognized
+                return '';
             }
 
             document.getElementById('generatePreviewBtn').addEventListener('click', () => {
                 const dataProposta = formatarData(document.getElementById('dataProposta').value);
                 const empresaCliente = document.getElementById('empresaCliente').value;
-                const contatoCliente = document.getElementById('contatoCliente').value;
-                const cpfCliente = document.getElementById('cpfCliente').value;
-                const enderecoCliente = document.getElementById('enderecoCliente').value;
-                const processoVinculado = document.getElementById('processoVinculado').value;
+                const nomeProjeto = document.getElementById('nomeProjeto').value;
                 const extensaoArea = document.getElementById('extensaoArea').value;
                 const dataImageamentoInicio = formatarData(document.getElementById('dataImageamentoInicio').value);
                 const dataImageamentoFim = formatarData(document.getElementById('dataImageamentoFim').value);
-                // Removidos os campos de cena recomendada, resolução colorida e datas de cena recomendada
-                // const cenaRecomendada = document.getElementById('cenaRecomendada').value;
-                // const resolucaoColorida = document.getElementById('resolucaoColorida').value;
-                // const dataCenaRecomendadaInput = document.getElementById('dataCenaRecomendada').value;
-                // const formattedCenaDates = dataCenaRecomendadaInput.split(',').map(dateStr => formatarData(dateStr.trim())).filter(Boolean).join(', ');
+                const comentariosProposta = document.getElementById('comentariosProposta').value.trim();
 
-
-                // Processa múltiplos satélites e constrói a seção de amostras
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(option => option.value);
                 let samplesHtml = '';
                 if (selectedSatellites.length > 0) {
@@ -615,11 +570,6 @@
                     samplesHtml += `</ul>`;
                 }
 
-
-                const pedidoMinimoKm2 = document.getElementById('pedidoMinimoKm2').value;
-                const custoRs = parseFloat(document.getElementById('custoRs').value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '####';
-                const diasEntrega = document.getElementById('diasEntrega').value;
-
                 const previewOutput = document.getElementById('previewOutput');
                 const downloadDocxBtn = document.getElementById('downloadDocxBtn');
 
@@ -628,28 +578,24 @@
 
                 for (let i = 1; i <= currentImageCount; i++) {
                     const hiddenInput = document.getElementById(`hiddenImageData${i}`);
-                    // Check if the element exists (for dynamically added images)
                     if (!hiddenInput) continue;
 
                     const imageDataUrl = hiddenInput.value;
                     const imageCaption = document.getElementById(`imageCaption${i}`).value;
 
-                    // Novos campos de detalhes da imagem
-                    const imageAreaTitle = document.getElementById(`image${i}AreaTitle`) ? document.getElementById(`image${i}AreaTitle`).value : ''; // Novo campo
+                    const imageAreaTitle = document.getElementById(`image${i}AreaTitle`) ? document.getElementById(`image${i}AreaTitle`).value : '';
                     const imageSat = document.getElementById(`image${i}Sat`) ? document.getElementById(`image${i}Sat`).value : '';
                     const imageDate = document.getElementById(`image${i}Date`) ? document.getElementById(`image${i}Date`).value : '';
                     const imageRes = document.getElementById(`image${i}Res`) ? document.getElementById(`image${i}Res`).value : '';
 
-                    // Remove a largura fixa para permitir a resolução nativa no Word
-                    let imageStyle = `height: auto !important; border-radius: 8px; display: block; margin: 0 auto;`;
+                    let imageStyle = `height: auto !important; border-radius: 8px; display: block; margin: 0 auto; max-width: 100%;`;
 
                     if (imageDataUrl && hiddenInput.getAttribute('data-image-pasted') === 'true') {
                         let imageBlock = `
                             <div style="margin-bottom: 10px; text-align: center; page-break-inside: avoid;">
                         `;
-                        // Adiciona os novos detalhes da imagem se existirem e não for a Figura 1
                         if (i !== 1) {
-                            if (imageAreaTitle) imageBlock += `<p style="font-size: 0.9em; color: #333; margin: 0 0 5px 0; font-weight: bold;">${imageAreaTitle}</p>`; // Adiciona o título da área
+                            if (imageAreaTitle) imageBlock += `<p style="font-size: 0.9em; color: #333; margin: 0 0 5px 0; font-weight: bold;">${imageAreaTitle}</p>`;
                             if (imageSat) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Satélite:</strong> ${imageSat}</p>`;
                             if (imageDate) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0;"><strong>Data:</strong> ${imageDate}</p>`;
                             if (imageRes) imageBlock += `<p style="font-size: 0.85em; color: #666; margin: 0 0 2px 0;"><strong>Resolução:</strong> ${imageRes}</p>`;
@@ -668,7 +614,6 @@
                     }
                 }
 
-                // Conteúdo das Especificações Técnicas
                 const especificacoesTecnicasHtml = `
                     <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas das Imagens:</h4>
                     <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
@@ -678,20 +623,67 @@
                     </ul>
                 `;
 
-                // Conteúdo dos Detalhes do Pedido
-                const detalhesPedidoHtml = `
+                const temAltimetria = selectedSatellites.some(sat => sat.toLowerCase().includes('altimetria'));
+                let especificacoesAltimetriaHtml = '';
+                if (temAltimetria) {
+                    especificacoesAltimetriaHtml = `
+                        <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Especificações Técnicas do Modelo de Elevação:</h4>
+                        <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
+                            <li style="margin-bottom: 2px; font-size: 0.9em;">Modelo de elevação em GeoTiff 32 bits floating point</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;">Nuvem de pontos em .las e .txt</li>
+                            <li style="margin-bottom: 2px; font-size: 0.9em;">Curvas de nível 2 m de equidistância em shp, dwg e kml</li>
+                        </ul>
+                    `;
+                }
+
+                const pedidoMinimoKm2 = document.getElementById('pedidoMinimoKm2').value;
+                const custoValor = parseFloat(document.getElementById('custoRs').value) || 0;
+                const custoRs = custoValor > 0 ? custoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '####';
+                const diasEntrega = document.getElementById('diasEntrega').value;
+
+                let pedidoMinimoAltimetriaKm2 = '';
+                let custoAltimetriaValor = 0;
+                let custoAltimetriaRs = '####';
+                let custoTotalRs = custoRs;
+
+                if (temAltimetria) {
+                    pedidoMinimoAltimetriaKm2 = document.getElementById('pedidoMinimoAltimetriaKm2').value;
+                    custoAltimetriaValor = parseFloat(document.getElementById('custoAltimetriaRs').value) || 0;
+                    custoAltimetriaRs = custoAltimetriaValor > 0 ? custoAltimetriaValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '####';
+                    
+                    const total = custoValor + custoAltimetriaValor;
+                    custoTotalRs = total > 0 ? total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '####';
+                }
+
+                let detalhesPedidoHtml = `
                     <h4 style="margin: 10px 0 5px 0; font-size: 1em; font-weight: 500; color: #374151;">Detalhes do Pedido</h4>
                     <ul style="list-style-type: disc; margin: 0; padding-left: 15px; line-height: 1.2;">
-                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo de ${pedidoMinimoKm2} Km2</li>
+                `;
+
+                if (temAltimetria) {
+                    detalhesPedidoHtml += `
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo da Imagem: ${pedidoMinimoKm2} Km²</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Custo da Imagem: R$ ${custoRs}</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo do Modelo de Elevação: ${pedidoMinimoAltimetriaKm2} Km²</li>
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Custo do Modelo de Elevação: R$ ${custoAltimetriaRs}</li>
+                        <li style="margin-bottom: 4px; margin-top: 4px; font-size: 0.9em; font-weight: bold; color: #111827;">Total (Imagem + Modelo de Elevação): R$ ${custoTotalRs}</li>
+                    `;
+                } else {
+                    detalhesPedidoHtml += `
+                        <li style="margin-bottom: 2px; font-size: 0.9em;">Pedido mínimo de ${pedidoMinimoKm2} Km²</li>
                         <li style="margin-bottom: 2px; font-size: 0.9em;">Custo de R$ ${custoRs}</li>
+                    `;
+                }
+
+                detalhesPedidoHtml += `
                         <li style="margin-bottom: 2px; font-size: 0.9em;">Entrega em ${diasEntrega} dias</li>
                         <li style="margin-bottom: 2px; font-size: 0.9em;">Pagamento na confirmação do pedido</li>
                     </ul>
                 `;
 
-                // Logo da Engesat
                 const engesatLogoUrl = "https://www.engesat.com.br/wp-content/uploads/2024/12/engesat-logomarca.png";
 
+                const comentariosHtml = comentariosProposta ? `<p style="margin: 8px 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Comentários:</strong><br>${comentariosProposta.replace(/\n/g, '<br>')}</p>` : '';
 
                 const htmlContent = `
                     <div style="text-align: center; margin-bottom: 15px;">
@@ -702,10 +694,8 @@
                     <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
                         <h3 style="font-size: 1.125em; font-weight: 600; color: #1f2937; margin: 0 0 8px 0;">Dados do Cliente</h3>
                         <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Empresa:</strong> ${empresaCliente}</p>
-                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Contato:</strong> ${contatoCliente}</p>
-                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>CPF/CNPJ:</strong> ${cpfCliente}</p>
-                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Endereço:</strong> ${enderecoCliente}</p>
-                        <p style="margin: 0; font-size: 0.9em; line-height: 1.2;"><strong>Processo Vinculado:</strong> ${processoVinculado}</p>
+                        <p style="margin: 0 0 2px 0; font-size: 0.9em; line-height: 1.2;"><strong>Projeto:</strong> ${nomeProjeto}</p>
+                        ${comentariosHtml}
                     </div>
 
                     <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações aqui apresentadas são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>, usadas para conferir a localização e eventual presença de nuvens e <span style="color: red; font-weight: bold;">não retratam a qualidade final da imagem entregue</span>.</p>
@@ -716,22 +706,21 @@
                     <div style="margin-bottom: 15px; padding: 10px; border-radius: 6px; background-color: #f9fafb; border: 1px solid #e5e7eb;">
                         <p style="margin: 0 0 5px 0; font-size: 0.9em; line-height: 1.2;"><strong>Extensão da Área:</strong> ${extensaoArea} km²</p>
                         ${imagesHtmlFigura1}
-                        <!-- Sugestão de quebra de página 1 -->
+                        
                         <div style="page-break-after: always;"></div>
 
                         <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">Alternativas de Imagens Disponíveis para a Área: Para datas de imageamento entre ${dataImageamentoInicio} e ${dataImageamentoFim}, recomendamos as cenas que seguem:</p>
 
                         ${imagesHtmlFigurasAlternativas}
 
-                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações acima são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>,
-                        utilizadas apenas para verificar a localização da área e a presença de nuvens. Elas <span style="color: red; font-weight: bold;">não representam a qualidade final da imagem que será entregue</span>.</p>
+                        <p style="margin: 0 0 10px 0; line-height: 1.2; font-size: 0.9em;">As ilustrações acima são <span style="color: red; font-weight: bold;">prévias (Quick Look)</span>, utilizadas apenas para verificar a localização da área e a presença de nuvens. Elas <span style="color: red; font-weight: bold;">não representam a qualidade final da imagem que será entregue</span>.</p>
 
                         ${samplesHtml}
 
-                        <!-- Forçar quebra de página para as seções abaixo -->
                         <div style="page-break-before: always;"></div>
 
                         ${especificacoesTecnicasHtml}
+                        ${especificacoesAltimetriaHtml}
                         ${detalhesPedidoHtml}
 
                     </div>
@@ -771,19 +760,17 @@
 
             document.getElementById('downloadDocxBtn').addEventListener('click', () => {
                 const previewOutput = document.getElementById('previewOutput');
-                if (!previewOutput || !previewOutput.innerHTML.trim()) {
+                if (!previewOutput || !previewOutput.innerHTML.trim() || previewOutput.innerHTML.includes('A pré-visualização da sua proposta aparecerá aqui.')) {
                     showCustomAlert('Gere a pré-visualização antes de baixar o .docx.');
                     return;
                 }
 
-                // Get the filename from the input field
                 const filename = document.getElementById('docxFilename').value.trim();
                 if (!filename) {
                     showCustomAlert('Por favor, insira um nome para o arquivo DOCX.');
                     return;
                 }
 
-                // Verifica se htmlDocx está definido antes de usar
                 if (typeof htmlDocx === 'undefined') {
                     console.error('Erro: html-docx-js não está carregado ou acessível.');
                     showCustomAlert('Erro ao tentar baixar o .docx. Por favor, tente novamente ou contacte o suporte.');
@@ -808,14 +795,8 @@
                 showCustomAlert('Arquivo .docx gerado e pronto para download!');
             });
 
-            // O código do acordeão foi removido, pois as seções agora estão sempre visíveis.
-            // As classes 'accordion-item', 'accordion-header', 'accordion-content', 'accordion-icon'
-            // foram removidas do HTML das seções de entrada para desativar o comportamento.
-            // A seção de pré-visualização continua com as classes para manter a aparência visual,
-            // mas sem a funcionalidade de recolher/expandir.
-
-            // Realce de campos obrigatórios (apenas visual, sem validação real aqui)
-            document.querySelectorAll('label[for="dataProposta"], label[for="empresaCliente"], label[for="contatoCliente"], label[for="extensaoArea"], label[for="dataImageamentoInicio"], label[for="dataImageamentoFim"], label[for="custoRs"], label[for="diasEntrega"]').forEach(label => {
+            // Realce de campos obrigatórios
+            document.querySelectorAll('label[for="dataProposta"], label[for="empresaCliente"], label[for="nomeProjeto"], label[for="extensaoArea"], label[for="dataImageamentoInicio"], label[for="dataImageamentoFim"], label[for="custoRs"], label[for="diasEntrega"]').forEach(label => {
                 label.classList.add('required-label');
             });
         };
