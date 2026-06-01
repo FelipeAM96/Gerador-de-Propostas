@@ -95,7 +95,7 @@
                             <option value="LANDSAT 4 E 5 TM">LANDSAT 4 E 5 TM</option>
                             <option value="LANDSAT 7 ETM +">LANDSAT 7 ETM +</option>
                             <option value="LANDSAT 8">LANDSAT 8</option>
-                            <option value="WorldView Legion">WorldView Legion</option>
+                            <option value="Legion">Legion</option>
                             <option value="PLANET">PLANET</option>
                             <option value="PLEIADES">PLEIADES</option>
                             <option value="PLEIADES NEO">PLEIADES NEO</option>
@@ -103,8 +103,8 @@
                             <option value="RapidEye">RapidEye</option>
                             <option value="Sentinel-2">Sentinel-2</option>
                             <option value="SKYSAT">SKYSAT</option>
-                            <option value="SPOT 6/7">SPOT 6/7</option>
                             <option value="SPOT 1-2-3-4-5">SPOT 1-2-3-4-5</option>
+                            <option value="SPOT 6/7">SPOT 6/7</option>
                             <option value="SUPERVIEW">SUPERVIEW</option>
                             <option value="TerraSAR-X">TerraSAR-X</option>
                             <option value="TH-01">TH-01</option>
@@ -115,9 +115,9 @@
                             <option value="World View 2">World View 2</option>
                             <option value="World View 3">World View 3</option>
                             <option value="World View 4">World View 4</option>
-                            <option value="ALTIMETRIA WORLDDEM">ALTIMETRIA WORLDDEM</option>
-                            <option value="Altimetria WorldDEM NEO™">Altimetria WorldDEM NEO™</option>
                             <option value="Altimetria AW3D">Altimetria AW3D</option>
+                            <option value="Altimetria WorldDEM">Altimetria WorldDEM</option>
+                            <option value="Altimetria WorldDEM NEO™">Altimetria WorldDEM NEO™</option>
                         </select>
                         <p class="text-xs text-gray-500 mt-1">Isso adicionará links de amostra na proposta. Se escolher Altimetria, opções de custo extra aparecerão abaixo.</p>
                     </div>
@@ -213,7 +213,7 @@
                 "LANDSAT 4 E 5 TM": "https://www.engesat.com.br/imagem-de-satelite/landsat/",
                 "LANDSAT 7 ETM +": "https://www.engesat.com.br/imagem-de-satelite/landsat-7-etm/",
                 "LANDSAT 8": "https://www.engesat.com.br/imagem-de-satelite/landsat-8/",
-                "WorldView Legion": "https://www.engesat.com.br/imagem-de-satelite/worldview-legion/",
+                "Legion": "https://www.engesat.com.br/imagem-de-satelite/worldview-legion/",
                 "PLANET": "https://www.engesat.com.br/imagem-de-satelite/planetscope/",
                 "PLEIADES": "https://www.engesat.com.br/imagem-de-satelite/pleiades/",
                 "PLEIADES NEO": "https://www.engesat.com.br/imagem-de-satelite/pleiades-neo/",
@@ -221,8 +221,8 @@
                 "RapidEye": "https://www.engesat.com.br/imagem-de-satelite/rapideye/",
                 "Sentinel-2": "https://www.engesat.com.br/sentinel-2/",
                 "SKYSAT": "https://www.engesat.com.br/imagem-de-satelite/skysat/",
-                "SPOT 6/7": "https://www.engesat.com.br/imagem-de-satelite/spot-67/",
                 "SPOT 1-2-3-4-5": "https://www.engesat.com.br/imagem-de-satelite/spot-1-2-3-4-5/",
+                "SPOT 6/7": "https://www.engesat.com.br/imagem-de-satelite/spot-67/",
                 "SUPERVIEW": "https://www.engesat.com.br/imagem-de-satelite/superview/",
                 "TerraSAR-X": "https://www.engesat.com.br/imagem-de-satelite/terrasar-x/",
                 "TH-01": "https://www.engesat.com.br/imagem-de-satelite/th-01/",
@@ -233,9 +233,9 @@
                 "World View 2": "https://www.engesat.com.br/imagem-de-satelite/world-view-2/",
                 "World View 3": "https://www.engesat.com.br/imagem-de-satelite/world-view-3/",
                 "World View 4": "https://www.engesat.com.br/imagem-de-satelite/world-view-4/",
-                "ALTIMETRIA WORLDDEM": "https://www.engesat.com.br/mercados/altimetria/",
-                "Altimetria WorldDEM NEO™": "https://www.engesat.com.br/mercados/altimetria-worlddem-neo/",
-                "Altimetria AW3D": "https://www.engesat.com.br/mercados/altimetria-aw3d/"
+                "Altimetria AW3D": "https://www.engesat.com.br/mercados/altimetria-aw3d/",
+                "Altimetria WorldDEM": "https://www.engesat.com.br/mercados/altimetria/",
+                "Altimetria WorldDEM NEO™": "https://www.engesat.com.br/mercados/altimetria-worlddem-neo/"
             };
 
             // Mostrar campos customizados de pagamento
@@ -252,7 +252,8 @@
             // Lógica de exibir painel de Altimetria Global
             document.getElementById('sateliteOpcoes').addEventListener('change', function() {
                 const selected = Array.from(this.selectedOptions).map(opt => opt.value.toLowerCase());
-                const temAltimetria = selected.some(sat => sat.includes('altimetria'));
+                // Verifica tanto "altimetria" quanto "worlddem"
+                const temAltimetria = selected.some(sat => sat.includes('altimetria') || sat.includes('worlddem'));
                 document.getElementById('altimetriaInputs').style.display = temAltimetria ? 'block' : 'none';
             });
 
@@ -476,7 +477,8 @@
                 
                 // Tratar lista global de satélites (Catálogo e Amostras)
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(opt => opt.value);
-                const temAltimetria = selectedSatellites.some(sat => sat.toLowerCase().includes('altimetria'));
+                // Verifica tanto "altimetria" quanto "worlddem" no gerador também
+                const temAltimetria = selectedSatellites.some(sat => sat.toLowerCase().includes('altimetria') || sat.toLowerCase().includes('worlddem'));
                 
                 let samplesHtml = '';
                 if (selectedSatellites.length > 0) {
