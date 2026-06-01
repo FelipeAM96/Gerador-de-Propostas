@@ -95,7 +95,6 @@
                             <option value="LANDSAT 4 E 5 TM">LANDSAT 4 E 5 TM</option>
                             <option value="LANDSAT 7 ETM +">LANDSAT 7 ETM +</option>
                             <option value="LANDSAT 8">LANDSAT 8</option>
-                            <option value="Legion">Legion</option>
                             <option value="PLANET">PLANET</option>
                             <option value="PLEIADES">PLEIADES</option>
                             <option value="PLEIADES NEO">PLEIADES NEO</option>
@@ -115,6 +114,7 @@
                             <option value="World View 2">World View 2</option>
                             <option value="World View 3">World View 3</option>
                             <option value="World View 4">World View 4</option>
+                            <option value="Legion">Legion</option>
                             <option value="Altimetria AW3D">Altimetria AW3D</option>
                             <option value="Altimetria WorldDEM">Altimetria WorldDEM</option>
                             <option value="Altimetria WorldDEM NEO™">Altimetria WorldDEM NEO™</option>
@@ -213,7 +213,6 @@
                 "LANDSAT 4 E 5 TM": "https://www.engesat.com.br/imagem-de-satelite/landsat/",
                 "LANDSAT 7 ETM +": "https://www.engesat.com.br/imagem-de-satelite/landsat-7-etm/",
                 "LANDSAT 8": "https://www.engesat.com.br/imagem-de-satelite/landsat-8/",
-                "Legion": "https://www.engesat.com.br/imagem-de-satelite/worldview-legion/",
                 "PLANET": "https://www.engesat.com.br/imagem-de-satelite/planetscope/",
                 "PLEIADES": "https://www.engesat.com.br/imagem-de-satelite/pleiades/",
                 "PLEIADES NEO": "https://www.engesat.com.br/imagem-de-satelite/pleiades-neo/",
@@ -233,6 +232,7 @@
                 "World View 2": "https://www.engesat.com.br/imagem-de-satelite/world-view-2/",
                 "World View 3": "https://www.engesat.com.br/imagem-de-satelite/world-view-3/",
                 "World View 4": "https://www.engesat.com.br/imagem-de-satelite/world-view-4/",
+                "Legion": "https://www.engesat.com.br/imagem-de-satelite/worldview-legion/",
                 "Altimetria AW3D": "https://www.engesat.com.br/mercados/altimetria-aw3d/",
                 "Altimetria WorldDEM": "https://www.engesat.com.br/mercados/altimetria/",
                 "Altimetria WorldDEM NEO™": "https://www.engesat.com.br/mercados/altimetria-worlddem-neo/"
@@ -361,20 +361,27 @@
                 containerNode.appendChild(altDiv);
 
                 // Lógica de atualização dinâmica da legenda
+                const areaNameInput = containerNode.closest('.area-block').querySelector('.area-name');
                 const satInput = altDiv.querySelector('.alt-img-sat');
                 const dateInput = altDiv.querySelector('.alt-img-date');
+                const resInput = altDiv.querySelector('.alt-img-res');
                 const captionInput = altDiv.querySelector('.alt-img-caption');
                 
                 let lastPrefix = '';
                 const updateCaption = () => {
+                    const area = areaNameInput.value.trim();
                     const sat = satInput.value.trim();
                     const date = dateInput.value.trim();
+                    const res = resInput.value.trim();
                     
-                    let newPrefix = '';
-                    if (sat) newPrefix += sat;
-                    if (newPrefix && date) newPrefix += ' - ';
-                    if (date) newPrefix += date;
-                    if (newPrefix) newPrefix += ' - ';
+                    let parts = [];
+                    if (area) parts.push(area);
+                    if (sat) parts.push(sat);
+                    if (date) parts.push(date);
+                    if (res) parts.push(res);
+                    
+                    let newPrefix = parts.join(' - ');
+                    // Foi removido o " += ' - ' " para não deixar um traço sobrando no final da legenda automática
                     
                     let currentCaption = captionInput.value;
                     let suffix = currentCaption;
@@ -390,8 +397,10 @@
                     lastPrefix = newPrefix;
                 };
                 
+                areaNameInput.addEventListener('input', updateCaption);
                 satInput.addEventListener('input', updateCaption);
                 dateInput.addEventListener('input', updateCaption);
+                resInput.addEventListener('input', updateCaption);
             };
 
             // Adicionar primeira área ao carregar
