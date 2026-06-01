@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Proposta Comercial</title>
-    <link rel="icon" type="image/png" href="img/Treco_Engesat.png" />
+    <link rel="icon" type="image/png" href="https://www.engesat.com.br/wp-content/uploads/2024/12/engesat-logomarca.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -169,15 +169,21 @@
                 
                 <div class="pt-4 border-t border-gray-200">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Nome do arquivo Word (.docx):</label>
-                    <input type="text" id="docxFilename" value="Proposta_Comercial_Imagens" class="w-full mb-4">
+                    <input type="text" id="docxFilename" value="Proposta Comercial Imagens - " class="w-full mb-4">
                     
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <button id="copyHtmlBtn" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg py-3">Copiar para Colar no Email</button>
-                        <button id="downloadDocxBtn" class="hidden w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3">Baixar Documento Word</button>
+                        <button id="copyHtmlBtn" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg py-3 transition-colors">Copiar para Colar no Email</button>
+                        <button id="downloadDocxBtn" class="hidden w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg py-3 transition-colors">Baixar Documento Word</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Toast de Notificação (Substitui o alert nativo) -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-4 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-10 pointer-events-none z-50 flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span class="font-medium">Proposta copiada! Agora é só colar no seu email.</span>
     </div>
 
     <!-- Bibliotecas Externas -->
@@ -278,7 +284,7 @@
                     </div>
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-1">Imagem de Referência (Opcional):</label>
-                        <div class="paste-zone flex items-center justify-center h-16 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:border-blue-500 bg-gray-50" 
+                        <div class="paste-zone flex items-center justify-center h-16 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:border-blue-500 bg-gray-50 transition-colors" 
                              tabindex="0" data-hidden-id="hidden_area_${aId}" data-preview-id="preview_area_${aId}" data-clear-btn="clear_btn_area_${aId}">
                             <p class="text-gray-500 text-sm">Clique e cole (Ctrl+V) a imagem de referência</p>
                         </div>
@@ -292,7 +298,7 @@
                     <div class="mt-4 pt-4 border-t border-blue-100 bg-blue-50/30 -mx-5 -mb-5 p-5 rounded-b-xl">
                         <h4 class="font-semibold text-blue-900 mb-3 text-sm">Imagens Alternativas (Opções de Satélite)</h4>
                         <div class="alt-container space-y-4"></div>
-                        <button type="button" class="mt-4 w-full px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 text-sm font-semibold shadow-sm" onclick="createAltImageBlock(this.previousElementSibling)">+ Adicionar Imagem Alternativa para esta área</button>
+                        <button type="button" class="mt-4 w-full px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 text-sm font-semibold shadow-sm transition-colors" onclick="createAltImageBlock(this.previousElementSibling)">+ Adicionar Imagem Alternativa para esta área</button>
                     </div>
                 `;
                 document.getElementById('areasContainer').appendChild(areaDiv);
@@ -340,7 +346,7 @@
                     </div>
                     <div>
                         <label class="block text-gray-700 text-xs font-medium mb-1">Imagem Quick Look:</label>
-                        <div class="paste-zone flex items-center justify-center h-16 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-blue-500 bg-gray-50"
+                        <div class="paste-zone flex items-center justify-center h-16 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-blue-500 bg-gray-50 transition-colors"
                              tabindex="0" data-hidden-id="hidden_alt_${altId}" data-preview-id="preview_alt_${altId}" data-clear-btn="clear_btn_alt_${altId}">
                             <p class="text-gray-500 text-xs">Clique e cole (Ctrl+V) o Quick Look</p>
                         </div>
@@ -352,6 +358,39 @@
                     </div>
                 `;
                 containerNode.appendChild(altDiv);
+
+                // Lógica de atualização dinâmica da legenda
+                const satInput = altDiv.querySelector('.alt-img-sat');
+                const dateInput = altDiv.querySelector('.alt-img-date');
+                const captionInput = altDiv.querySelector('.alt-img-caption');
+                
+                let lastPrefix = '';
+                const updateCaption = () => {
+                    const sat = satInput.value.trim();
+                    const date = dateInput.value.trim();
+                    
+                    let newPrefix = '';
+                    if (sat) newPrefix += sat;
+                    if (newPrefix && date) newPrefix += ' - ';
+                    if (date) newPrefix += date;
+                    if (newPrefix) newPrefix += ' - ';
+                    
+                    let currentCaption = captionInput.value;
+                    let suffix = currentCaption;
+                    
+                    // Preserva o que o usuário digitou manualmente na legenda após o prefixo automático
+                    if (lastPrefix && currentCaption.startsWith(lastPrefix)) {
+                        suffix = currentCaption.substring(lastPrefix.length);
+                    } else if (!lastPrefix && currentCaption) {
+                        suffix = currentCaption;
+                    }
+                    
+                    captionInput.value = newPrefix + suffix;
+                    lastPrefix = newPrefix;
+                };
+                
+                satInput.addEventListener('input', updateCaption);
+                dateInput.addEventListener('input', updateCaption);
             };
 
             // Adicionar primeira área ao carregar
@@ -364,7 +403,6 @@
                 if (!activeZone) return;
 
                 const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-                let imageFound = false;
 
                 for (const item of items) {
                     if (item.kind === 'file' && item.type.startsWith('image/')) {
@@ -391,7 +429,6 @@
                             if(clearBtnId) document.getElementById(clearBtnId).classList.remove('hidden');
                         };
                         reader.readAsDataURL(file);
-                        imageFound = true;
                         break;
                     }
                 }
@@ -422,7 +459,15 @@
                 return (year && month && day) ? `${day}/${month}/${year}` : '';
             }
 
-            // GERAÇÃO DO HTML (Sólido, sem quebras de sintaxe)
+            // Atualizar o nome do arquivo Word com a Empresa Cliente
+            const empresaClienteInput = document.getElementById('empresaCliente');
+            const docxFilenameInput = document.getElementById('docxFilename');
+            empresaClienteInput.addEventListener('input', function() {
+                const nomeEmpresa = this.value.trim();
+                docxFilenameInput.value = "Proposta Comercial Imagens - " + nomeEmpresa;
+            });
+
+            // GERAÇÃO DO HTML
             document.getElementById('generatePreviewBtn').addEventListener('click', () => {
                 const dataProposta = formatarData(document.getElementById('dataProposta').value);
                 const empresaCliente = document.getElementById('empresaCliente').value || '[Empresa Cliente]';
@@ -583,10 +628,18 @@
 
                 // Montar Documento Final
                 let finalDoc = `
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <h1 style="font-size: 1.8em; font-weight: bold; margin: 0; color: #111827;">Proposta Comercial</h1>
-                        <p style="margin-top: 5px; font-size: 0.95em; color: #64748b;">Curitiba, ${dataProposta}</p>
-                    </div>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px;">
+                        <tr>
+                            <td width="150" valign="top" style="text-align: left;">
+                                <img src="${engesatLogoUrl}" alt="Engesat Logo" style="max-width: 130px; height: auto;">
+                            </td>
+                            <td valign="top" style="text-align: center;">
+                                <h1 style="font-size: 1.8em; font-weight: bold; margin: 0; color: #111827;">Proposta Comercial</h1>
+                                <p style="margin-top: 5px; font-size: 0.95em; color: #64748b;">Curitiba, ${dataProposta}</p>
+                            </td>
+                            <td width="150"></td>
+                        </tr>
+                    </table>
 
                     <div style="margin-bottom: 25px; padding: 20px; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
                         <h3 style="font-size: 1.15em; font-weight: bold; color: #0f172a; margin: 0 0 10px 0; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">Dados do Cliente</h3>
@@ -610,7 +663,7 @@
 
                     <h4 style="margin: 20px 0 10px 0; font-size: 1.1em; font-weight: bold; color: #1e293b;">Especificações Técnicas (Imagens de Satélite):</h4>
                     <ul style="list-style-type: disc; margin: 0 0 20px 0; padding-left: 20px; line-height: 1.5;">
-                        <li style="margin-bottom: 5px; font-size: 0.95em;">Ortorretificada</li>
+                        <li style="margin-bottom: 5px; font-size: 0.95em;">Ortorretificada, georreferenciada e mosaicada</li>
                         <li style="margin-bottom: 5px; font-size: 0.95em;">Sistema de coordenadas UTM SIRGAS 2000</li>
                         <li style="margin-bottom: 5px; font-size: 0.95em;">Formato GeoTIFF, com 3 ou 4 bandas</li>
                     </ul>
@@ -634,16 +687,16 @@
                     <div style="margin-top: 30px; margin-bottom: 25px; padding: 20px; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
                         <h3 style="font-size: 1.15em; font-weight: bold; color: #0f172a; margin: 0 0 15px 0; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">Informações Administrativas e Bancárias</h3>
                         
-                        <h4 style="margin: 15px 0 5px 0; font-size: 1em; font-weight: bold; color: #334155;">Dados Administrativos – Engesat</h4>
+                        <h4 style="margin: 15px 0 5px 0; font-size: 1em; font-weight: bold; color: #334155;">📄 Dados Administrativos – Engesat Imagens de Satélite</h4>
                         <ul style="list-style-type: disc; margin: 0 0 15px 0; padding-left: 20px; line-height: 1.4;">
                             <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Nome Fantasia:</strong> Engesat Imagens de Satélite</li>
-                            <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Razão Social:</strong> EISAT Imagens de Satélite Ltda. – EPP</li>
+                            <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Razão Social:</strong> EISAT IMAGENS DE SATELITE LTDA </li>
                             <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>CNPJ:</strong> 02.059.387/0001-87</li>
-                            <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Inscrição Estadual:</strong> ISENTA</li>
-                            <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Inscrição Municipal:</strong> 0701351363-2</li>
+                            <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Inscrição Estadual:</strong> ISENTO</li>
+                            <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Inscrição Municipal:</strong> 07 20 351.363-2</li>
                         </ul>
 
-                        <h4 style="margin: 15px 0 5px 0; font-size: 1em; font-weight: bold; color: #334155;">Dados Bancários</h4>
+                        <h4 style="margin: 15px 0 5px 0; font-size: 1em; font-weight: bold; color: #334155;">💳 Dados Bancários</h4>
                         <ul style="list-style-type: disc; margin: 0; padding-left: 20px; line-height: 1.4;">
                             <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Banco:</strong> Banco Inter 077</li>
                             <li style="margin-bottom: 4px; font-size: 0.95em;"><strong>Agência:</strong> 0001</li>
@@ -660,7 +713,7 @@
                     <p style="margin: 0; font-size: 0.9em; line-height: 1.5; color: #4b5563;">Diretor</p>
                     
                     <div style="margin-top: 20px;">
-                        <img src="${engesatLogoUrl}" alt="Engesat Logo" style="max-width: 150px; height: auto; border-radius: 8px;">
+                        <img src="${engesatLogoUrl}" alt="Engesat Logo" onerror="this.style.display='none'" style="max-width: 150px; height: auto; border-radius: 8px;">
                     </div>
                 `;
 
@@ -695,7 +748,14 @@
                 selection.addRange(range);
                 document.execCommand('copy');
                 selection.removeAllRanges();
-                alert('Proposta copiada! Agora é só colar no seu email.');
+                
+                // Mostra o Toast Notification em vez do alert
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                }, 3000);
             });
         };
     </script>
