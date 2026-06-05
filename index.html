@@ -22,6 +22,16 @@
         @media (min-width: 1024px) {
             .main-content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
         }
+        /* Classe para o efeito visual durante o arrastar e soltar */
+        .dragging {
+            opacity: 0.4;
+            border: 2px dashed #3b82f6 !important;
+        }
+        .sortable-drag {
+            cursor: grabbing !important;
+            opacity: 1 !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8 flex justify-center items-start min-h-screen">
@@ -202,6 +212,7 @@
     <!-- Bibliotecas Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.0/dist/html-docx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
     <!-- Toda Lógica Javascript Otimizada -->
     <script>
@@ -325,6 +336,19 @@
                     </div>
                 `;
                 document.getElementById('areasContainer').appendChild(areaDiv);
+
+                // Configurar o Drag & Drop usando SortableJS (Permite rolar a página com a roleta livremente)
+                const altContainer = areaDiv.querySelector('.alt-container');
+                new Sortable(altContainer, {
+                    handle: '.drag-handle',
+                    animation: 150,
+                    ghostClass: 'dragging',
+                    dragClass: 'sortable-drag',
+                    forceFallback: true, // Força o uso do mouse em vez do drag nativo (garante o scroll do mouse wheel)
+                    fallbackTolerance: 3, // Evita cliques acidentais
+                    scroll: true,
+                    bubbleScroll: true
+                });
                 
                 // Preencher dados se estiver carregando de um rascunho
                 if (loadData) {
@@ -354,12 +378,11 @@
                 const altId = altIdCounter;
                 
                 const altDiv = document.createElement('div');
-                altDiv.className = 'alt-image-block bg-white p-4 border border-blue-200 rounded-lg shadow-sm relative pt-8'; // Adicionado pt-8 para dar espaço aos botões no topo
+                altDiv.className = 'alt-image-block bg-white p-4 border border-blue-200 rounded-lg shadow-sm relative pt-8';
                 
                 altDiv.innerHTML = `
-                    <div class="absolute top-2 right-2 flex items-center gap-3 bg-white px-2 rounded">
-                        <button type="button" class="text-blue-500 hover:text-blue-700 font-bold text-lg" title="Mover para cima" onclick="moveAltUp(this)">▲</button>
-                        <button type="button" class="text-blue-500 hover:text-blue-700 font-bold text-lg" title="Mover para baixo" onclick="moveAltDown(this)">▼</button>
+                    <div class="absolute top-2 right-2 flex items-center gap-1 bg-white px-2 rounded">
+                        <div class="drag-handle cursor-move text-gray-400 hover:text-blue-600 px-2 select-none" title="Segure e arraste para reordenar" style="font-size: 1.3rem;">⣿</div>
                         <button type="button" class="text-gray-400 hover:text-red-600 font-bold text-lg ml-2" title="Remover Alternativa" onclick="this.closest('.alt-image-block').remove()">✕</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 mt-2">
@@ -469,23 +492,6 @@
                 satInput.addEventListener('input', updateCaption);
                 dateInput.addEventListener('input', updateCaption);
                 resInput.addEventListener('input', updateCaption);
-            };
-
-            // Funções para reordenar os blocos de imagens alternativas
-            window.moveAltUp = function(btnNode) {
-                const currentBlock = btnNode.closest('.alt-image-block');
-                const previousBlock = currentBlock.previousElementSibling;
-                if (previousBlock) {
-                    currentBlock.parentNode.insertBefore(currentBlock, previousBlock);
-                }
-            };
-
-            window.moveAltDown = function(btnNode) {
-                const currentBlock = btnNode.closest('.alt-image-block');
-                const nextBlock = currentBlock.nextElementSibling;
-                if (nextBlock) {
-                    currentBlock.parentNode.insertBefore(nextBlock, currentBlock);
-                }
             };
 
             // Lógica de Salvar e Carregar Rascunho via Arquivo JSON
@@ -734,9 +740,17 @@
                         // Coletar dados para o Resumo Financeiro
                         if (cost) {
                             const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            
+                            let detalhesResumo = [];
+                            if (sat) detalhesResumo.push(`Satélite: ${sat}`);
+                            if (date) detalhesResumo.push(`Data: ${date}`);
+                            if (res) detalhesResumo.push(`Resolução: ${res}`);
+                            
+                            let descricaoFinal = detalhesResumo.length > 0 ? detalhesResumo.join(' - ') : caption;
+
                             arrayResumoImagens.push({
                                 area: areaName,
-                                descricao: sat ? `Opção: ${sat}` : caption,
+                                descricao: descricaoFinal,
                                 valor: costFormatted
                             });
                         }
