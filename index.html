@@ -354,11 +354,15 @@
                 const altId = altIdCounter;
                 
                 const altDiv = document.createElement('div');
-                altDiv.className = 'alt-image-block bg-white p-4 border border-blue-200 rounded-lg shadow-sm relative';
+                altDiv.className = 'alt-image-block bg-white p-4 border border-blue-200 rounded-lg shadow-sm relative pt-8'; // Adicionado pt-8 para dar espaço aos botões no topo
                 
                 altDiv.innerHTML = `
-                    <button type="button" class="absolute top-2 right-2 text-gray-400 hover:text-red-600 font-bold text-lg" title="Remover Alternativa" onclick="this.closest('.alt-image-block').remove()">✕</button>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                    <div class="absolute top-2 right-2 flex items-center gap-3 bg-white px-2 rounded">
+                        <button type="button" class="text-blue-500 hover:text-blue-700 font-bold text-lg" title="Mover para cima" onclick="moveAltUp(this)">▲</button>
+                        <button type="button" class="text-blue-500 hover:text-blue-700 font-bold text-lg" title="Mover para baixo" onclick="moveAltDown(this)">▼</button>
+                        <button type="button" class="text-gray-400 hover:text-red-600 font-bold text-lg ml-2" title="Remover Alternativa" onclick="this.closest('.alt-image-block').remove()">✕</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 mt-2">
                         <div>
                             <label class="block text-gray-700 text-xs font-medium mb-1">Satélite:</label>
                             <input type="text" class="alt-img-sat w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: PlanetScope">
@@ -465,6 +469,23 @@
                 satInput.addEventListener('input', updateCaption);
                 dateInput.addEventListener('input', updateCaption);
                 resInput.addEventListener('input', updateCaption);
+            };
+
+            // Funções para reordenar os blocos de imagens alternativas
+            window.moveAltUp = function(btnNode) {
+                const currentBlock = btnNode.closest('.alt-image-block');
+                const previousBlock = currentBlock.previousElementSibling;
+                if (previousBlock) {
+                    currentBlock.parentNode.insertBefore(currentBlock, previousBlock);
+                }
+            };
+
+            window.moveAltDown = function(btnNode) {
+                const currentBlock = btnNode.closest('.alt-image-block');
+                const nextBlock = currentBlock.nextElementSibling;
+                if (nextBlock) {
+                    currentBlock.parentNode.insertBefore(nextBlock, currentBlock);
+                }
             };
 
             // Lógica de Salvar e Carregar Rascunho via Arquivo JSON
