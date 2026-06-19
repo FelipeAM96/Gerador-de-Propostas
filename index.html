@@ -952,6 +952,46 @@
                 const engesatLogoUrl = "https://www.engesat.com.br/wp-content/uploads/2024/12/engesat-logomarca.png";
                 const comentariosHtml = comentariosProposta ? `<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e2e8f0;"><p style="margin: 0; font-size: 0.95em; line-height: 1.4; color: #4b5563;"><strong>Comentários Adicionais:</strong><br>${comentariosProposta.replace(/\n/g, '<br>')}</p></div>` : '';
 
+                // Guia Visual de Leitura
+                let iconePasso2 = '🛰️';
+                let textoPasso2 = 'Imagens/Satélites sugeridos e custos.';
+                
+                if (isAllOnlyAltimetry) {
+                    iconePasso2 = '⛰️';
+                    textoPasso2 = 'Modelos de elevação, custos e exemplos.';
+                } else if (hasAnyAltimetry && hasAnyImages) {
+                    iconePasso2 = '🛰️/⛰️';
+                    textoPasso2 = 'Imagens e/ou modelos de elevação sugeridos, com custos.';
+                }
+
+                let guiaLeituraHtml = `
+                    <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px 20px; margin-bottom: 25px; border-radius: 0 8px 8px 0; font-family: sans-serif; page-break-inside: avoid;">
+                        <h4 style="margin: 0 0 10px 0; color: #1e40af; font-size: 1.05em;">💡 Como interpretar esta proposta</h4>
+                        <p style="margin: 0 0 12px 0; font-size: 0.9em; color: #334155;">Estruturamos este documento para facilitar a sua análise. Veja a ordem de apresentação:</p>
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed;">
+                            <tr>
+                                <td valign="top" style="padding: 10px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; text-align: center; width: 31%;">
+                                    <div style="font-size: 1.5em; margin-bottom: 5px;">📍</div>
+                                    <div style="color: #1e40af; font-weight: bold; font-size: 0.9em; margin-bottom: 4px;">1. A Área</div>
+                                    <div style="font-size: 0.8em; color: #64748b; line-height: 1.3;">Nome, extensão (km²) e imagem da região.</div>
+                                </td>
+                                <td width="3%"></td>
+                                <td valign="top" style="padding: 10px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; text-align: center; width: 31%;">
+                                    <div style="font-size: 1.5em; margin-bottom: 5px;">${iconePasso2}</div>
+                                    <div style="color: #1e40af; font-weight: bold; font-size: 0.9em; margin-bottom: 4px;">2. As Opções</div>
+                                    <div style="font-size: 0.8em; color: #64748b; line-height: 1.3;">${textoPasso2}</div>
+                                </td>
+                                <td width="3%"></td>
+                                <td valign="top" style="padding: 10px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; text-align: center; width: 31%;">
+                                    <div style="font-size: 1.5em; margin-bottom: 5px;">📊</div>
+                                    <div style="color: #1e40af; font-weight: bold; font-size: 0.9em; margin-bottom: 4px;">3. O Resumo</div>
+                                    <div style="font-size: 0.8em; color: #64748b; line-height: 1.3;">No fim do arquivo: valores finais e prazos.</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                `;
+
                 // Montar Documento Final
                 let finalDoc = `
                     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px;">
@@ -991,6 +1031,8 @@
                                     </p>
                                </div>`)
                     }
+
+                    ${guiaLeituraHtml}
 
                     ${areasContentHtml}
 
