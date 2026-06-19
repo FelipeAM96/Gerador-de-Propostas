@@ -81,7 +81,7 @@
                 <!-- Gestão de Áreas e Imagens -->
                 <div id="sectionAreas">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">2. Áreas de Interesse e Imagens</h2>
-                    <p class="text-sm text-gray-600 mb-4">Adicione quantas áreas precisar. Para cada área, você pode incluir a extensão (km²), imagem de referência e anexar múltiplas sugestões de satélite com seus respectivos valores.</p>
+                    <p class="text-sm text-gray-600 mb-4">Adicione quantas áreas precisar. Para cada área, você pode incluir a extensão (km²), imagem de referência, dados de altimetria e sugerir opções de satélite.</p>
                     
                     <div id="areasContainer" class="space-y-6">
                         <!-- Áreas geradas dinamicamente aqui -->
@@ -92,7 +92,7 @@
                     </button>
                 </div>
 
-                <!-- Configurações Globais (Altimetria e Satélites de Ref) -->
+                <!-- Configurações Globais -->
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">3. Outras Configurações</h2>
                     
@@ -142,38 +142,7 @@
                             <option value="Altimetria WorldDEM">Altimetria WorldDEM</option>
                             <option value="Altimetria WorldDEM NEO™">Altimetria WorldDEM NEO™</option>
                         </select>
-                        <p class="text-xs text-gray-500 mt-1">Isso adicionará links de amostra na proposta. Se escolher Altimetria, opções de custo extra aparecerão abaixo.</p>
-                    </div>
-
-                    <!-- Bloco Dinâmico de Altimetria -->
-                    <div id="altimetriaInputs" style="display: none;" class="p-5 border border-purple-200 rounded-lg bg-purple-50 mb-4">
-                        <h3 class="font-semibold text-purple-800 mb-3">Custos: Modelo de Elevação (Altimetria)</h3>
-                        
-                        <div class="mb-4 p-3 bg-white border border-purple-100 rounded-md shadow-sm">
-                            <label class="flex items-center gap-2 cursor-pointer font-medium text-purple-900 text-sm">
-                                <input type="checkbox" id="somenteAltimetria" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                Proposta EXCLUSIVA de Altimetria (Ocultar opções de satélite, mantendo área de referência)
-                            </label>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2">
-                                <label class="block text-gray-700 text-sm font-medium mb-1 required-label">Tipo de Produto:</label>
-                                <select id="tipoAltimetria" class="w-full">
-                                    <option value="MDS (Modelo Digital de Superfície)">Somente MDS (Modelo Digital de Superfície)</option>
-                                    <option value="MDT (Modelo Digital de Terreno)">Somente MDT (Modelo Digital de Terreno)</option>
-                                    <option value="MDS e MDT">MDS e MDT (Superfície e Terreno)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-1 required-label">Ped. Mínimo (Km²):</label>
-                                <input type="number" id="pedidoMinimoAltimetriaKm2" placeholder="Ex: 50" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-1 required-label">Custo Total (R$):</label>
-                                <input type="number" id="custoAltimetriaRs" placeholder="Ex: 5000" class="w-full">
-                            </div>
-                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Isso adicionará links de amostra na proposta.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -307,29 +276,32 @@
                 }
             });
 
-            // Lógica de exibir painel de Altimetria Global
-            document.getElementById('sateliteOpcoes').addEventListener('change', function() {
-                const selected = Array.from(this.selectedOptions).map(opt => opt.value.toLowerCase());
-                // Verifica tanto "altimetria" quanto "worlddem"
-                const temAltimetria = selected.some(sat => sat.includes('altimetria') || sat.includes('worlddem'));
-                document.getElementById('altimetriaInputs').style.display = temAltimetria ? 'block' : 'none';
+            window.toggleAreaAltimetry = function(cb) {
+                const fields = cb.closest('.bg-purple-50').querySelector('.area-altimetry-fields');
+                const onlyAltCb = cb.closest('.bg-purple-50').querySelector('.area-only-altimetry');
+                const areaBlock = cb.closest('.area-block');
+                const altSection = areaBlock.querySelector('.area-alternatives-section');
                 
-                if (!temAltimetria) {
-                    const cb = document.getElementById('somenteAltimetria');
-                    if(cb.checked) {
-                        cb.checked = false;
-                        cb.dispatchEvent(new Event('change'));
+                if(cb.checked) {
+                    fields.classList.remove('hidden');
+                } else {
+                    fields.classList.add('hidden');
+                    if(onlyAltCb) {
+                        onlyAltCb.checked = false;
+                        altSection.style.display = 'block';
                     }
                 }
-            });
+            };
 
-            // Lógica do Checkbox de Somente Altimetria
-            document.getElementById('somenteAltimetria').addEventListener('change', function() {
-                const isChecked = this.checked;
-                document.querySelectorAll('.area-alternatives-section').forEach(el => {
-                    el.style.display = isChecked ? 'none' : 'block';
-                });
-            });
+            window.toggleAreaOnlyAltimetry = function(cb) {
+                const areaBlock = cb.closest('.area-block');
+                const altSection = areaBlock.querySelector('.area-alternatives-section');
+                if(cb.checked) {
+                    altSection.style.display = 'none';
+                } else {
+                    altSection.style.display = 'block';
+                }
+            };
 
             // Gerenciamento de Áreas e Imagens Alternativas
             let areaIdCounter = 0;
@@ -370,7 +342,40 @@
                         </div>
                     </div>
                     
-                    <div class="area-alternatives-section mt-4 pt-4 border-t border-blue-100 bg-blue-50/30 -mx-5 -mb-5 p-5 rounded-b-xl" style="${document.getElementById('somenteAltimetria')?.checked ? 'display: none;' : ''}">
+                    <div class="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg shadow-sm">
+                        <label class="flex items-center gap-2 cursor-pointer font-semibold text-purple-900 text-sm">
+                            <input type="checkbox" class="area-has-altimetry w-4 h-4 text-purple-600 rounded focus:ring-purple-500" onchange="toggleAreaAltimetry(this)">
+                            Incluir dados de Altimetria para esta área
+                        </label>
+                        <div class="area-altimetry-fields mt-3 hidden">
+                            <div class="mb-3">
+                                <label class="flex items-center gap-2 cursor-pointer font-medium text-purple-800 text-sm">
+                                    <input type="checkbox" class="area-only-altimetry w-4 h-4 text-purple-500 rounded focus:ring-purple-400" onchange="toggleAreaOnlyAltimetry(this)">
+                                    Proposta EXCLUSIVA de Altimetria (Ocultar opções de satélite para esta área)
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Tipo de Produto:</label>
+                                    <select class="area-altimetry-type w-full p-2 border border-gray-300 rounded text-sm">
+                                        <option value="MDS e MDT">MDS e MDT</option>
+                                        <option value="MDS (Modelo Digital de Superfície)">Somente MDS</option>
+                                        <option value="MDT (Modelo Digital de Terreno)">Somente MDT</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Ped. Mín. (Km²):</label>
+                                    <input type="number" class="area-altimetry-min w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 50">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Custo Total (R$):</label>
+                                    <input type="number" class="area-altimetry-cost w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 5000">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="area-alternatives-section mt-4 pt-4 border-t border-blue-100 bg-blue-50/30 -mx-5 -mb-5 p-5 rounded-b-xl">
                         <h4 class="font-semibold text-blue-900 mb-3 text-sm">Imagens Alternativas (Opções de Satélite)</h4>
                         <div class="alt-container space-y-4"></div>
                         <button type="button" class="mt-4 w-full px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 text-sm font-semibold shadow-sm transition-colors" onclick="createAltImageBlock(this.previousElementSibling)">+ Adicionar Imagem Alternativa para esta área</button>
@@ -395,6 +400,22 @@
                 if (loadData) {
                     areaDiv.querySelector('.area-name').value = loadData.name || '';
                     areaDiv.querySelector('.area-ext').value = loadData.ext || '';
+                    
+                    const cbAlt = areaDiv.querySelector('.area-has-altimetry');
+                    if (loadData.hasAltimetry) {
+                        cbAlt.checked = true;
+                        toggleAreaAltimetry(cbAlt);
+                        areaDiv.querySelector('.area-altimetry-type').value = loadData.altType || 'MDS e MDT';
+                        areaDiv.querySelector('.area-altimetry-min').value = loadData.altMin || '';
+                        areaDiv.querySelector('.area-altimetry-cost').value = loadData.altCost || '';
+                        
+                        const cbOnlyAlt = areaDiv.querySelector('.area-only-altimetry');
+                        if(loadData.onlyAltimetry) {
+                            cbOnlyAlt.checked = true;
+                            toggleAreaOnlyAltimetry(cbOnlyAlt);
+                        }
+                    }
+
                     if (loadData.imgBase64) {
                         const pasteZone = areaDiv.querySelector('.paste-zone');
                         document.getElementById(`hidden_area_${aId}`).value = loadData.imgBase64;
@@ -543,10 +564,6 @@
                     nomeProjeto: document.getElementById('nomeProjeto').value,
                     comentariosProposta: document.getElementById('comentariosProposta').value,
                     sateliteOpcoes: Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(opt => opt.value),
-                    somenteAltimetria: document.getElementById('somenteAltimetria').checked,
-                    tipoAltimetria: document.getElementById('tipoAltimetria').value,
-                    pedidoMinimoAltimetriaKm2: document.getElementById('pedidoMinimoAltimetriaKm2').value,
-                    custoAltimetriaRs: document.getElementById('custoAltimetriaRs').value,
                     diasEntrega: document.getElementById('diasEntrega').value,
                     condicaoPagamentoSelect: document.getElementById('condicaoPagamentoSelect').value,
                     condicaoPagamentoCustom: document.getElementById('condicaoPagamentoCustom').value,
@@ -559,6 +576,11 @@
                         name: area.querySelector('.area-name').value,
                         ext: area.querySelector('.area-ext').value,
                         imgBase64: area.querySelector('.area-img-data').value,
+                        hasAltimetry: area.querySelector('.area-has-altimetry').checked,
+                        onlyAltimetry: area.querySelector('.area-only-altimetry') ? area.querySelector('.area-only-altimetry').checked : false,
+                        altType: area.querySelector('.area-altimetry-type').value,
+                        altMin: area.querySelector('.area-altimetry-min').value,
+                        altCost: area.querySelector('.area-altimetry-cost').value,
                         alts: []
                     };
 
@@ -602,12 +624,6 @@
                         document.getElementById('nomeProjeto').value = draft.nomeProjeto || '';
                         document.getElementById('comentariosProposta').value = draft.comentariosProposta || '';
                         
-                        document.getElementById('somenteAltimetria').checked = draft.somenteAltimetria || false;
-                        document.getElementById('somenteAltimetria').dispatchEvent(new Event('change'));
-                        if(draft.tipoAltimetria) document.getElementById('tipoAltimetria').value = draft.tipoAltimetria;
-                        
-                        document.getElementById('pedidoMinimoAltimetriaKm2').value = draft.pedidoMinimoAltimetriaKm2 || '';
-                        document.getElementById('custoAltimetriaRs').value = draft.custoAltimetriaRs || '';
                         document.getElementById('diasEntrega').value = draft.diasEntrega || '';
                         
                         const condSelect = document.getElementById('condicaoPagamentoSelect');
@@ -619,7 +635,6 @@
                         Array.from(satSelect.options).forEach(opt => {
                             opt.selected = (draft.sateliteOpcoes || []).includes(opt.value);
                         });
-                        satSelect.dispatchEvent(new Event('change')); // aciona a lógica de exibir painel de altimetria
 
                         // Limpa áreas existentes
                         document.getElementById('areasContainer').innerHTML = '';
@@ -729,10 +744,6 @@
                 
                 // Tratar lista global de satélites (Catálogo e Amostras)
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(opt => opt.value);
-                // Verifica tanto "altimetria" quanto "worlddem" no gerador também
-                const temAltimetria = selectedSatellites.some(sat => sat.toLowerCase().includes('altimetria') || sat.toLowerCase().includes('worlddem'));
-                const isSomenteAltimetria = document.getElementById('somenteAltimetria').checked && temAltimetria;
-                const tipoAltimetria = document.getElementById('tipoAltimetria').value;
                 
                 let samplesHtml = '';
                 if (selectedSatellites.length > 0) {
@@ -751,10 +762,16 @@
                 // Processar as Áreas
                 let areasContentHtml = '';
                 let arrayResumoImagens = []; // Array para capturar os dados para o Resumo Financeiro
+                let arrayResumoAltimetria = [];
+                let hasAnyAltimetry = false;
+                let hasAnyMDT = false;
+                let totalAreas = 0;
+                let areasWithOnlyAltimetry = 0;
                 
                 const areaBlocks = document.querySelectorAll('.area-block');
 
                 areaBlocks.forEach((area, index) => {
+                    totalAreas++;
                     const areaName = area.querySelector('.area-name').value || `Área ${index + 1}`;
                     const areaExt = area.querySelector('.area-ext').value || '---';
                     
@@ -772,7 +789,44 @@
                         `;
                     }
 
-                    if (!isSomenteAltimetria) {
+                    // Processamento de Altimetria por Área
+                    const cbAlt = area.querySelector('.area-has-altimetry');
+                    const cbOnlyAlt = area.querySelector('.area-only-altimetry');
+                    const isAreaOnlyAltimetry = cbAlt && cbAlt.checked && cbOnlyAlt && cbOnlyAlt.checked;
+                    
+                    if (isAreaOnlyAltimetry) {
+                        areasWithOnlyAltimetry++;
+                    }
+
+                    if (cbAlt && cbAlt.checked) {
+                        hasAnyAltimetry = true;
+                        const altType = area.querySelector('.area-altimetry-type').value;
+                        const altMin = area.querySelector('.area-altimetry-min').value;
+                        const altCost = area.querySelector('.area-altimetry-cost').value;
+                        
+                        if (altType.includes('MDT')) hasAnyMDT = true;
+
+                        const altCostFormatted = altCost ? parseFloat(altCost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
+
+                        areasContentHtml += `
+                            <div style="margin-bottom: 25px; padding: 15px; background-color: #f5f3ff; border: 1px solid #c4b5fd; border-radius: 8px; page-break-inside: avoid;">
+                                <h4 style="margin: 0 0 10px 0; font-size: 1.05em; font-weight: bold; color: #5b21b6;">Modelo de Elevação (Altimetria)</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.95em; color: #4c1d95;">
+                                    <div><strong>Produto:</strong> ${altType}</div>
+                                    <div><strong>Pedido Mínimo Exigido:</strong> ${altMin ? altMin + ' km²' : '-'}</div>
+                                    <div><strong>Investimento (Altimetria):</strong> R$ ${altCostFormatted}</div>
+                                </div>
+                            </div>
+                        `;
+
+                        arrayResumoAltimetria.push({
+                            area: areaName,
+                            tipo: altType,
+                            valor: altCostFormatted
+                        });
+                    }
+
+                    if (!isAreaOnlyAltimetry) {
                         // Imagens Alternativas
                         const altBlocks = area.querySelectorAll('.alt-image-block');
                         let altCount = 0;
@@ -807,7 +861,7 @@
                                 });
                             }
 
-                            areasContentHtml += `<div style="margin-bottom: 30px; padding: 15px; background-background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; page-break-inside: avoid;">`;
+                            areasContentHtml += `<div style="margin-bottom: 30px; padding: 15px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; page-break-inside: avoid;">`;
                             
                             if (sat || date || res) {
                                 areasContentHtml += `<div style="margin-bottom: 10px; font-size: 0.95em; color: #334155;">`;
@@ -847,13 +901,16 @@
                 const condicaoCustom = document.getElementById('condicaoPagamentoCustom').value;
                 const condicaoFinal = condicaoSelect === 'Na confirmação do pedido' ? 'Na confirmação do pedido' : (condicaoCustom || 'A combinar');
 
+                const isAllOnlyAltimetry = (totalAreas > 0 && areasWithOnlyAltimetry === totalAreas);
+                const hasAnyImages = (totalAreas > areasWithOnlyAltimetry);
+
                 let resumoFinanceiroHtml = `
                     <div style="background-color: #fff; border: 2px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 30px; margin-bottom: 20px; page-break-inside: avoid;">
                         <h4 style="margin: 0 0 10px 0; font-size: 1.15em; font-weight: bold; color: #111827; text-transform: uppercase;">Resumo Comercial e Prazos</h4>
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.95em;">
                 `;
 
-                if (!isSomenteAltimetria) {
+                if (hasAnyImages) {
                     if (arrayResumoImagens.length > 0) {
                         resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 10px 5px 5px 5px; font-weight: bold; color: #1e3a8a; border-bottom: 1px solid #cbd5e1;">Opções de Imagens de Satélite (Por Área):</td></tr>`;
                         arrayResumoImagens.forEach(item => {
@@ -871,17 +928,16 @@
                     }
                 }
 
-                if (temAltimetria) {
-                    const minAlt = document.getElementById('pedidoMinimoAltimetriaKm2').value || '-';
-                    const custoAlt = parseFloat(document.getElementById('custoAltimetriaRs').value) || 0;
-                    const custoAltFmt = custoAlt > 0 ? custoAlt.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
-                    
-                    resumoFinanceiroHtml += `
-                        <tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #6b21a8; border-bottom: 1px solid #cbd5e1;">Modelo de Elevação (Altimetria):</td></tr>
-                        <tr style="border-bottom: 1px solid #f3f4f6;"><td style="padding: 8px 5px; color: #4b5563;">Tipo de Produto:</td><td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #4b5563;">${tipoAltimetria}</td></tr>
-                        <tr style="border-bottom: 1px solid #f3f4f6;"><td style="padding: 8px 5px; color: #4b5563;">Pedido Mínimo Exigido:</td><td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #4b5563;">${minAlt} km²</td></tr>
-                        <tr style="border-bottom: 1px solid #f3f4f6;"><td style="padding: 8px 5px; color: #4b5563;">Investimento (Altimetria):</td><td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; white-space: nowrap;">R$ ${custoAltFmt}</td></tr>
-                    `;
+                if (arrayResumoAltimetria.length > 0) {
+                    resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #6b21a8; border-bottom: 1px solid #cbd5e1;">Modelos de Elevação (Altimetria):</td></tr>`;
+                    arrayResumoAltimetria.forEach(item => {
+                        resumoFinanceiroHtml += `
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 8px 5px; color: #4b5563; vertical-align: top;"><strong>${item.area}</strong><br><span style="font-size: 0.9em; color: #64748b;">${item.tipo}</span></td>
+                                <td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${item.valor}</td>
+                            </tr>
+                        `;
+                    });
                 }
 
                 resumoFinanceiroHtml += `
@@ -919,21 +975,28 @@
                     </div>
 
                     <p style="margin: 0 0 15px 0; line-height: 1.5; font-size: 0.95em;">Boa tarde,</p>
-                    ${isSomenteAltimetria 
+                    ${isAllOnlyAltimetry 
                         ? `<p style="margin: 0 0 20px 0; line-height: 1.5; font-size: 0.95em;">Apresentamos abaixo a proposta técnica e comercial para o fornecimento de <strong>produtos altimétricos</strong> referentes às áreas solicitadas.</p>` 
-                        : `<p style="margin: 0 0 20px 0; line-height: 1.5; font-size: 0.95em;">Apresentamos abaixo a proposta técnica e comercial para o fornecimento de imagens de satélite referentes às áreas solicitadas.</p>
-                           <div style="background-color: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 25px;">
-                                <p style="margin: 0; line-height: 1.4; font-size: 0.9em; color: #991b1b;">
-                                    <strong>Aviso Importante:</strong> As ilustrações apresentadas a seguir são <span style="font-weight: bold; text-decoration: underline;">prévias (Quick Look)</span>. Elas servem exclusivamente para conferir a localização e presença de nuvens, e <strong>não retratam a qualidade ou resolução final da imagem que será entregue</strong>.
-                                </p>
-                           </div>`
+                        : (hasAnyAltimetry
+                            ? `<p style="margin: 0 0 20px 0; line-height: 1.5; font-size: 0.95em;">Apresentamos abaixo a proposta técnica e comercial para o fornecimento de imagens de satélite e produtos altimétricos referentes às áreas solicitadas.</p>
+                               <div style="background-color: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 25px;">
+                                    <p style="margin: 0; line-height: 1.4; font-size: 0.9em; color: #991b1b;">
+                                        <strong>Aviso Importante:</strong> As ilustrações apresentadas a seguir são <span style="font-weight: bold; text-decoration: underline;">prévias (Quick Look)</span>. Elas servem exclusivamente para conferir a localização e presença de nuvens, e <strong>não retratam a qualidade ou resolução final da imagem que será entregue</strong>.
+                                    </p>
+                               </div>`
+                            : `<p style="margin: 0 0 20px 0; line-height: 1.5; font-size: 0.95em;">Apresentamos abaixo a proposta técnica e comercial para o fornecimento de imagens de satélite referentes às áreas solicitadas.</p>
+                               <div style="background-color: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 25px;">
+                                    <p style="margin: 0; line-height: 1.4; font-size: 0.9em; color: #991b1b;">
+                                        <strong>Aviso Importante:</strong> As ilustrações apresentadas a seguir são <span style="font-weight: bold; text-decoration: underline;">prévias (Quick Look)</span>. Elas servem exclusivamente para conferir a localização e presença de nuvens, e <strong>não retratam a qualidade ou resolução final da imagem que será entregue</strong>.
+                                    </p>
+                               </div>`)
                     }
 
                     ${areasContentHtml}
 
                     <div style="page-break-before: always;"></div>
 
-                    ${!isSomenteAltimetria ? `
+                    ${hasAnyImages ? `
                     <h4 style="margin: 20px 0 10px 0; font-size: 1.1em; font-weight: bold; color: #1e293b;">Especificações Técnicas (Imagens de Satélite):</h4>
                     <ul style="list-style-type: disc; margin: 0 0 20px 0; padding-left: 20px; line-height: 1.5;">
                         <li style="margin-bottom: 5px; font-size: 0.95em;">Ortorretificada, georreferenciada e mosaicada</li>
@@ -943,15 +1006,13 @@
                     ` : ''}
                 `;
 
-                if (temAltimetria) {
-                    const incluiCurvas = tipoAltimetria.includes('MDT');
+                if (hasAnyAltimetry) {
                     finalDoc += `
                         <h4 style="margin: 20px 0 10px 0; font-size: 1.1em; font-weight: bold; color: #1e293b;">Especificações Técnicas (Modelo de Elevação):</h4>
                         <ul style="list-style-type: disc; margin: 0 0 20px 0; padding-left: 20px; line-height: 1.5;">
-                            <li style="margin-bottom: 5px; font-size: 0.95em;"><strong>Produto:</strong> ${tipoAltimetria}</li>
                             <li style="margin-bottom: 5px; font-size: 0.95em;">Modelo de elevação em GeoTIFF (32 bits floating point)</li>
                             <li style="margin-bottom: 5px; font-size: 0.95em;">Nuvem de pontos em .las e .txt</li>
-                            ${incluiCurvas ? `<li style="margin-bottom: 5px; font-size: 0.95em;">Curvas de nível com 2 m de equidistância em .shp, .dwg e .kml</li>` : ''}
+                            ${hasAnyMDT ? `<li style="margin-bottom: 5px; font-size: 0.95em;">Curvas de nível com 2 m de equidistância em .shp, .dwg e .kml</li>` : ''}
                         </ul>
                     `;
                 }
