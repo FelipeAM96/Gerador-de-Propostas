@@ -1034,6 +1034,14 @@
 
                     ${guiaLeituraHtml}
 
+                    ${hasAnyImages ? `
+                    <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-left: 5px solid #f59e0b; padding: 15px; border-radius: 6px; margin-bottom: 25px; page-break-inside: avoid;">
+                        <p style="margin: 0; font-size: 0.9em; line-height: 1.5; color: #92400e; font-weight: bold; text-align: justify;">
+                            ESTA PROPOSTA OFERECE UMA OU MAIS OPÇÕES DE IMAGENS DE SATÉLITE PARA CADA ÁREA, COM O OBJETIVO DE APRESENTAR AS DIFERENTES ALTERNATIVAS DISPONÍVEIS DE CADA SENSOR, EM CONFORMIDADE COM AS ESPECIFICAÇÕES SOLICITADAS PARA AS ANÁLISES. A SELEÇÃO DA OPÇÃO MAIS ADEQUADA AO PROJETO DEVERÁ SER REALIZADA PELO CLIENTE, COM BASE EM ANÁLISE CRITERIOSA.
+                        </p>
+                    </div>
+                    ` : ''}
+
                     ${areasContentHtml}
 
                     <div style="page-break-before: always;"></div>
