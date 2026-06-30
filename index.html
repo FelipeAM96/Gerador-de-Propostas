@@ -1143,8 +1143,23 @@
                     <body>${previewHtml}</body>
                     </html>
                 `;
-                const blob = htmlDocx.asBlob(docTemplate, { orientation: 'portrait', margins: { top: 720, right: 720, bottom: 720, left: 720 } });
-                saveAs(blob, filename + '.docx');
+                
+                try {
+                    // O htmlDocx converte para .docx, mas pode dar erro de segurança (CORS/Tainted Canvas) 
+                    // ao tentar processar imagens locais (como img/DEM.png) ou externas.
+                    const blob = htmlDocx.asBlob(docTemplate, { orientation: 'portrait', margins: { top: 720, right: 720, bottom: 720, left: 720 } });
+                    saveAs(blob, filename + '.docx');
+                    showToast("Documento Word baixado com sucesso!");
+                } catch (e) {
+                    console.warn("html-docx falhou (provavelmente devido a imagens locais). Usando fallback.", e);
+                    // Fallback nativo: exporta o HTML direto com extensão .doc
+                    // O Microsoft Word lê isso nativamente, baixando as imagens automaticamente ao abrir o arquivo.
+                    const fallbackBlob = new Blob(['\ufeff', docTemplate], {
+                        type: 'application/msword'
+                    });
+                    saveAs(fallbackBlob, filename + '.doc');
+                    showToast("Documento baixado (Modo de Compatibilidade)!");
+                }
             });
 
             document.getElementById('copyHtmlBtn').addEventListener('click', () => {
