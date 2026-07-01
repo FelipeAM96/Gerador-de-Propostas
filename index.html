@@ -765,6 +765,7 @@
                 let arrayResumoAltimetria = [];
                 let hasAnyAltimetry = false;
                 let hasAnyMDT = false;
+                let hasAnyMDS = false;
                 let totalAreas = 0;
                 let areasWithOnlyAltimetry = 0;
                 
@@ -805,6 +806,7 @@
                         const altCost = area.querySelector('.area-altimetry-cost').value;
                         
                         if (altType.includes('MDT')) hasAnyMDT = true;
+                        if (altType.includes('MDS')) hasAnyMDS = true;
 
                         const altCostFormatted = altCost ? parseFloat(altCost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
 
@@ -1057,12 +1059,46 @@
                 `;
 
                 if (hasAnyAltimetry) {
+                    let explicacaoAltimetriaHtml = '';
+                    
+                    if (hasAnyMDS && hasAnyMDT) {
+                        explicacaoAltimetriaHtml = `
+                            <div style="background-color: #f1f5f9; padding: 12px; border-left: 4px solid #64748b; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
+                                <p style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: bold; color: #334155;">Entendendo os produtos:</p>
+                                <ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: 0.85em; color: #475569; line-height: 1.4;">
+                                    <li style="margin-bottom: 4px;"><strong>MDS (Modelo Digital de Superfície):</strong> Representa a elevação da primeira superfície refletora, englobando a copa das árvores, telhados de edifícios e demais estruturas acima do nível do solo.</li>
+                                    <li><strong>MDT (Modelo Digital de Terreno):</strong> Representa o perfil topográfico do solo nu (terreno natural), obtido a partir da remoção e filtragem de vegetação e estruturas artificiais.</li>
+                                </ul>
+                            </div>
+                        `;
+                    } else if (hasAnyMDS) {
+                        explicacaoAltimetriaHtml = `
+                            <div style="background-color: #f1f5f9; padding: 12px; border-left: 4px solid #64748b; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
+                                <p style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: bold; color: #334155;">Entendendo o produto:</p>
+                                <ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: 0.85em; color: #475569; line-height: 1.4;">
+                                    <li><strong>MDS (Modelo Digital de Superfície):</strong> Representa a elevação da primeira superfície refletora, englobando a copa das árvores, telhados de edifícios e demais estruturas acima do nível do solo.</li>
+                                </ul>
+                            </div>
+                        `;
+                    } else if (hasAnyMDT) {
+                        explicacaoAltimetriaHtml = `
+                            <div style="background-color: #f1f5f9; padding: 12px; border-left: 4px solid #64748b; margin-bottom: 15px; border-radius: 4px; page-break-inside: avoid;">
+                                <p style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: bold; color: #334155;">Entendendo o produto:</p>
+                                <ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: 0.85em; color: #475569; line-height: 1.4;">
+                                    <li><strong>MDT (Modelo Digital de Terreno):</strong> Representa o perfil topográfico do solo nu (terreno natural), obtido a partir da remoção e filtragem de vegetação e estruturas artificiais.</li>
+                                </ul>
+                            </div>
+                        `;
+                    }
+
                     finalDoc += `
                         <h4 style="margin: 30px 0 15px 0; font-size: 1.15em; font-weight: bold; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">Detalhamento dos Dados Altimétricos</h4>
                         
                         <p style="margin: 0 0 15px 0; font-size: 0.95em; line-height: 1.5; color: #334155;">
                             Os produtos altimétricos oferecidos possuem <strong>cobertura global com entrega imediata</strong>, referentes a aquisições realizadas entre os anos de <strong>2017 e 2021</strong>.
                         </p>
+
+                        ${explicacaoAltimetriaHtml}
 
                         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px; page-break-inside: avoid;">
                             <tr>
@@ -1078,7 +1114,7 @@
                                     </ul>
                                 </td>
                                 <td width="50%" valign="top" style="text-align: center; background-color: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                    <img src="img/DEM.png" alt="Amostra de Modelo Digital de Elevação" style="width: 55%; height: auto; display: block; margin: 0 auto; border-radius: 4px; border: 1px solid #cbd5e1;">
+                                    <img src="img/DEM.png" alt="Amostra de Modelo Digital de Elevação" width="340" style="display: block; margin: 0 auto; border-radius: 4px; border: 1px solid #cbd5e1;">
                                     <p style="margin: 10px 0 0 0; font-size: 0.8em; color: #64748b; font-style: italic; line-height: 1.4;">
                                         *Imagem meramente ilustrativa, com o objetivo de demonstrar o padrão visual de um modelo de elevação.
                                     </p>
@@ -1146,14 +1182,14 @@
                 
                 try {
                     // O htmlDocx converte para .docx, mas pode dar erro de segurança (CORS/Tainted Canvas) 
-                    // ao tentar processar imagens locais (como img/DEM.png) ou externas.
+                    // ao tentar processar imagens locais.
                     const blob = htmlDocx.asBlob(docTemplate, { orientation: 'portrait', margins: { top: 720, right: 720, bottom: 720, left: 720 } });
                     saveAs(blob, filename + '.docx');
                     showToast("Documento Word baixado com sucesso!");
                 } catch (e) {
-                    console.warn("html-docx falhou (provavelmente devido a imagens locais). Usando fallback.", e);
+                    console.warn("html-docx falhou (provavelmente devido a imagens). Usando fallback.", e);
                     // Fallback nativo: exporta o HTML direto com extensão .doc
-                    // O Microsoft Word lê isso nativamente, baixando as imagens automaticamente ao abrir o arquivo.
+                    // O Microsoft Word lê isso nativamente, mantendo as imagens e estrutura.
                     const fallbackBlob = new Blob(['\ufeff', docTemplate], {
                         type: 'application/msword'
                     });
