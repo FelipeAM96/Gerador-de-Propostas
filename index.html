@@ -58,6 +58,12 @@
                 <!-- Dados Gerais -->
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">1. Dados da Proposta</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-red-700 text-sm font-bold mb-1">Comentários Iniciais (Opcional):</label>
+                        <textarea id="comentariosIniciais" rows="3" class="w-full resize-y border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500" placeholder="Aparecerá em destaque vermelho ANTES dos dados do cliente..."></textarea>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 text-sm font-medium mb-1 required-label">Data da Proposta:</label>
@@ -73,8 +79,8 @@
                         <input type="text" id="nomeProjeto" placeholder="Ex: Monitoramento de Safra 2024">
                     </div>
                     <div class="w-full">
-                        <label class="block text-gray-700 text-sm font-medium mb-1">Comentários (Opcional):</label>
-                        <textarea id="comentariosProposta" rows="5" class="w-full resize-y" placeholder="Observações adicionais para a introdução da proposta..."></textarea>
+                        <label class="block text-gray-700 text-sm font-medium mb-1">Especificações (Opcional):</label>
+                        <textarea id="comentariosProposta" rows="5" class="w-full resize-y" placeholder="Observações adicionais para a introdução da proposta, especificações técnicas..."></textarea>
                     </div>
                 </div>
 
@@ -96,6 +102,15 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">3. Outras Configurações</h2>
                     
+                    <!-- Nova opção de cálculo de total da proposta -->
+                    <div class="mb-5 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
+                        <label class="flex items-center gap-2 cursor-pointer font-bold text-blue-900 text-sm">
+                            <input type="checkbox" id="calcularTotal" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                            Calcular Total da Proposta (Soma de TODOS os valores informados)
+                        </label>
+                        <p class="text-xs text-blue-700 mt-2 ml-7">Ative esta opção se desejar que o resumo financeiro exiba uma linha com a soma total de todas as opções cadastradas (Georreferenciamento + Altimetrias + Todas as imagens alternativas).</p>
+                    </div>
+
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-medium mb-1">Satélites para Catálogo/Amostras (Ctrl+clique para múltiplos):</label>
                         <select id="sateliteOpcoes" multiple size="6" class="w-full">
@@ -213,7 +228,6 @@
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.0/dist/html-docx.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
-    <!-- Toda Lógica Javascript Otimizada -->
     <script>
         window.onload = () => {
             const satelliteLinks = {
@@ -583,10 +597,12 @@
                     dataProposta: document.getElementById('dataProposta').value,
                     empresaCliente: document.getElementById('empresaCliente').value,
                     nomeProjeto: document.getElementById('nomeProjeto').value,
+                    comentariosIniciais: document.getElementById('comentariosIniciais').value,
                     comentariosProposta: document.getElementById('comentariosProposta').value,
                     sateliteOpcoes: Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(opt => opt.value),
                     hasGeoref: document.getElementById('hasGeoref').checked,
                     custoGeoref: document.getElementById('custoGeoref').value,
+                    calcularTotal: document.getElementById('calcularTotal').checked,
                     diasEntrega: document.getElementById('diasEntrega').value,
                     condicaoPagamentoSelect: document.getElementById('condicaoPagamentoSelect').value,
                     condicaoPagamentoCustom: document.getElementById('condicaoPagamentoCustom').value,
@@ -645,12 +661,14 @@
                         document.getElementById('dataProposta').value = draft.dataProposta || '';
                         document.getElementById('empresaCliente').value = draft.empresaCliente || '';
                         document.getElementById('nomeProjeto').value = draft.nomeProjeto || '';
+                        document.getElementById('comentariosIniciais').value = draft.comentariosIniciais || '';
                         document.getElementById('comentariosProposta').value = draft.comentariosProposta || '';
 
                         document.getElementById('hasGeoref').checked = draft.hasGeoref || false;
                         document.getElementById('hasGeoref').dispatchEvent(new Event('change'));
                         document.getElementById('custoGeoref').value = draft.custoGeoref || '';
                         
+                        document.getElementById('calcularTotal').checked = draft.calcularTotal || false;
                         document.getElementById('diasEntrega').value = draft.diasEntrega || '';
                         
                         const condSelect = document.getElementById('condicaoPagamentoSelect');
@@ -767,6 +785,7 @@
                 const dataProposta = formatarData(document.getElementById('dataProposta').value);
                 const empresaCliente = document.getElementById('empresaCliente').value || '[Empresa Cliente]';
                 const nomeProjeto = document.getElementById('nomeProjeto').value || '[Nome do Projeto]';
+                const comentariosIniciais = document.getElementById('comentariosIniciais').value.trim();
                 const comentariosProposta = document.getElementById('comentariosProposta').value.trim();
                 
                 // Tratar lista global de satélites (Catálogo e Amostras)
@@ -774,7 +793,10 @@
                 
                 const hasGeoref = document.getElementById('hasGeoref').checked;
                 const custoGeoref = document.getElementById('custoGeoref').value;
+                const calcularTotal = document.getElementById('calcularTotal').checked;
                 
+                let somaTotalDaProposta = 0; // Variável para acumular o cálculo total
+
                 let samplesHtml = '';
                 if (selectedSatellites.length > 0) {
                     samplesHtml += `<div style="margin-top: 25px;"><h4 style="margin: 0 0 8px 0; font-size: 1.05em; font-weight: 600; color: #1e293b;">Catálogo e Amostras de Referência:</h4><ul style="list-style-type: disc; margin: 0; padding-left: 20px; line-height: 1.4;">`;
@@ -839,6 +861,11 @@
                         if (altType.includes('MDS')) hasAnyMDS = true;
 
                         const altCostFormatted = altCost ? parseFloat(altCost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
+                        
+                        // Somatório do total
+                        if (altCost) {
+                            somaTotalDaProposta += parseFloat(altCost);
+                        }
 
                         areasContentHtml += `
                             <div style="margin-bottom: 25px; padding: 15px; background-color: #f5f3ff; border: 1px solid #c4b5fd; border-radius: 8px; page-break-inside: avoid;">
@@ -875,8 +902,10 @@
                             const cost = altBlock.querySelector('.alt-img-cost').value;
                             const caption = altBlock.querySelector('.alt-img-caption').value || `Sugestão ${altCount} - ${areaName}`;
 
-                            // Coletar dados para o Resumo Financeiro
+                            // Coletar dados para o Resumo Financeiro e Somatório
                             if (cost) {
+                                somaTotalDaProposta += parseFloat(cost);
+                                
                                 const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                 
                                 let detalhesResumo = [];
@@ -973,12 +1002,26 @@
                 }
                 
                 if (hasGeoref) {
+                    if (custoGeoref) {
+                        somaTotalDaProposta += parseFloat(custoGeoref);
+                    }
                     const custoGeorefFmt = custoGeoref ? parseFloat(custoGeoref).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
                     resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #047857; border-bottom: 1px solid #cbd5e1;">Serviços Especiais:</td></tr>`;
                     resumoFinanceiroHtml += `
                         <tr style="border-bottom: 1px solid #f3f4f6;">
                             <td style="padding: 8px 5px; color: #4b5563; vertical-align: top;"><strong>Serviços de Georreferenciamento de Imóveis Rurais</strong><br><span style="font-size: 0.9em; color: #64748b;">Em Áreas Inacessíveis</span></td>
                             <td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${custoGeorefFmt}</td>
+                        </tr>
+                    `;
+                }
+
+                // Inserir linha do Total da Proposta, se a opção estiver ativa
+                if (calcularTotal) {
+                    const totalGeralFormatado = somaTotalDaProposta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    resumoFinanceiroHtml += `
+                        <tr style="border-top: 2px solid #94a3b8; background-color: #f1f5f9;">
+                            <td style="padding: 12px 5px; color: #0f172a; text-align: right; font-size: 1.05em;"><strong>TOTAL DA PROPOSTA:</strong></td>
+                            <td style="padding: 12px 5px; text-align: right; font-weight: bold; color: #b91c1c; font-size: 1.1em; white-space: nowrap;">R$ ${totalGeralFormatado}</td>
                         </tr>
                     `;
                 }
@@ -993,7 +1036,16 @@
                 `;
 
                 const engesatLogoUrl = "https://www.engesat.com.br/wp-content/uploads/2024/12/engesat-logomarca.png";
-                const comentariosHtml = comentariosProposta ? `<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e2e8f0;"><p style="margin: 0; font-size: 0.95em; line-height: 1.4; color: #4b5563;"><strong>Comentários Adicionais:</strong><br>${comentariosProposta.replace(/\n/g, '<br>')}</p></div>` : '';
+                
+                const boxComentariosIniciais = comentariosIniciais ? `
+                    <div style="margin-bottom: 25px; padding: 15px 20px; border-left: 4px solid #dc2626; background-color: #fef2f2; border-radius: 0 8px 8px 0; page-break-inside: avoid;">
+                        <p style="margin: 0; color: #b91c1c; font-weight: 600; font-size: 1.05em; line-height: 1.5;">
+                            ${comentariosIniciais.replace(/\n/g, '<br>')}
+                        </p>
+                    </div>
+                ` : '';
+
+                const comentariosHtml = comentariosProposta ? `<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e2e8f0;"><p style="margin: 0; font-size: 0.95em; line-height: 1.4; color: #4b5563;"><strong>Especificações:</strong><br>${comentariosProposta.replace(/\n/g, '<br>')}</p></div>` : '';
 
                 // Guia Visual de Leitura
                 let iconePasso2 = '🛰️';
@@ -1068,6 +1120,8 @@
                             <td width="150"></td>
                         </tr>
                     </table>
+                    
+                    ${boxComentariosIniciais}
 
                     <div style="margin-bottom: 25px; padding: 20px; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
                         <h3 style="font-size: 1.15em; font-weight: bold; color: #0f172a; margin: 0 0 10px 0; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">Dados do Cliente</h3>
