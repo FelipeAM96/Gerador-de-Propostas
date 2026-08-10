@@ -160,6 +160,34 @@
                         <p class="text-xs text-gray-500 mt-1">Isso adicionará links de amostra na proposta.</p>
                     </div>
 
+                    <!-- Botão Laudo Técnico -->
+                    <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm">
+                        <label class="flex items-center gap-2 cursor-pointer font-semibold text-emerald-900 text-sm">
+                            <input type="checkbox" id="hasLaudo" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                            Incluir Laudo Técnico
+                        </label>
+                        <div id="laudoFields" class="mt-3 hidden">
+                            <div>
+                                <label class="block text-gray-700 text-xs font-medium mb-1">Custo do Laudo (R$):</label>
+                                <input type="number" id="custoLaudo" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 1500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão ART -->
+                    <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm">
+                        <label class="flex items-center gap-2 cursor-pointer font-semibold text-emerald-900 text-sm">
+                            <input type="checkbox" id="hasART" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                            Incluir ART (Anotação de Responsabilidade Técnica)
+                        </label>
+                        <div id="artFields" class="mt-3 hidden">
+                            <div>
+                                <label class="block text-gray-700 text-xs font-medium mb-1">Custo da ART (R$):</label>
+                                <input type="number" id="custoART" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 300">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Botão Serviço de Georreferenciamento -->
                     <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm">
                         <label class="flex items-center gap-2 cursor-pointer font-semibold text-emerald-900 text-sm">
@@ -302,6 +330,20 @@
                 } else {
                     customInput.classList.add('hidden');
                 }
+            });
+
+            // Lógica do Checkbox de Laudo Técnico
+            document.getElementById('hasLaudo').addEventListener('change', function() {
+                const fields = document.getElementById('laudoFields');
+                if(this.checked) fields.classList.remove('hidden');
+                else fields.classList.add('hidden');
+            });
+
+            // Lógica do Checkbox de ART
+            document.getElementById('hasART').addEventListener('change', function() {
+                const fields = document.getElementById('artFields');
+                if(this.checked) fields.classList.remove('hidden');
+                else fields.classList.add('hidden');
             });
 
             // Lógica do Checkbox de Georreferenciamento
@@ -600,8 +642,14 @@
                     comentariosIniciais: document.getElementById('comentariosIniciais').value,
                     comentariosProposta: document.getElementById('comentariosProposta').value,
                     sateliteOpcoes: Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(opt => opt.value),
+                    
+                    hasLaudo: document.getElementById('hasLaudo').checked,
+                    custoLaudo: document.getElementById('custoLaudo').value,
+                    hasART: document.getElementById('hasART').checked,
+                    custoART: document.getElementById('custoART').value,
                     hasGeoref: document.getElementById('hasGeoref').checked,
                     custoGeoref: document.getElementById('custoGeoref').value,
+                    
                     calcularTotal: document.getElementById('calcularTotal').checked,
                     diasEntrega: document.getElementById('diasEntrega').value,
                     condicaoPagamentoSelect: document.getElementById('condicaoPagamentoSelect').value,
@@ -663,6 +711,14 @@
                         document.getElementById('nomeProjeto').value = draft.nomeProjeto || '';
                         document.getElementById('comentariosIniciais').value = draft.comentariosIniciais || '';
                         document.getElementById('comentariosProposta').value = draft.comentariosProposta || '';
+
+                        document.getElementById('hasLaudo').checked = draft.hasLaudo || false;
+                        document.getElementById('hasLaudo').dispatchEvent(new Event('change'));
+                        document.getElementById('custoLaudo').value = draft.custoLaudo || '';
+
+                        document.getElementById('hasART').checked = draft.hasART || false;
+                        document.getElementById('hasART').dispatchEvent(new Event('change'));
+                        document.getElementById('custoART').value = draft.custoART || '';
 
                         document.getElementById('hasGeoref').checked = draft.hasGeoref || false;
                         document.getElementById('hasGeoref').dispatchEvent(new Event('change'));
@@ -791,8 +847,13 @@
                 // Tratar lista global de satélites (Catálogo e Amostras)
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(opt => opt.value);
                 
+                const hasLaudo = document.getElementById('hasLaudo').checked;
+                const custoLaudo = document.getElementById('custoLaudo').value;
+                const hasART = document.getElementById('hasART').checked;
+                const custoART = document.getElementById('custoART').value;
                 const hasGeoref = document.getElementById('hasGeoref').checked;
                 const custoGeoref = document.getElementById('custoGeoref').value;
+                
                 const calcularTotal = document.getElementById('calcularTotal').checked;
                 
                 let somaTotalDaProposta = 0; // Variável para acumular o cálculo total
@@ -1001,18 +1062,41 @@
                     });
                 }
                 
-                if (hasGeoref) {
-                    if (custoGeoref) {
-                        somaTotalDaProposta += parseFloat(custoGeoref);
-                    }
-                    const custoGeorefFmt = custoGeoref ? parseFloat(custoGeoref).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
+                if (hasGeoref || hasLaudo || hasART) {
                     resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #047857; border-bottom: 1px solid #cbd5e1;">Serviços Especiais:</td></tr>`;
-                    resumoFinanceiroHtml += `
-                        <tr style="border-bottom: 1px solid #f3f4f6;">
-                            <td style="padding: 8px 5px; color: #4b5563; vertical-align: top;"><strong>Serviços de Georreferenciamento de Imóveis Rurais</strong><br><span style="font-size: 0.9em; color: #64748b;">Em Áreas Inacessíveis</span></td>
-                            <td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${custoGeorefFmt}</td>
-                        </tr>
-                    `;
+                    
+                    if (hasLaudo) {
+                        if (custoLaudo) somaTotalDaProposta += parseFloat(custoLaudo);
+                        const custoLaudoFmt = custoLaudo ? parseFloat(custoLaudo).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
+                        resumoFinanceiroHtml += `
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 8px 5px; color: #4b5563; vertical-align: top;"><strong>Laudo Técnico</strong></td>
+                                <td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${custoLaudoFmt}</td>
+                            </tr>
+                        `;
+                    }
+
+                    if (hasART) {
+                        if (custoART) somaTotalDaProposta += parseFloat(custoART);
+                        const custoARTFmt = custoART ? parseFloat(custoART).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
+                        resumoFinanceiroHtml += `
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 8px 5px; color: #4b5563; vertical-align: top;"><strong>ART (Anotação de Responsabilidade Técnica)</strong></td>
+                                <td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${custoARTFmt}</td>
+                            </tr>
+                        `;
+                    }
+
+                    if (hasGeoref) {
+                        if (custoGeoref) somaTotalDaProposta += parseFloat(custoGeoref);
+                        const custoGeorefFmt = custoGeoref ? parseFloat(custoGeoref).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
+                        resumoFinanceiroHtml += `
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 8px 5px; color: #4b5563; vertical-align: top;"><strong>Serviços de Georreferenciamento de Imóveis Rurais</strong><br><span style="font-size: 0.9em; color: #64748b;">Em Áreas Inacessíveis</span></td>
+                                <td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${custoGeorefFmt}</td>
+                            </tr>
+                        `;
+                    }
                 }
 
                 // Inserir linha do Total da Proposta, se a opção estiver ativa
