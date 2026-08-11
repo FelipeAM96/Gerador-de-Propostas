@@ -108,7 +108,18 @@
                             <input type="checkbox" id="calcularTotal" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
                             Calcular Total da Proposta (Soma de TODOS os valores informados)
                         </label>
-                        <p class="text-xs text-blue-700 mt-2 ml-7">Ative esta opção se desejar que o resumo financeiro exiba uma linha com a soma total de todas as opções cadastradas (Georreferenciamento + Altimetrias + Todas as imagens alternativas).</p>
+                        <p class="text-xs text-blue-700 mt-2 ml-7 mb-3">Ative esta opção se desejar que o resumo financeiro exiba uma linha com a soma total de todas as opções cadastradas.</p>
+                        
+                        <div id="acrescimoFields" class="ml-7 mt-3 hidden p-4 bg-white border border-blue-100 rounded-lg shadow-inner">
+                            <label class="block text-gray-700 text-sm font-bold mb-1">Acréscimo ou Desconto (%) - Opcional:</label>
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="number" id="porcentagemAcrescimo" class="w-24 p-2 border border-gray-300 rounded text-sm text-center" placeholder="Ex: 15 ou -10">
+                                <span class="text-sm font-bold text-gray-600">%</span>
+                            </div>
+                            <label class="block text-gray-700 text-xs font-medium mb-1">Descrição (Aparecerá na proposta):</label>
+                            <input type="text" id="motivoAcrescimo" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: Impostos na emissão (NF-e) ou Desconto">
+                            <p class="text-xs text-gray-500 mt-2">O sistema fará o cálculo automático sobre a soma total. Para aplicar um desconto, coloque o sinal de menos (ex: -10).</p>
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -353,6 +364,13 @@
                 else fields.classList.add('hidden');
             });
 
+            // Lógica do Checkbox de Calcular Total
+            document.getElementById('calcularTotal').addEventListener('change', function() {
+                const fields = document.getElementById('acrescimoFields');
+                if(this.checked) fields.classList.remove('hidden');
+                else fields.classList.add('hidden');
+            });
+
             window.toggleAreaAltimetry = function(cb) {
                 const fields = cb.closest('.bg-purple-50').querySelector('.area-altimetry-fields');
                 const onlyAltCb = cb.closest('.bg-purple-50').querySelector('.area-only-altimetry');
@@ -431,7 +449,7 @@
                                     Proposta EXCLUSIVA de Altimetria (Ocultar opções de satélite para esta área)
                                 </label>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Tipo de Produto:</label>
                                     <select class="area-altimetry-type w-full p-2 border border-gray-300 rounded text-sm">
@@ -439,10 +457,6 @@
                                         <option value="MDS (Modelo Digital de Superfície)">Somente MDS</option>
                                         <option value="MDT (Modelo Digital de Terreno)">Somente MDT</option>
                                     </select>
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Ped. Mín. (Km²):</label>
-                                    <input type="number" class="area-altimetry-min w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 50">
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Custo Total (R$):</label>
@@ -483,7 +497,6 @@
                         cbAlt.checked = true;
                         toggleAreaAltimetry(cbAlt);
                         areaDiv.querySelector('.area-altimetry-type').value = loadData.altType || 'MDS e MDT';
-                        areaDiv.querySelector('.area-altimetry-min').value = loadData.altMin || '';
                         areaDiv.querySelector('.area-altimetry-cost').value = loadData.altCost || '';
                         
                         const cbOnlyAlt = areaDiv.querySelector('.area-only-altimetry');
@@ -538,15 +551,9 @@
                             <input type="text" class="alt-img-res w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 3m">
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Ped. Mínimo (km²):</label>
-                            <input type="number" class="alt-img-min-area w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 50">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Custo Total (R$):</label>
-                            <input type="number" class="alt-img-cost w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 4500">
-                        </div>
+                    <div class="mb-3 w-full md:w-1/2">
+                        <label class="block text-gray-700 text-xs font-medium mb-1 required-label">Custo Total (R$):</label>
+                        <input type="number" class="alt-img-cost w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 4500">
                     </div>
                     <div class="mb-3">
                         <label class="block text-gray-700 text-xs font-medium mb-1">Legenda da Imagem:</label>
@@ -571,7 +578,6 @@
                 const satInput = altDiv.querySelector('.alt-img-sat');
                 const dateInput = altDiv.querySelector('.alt-img-date');
                 const resInput = altDiv.querySelector('.alt-img-res');
-                const minAreaInput = altDiv.querySelector('.alt-img-min-area');
                 const costInput = altDiv.querySelector('.alt-img-cost');
                 const captionInput = altDiv.querySelector('.alt-img-caption');
                 
@@ -580,7 +586,6 @@
                     satInput.value = loadData.sat || '';
                     dateInput.value = loadData.date || '';
                     resInput.value = loadData.res || '';
-                    minAreaInput.value = loadData.minArea || '';
                     costInput.value = loadData.cost || '';
                     captionInput.value = loadData.caption || '';
 
@@ -651,6 +656,8 @@
                     custoGeoref: document.getElementById('custoGeoref').value,
                     
                     calcularTotal: document.getElementById('calcularTotal').checked,
+                    porcentagemAcrescimo: document.getElementById('porcentagemAcrescimo').value,
+                    motivoAcrescimo: document.getElementById('motivoAcrescimo').value,
                     diasEntrega: document.getElementById('diasEntrega').value,
                     condicaoPagamentoSelect: document.getElementById('condicaoPagamentoSelect').value,
                     condicaoPagamentoCustom: document.getElementById('condicaoPagamentoCustom').value,
@@ -677,7 +684,6 @@
                             sat: alt.querySelector('.alt-img-sat').value,
                             date: alt.querySelector('.alt-img-date').value,
                             res: alt.querySelector('.alt-img-res').value,
-                            minArea: alt.querySelector('.alt-img-min-area').value,
                             cost: alt.querySelector('.alt-img-cost').value,
                             caption: alt.querySelector('.alt-img-caption').value,
                             imgBase64: alt.querySelector('.alt-img-data').value
@@ -725,6 +731,10 @@
                         document.getElementById('custoGeoref').value = draft.custoGeoref || '';
                         
                         document.getElementById('calcularTotal').checked = draft.calcularTotal || false;
+                        document.getElementById('calcularTotal').dispatchEvent(new Event('change'));
+                        document.getElementById('porcentagemAcrescimo').value = draft.porcentagemAcrescimo || '';
+                        document.getElementById('motivoAcrescimo').value = draft.motivoAcrescimo || '';
+                        
                         document.getElementById('diasEntrega').value = draft.diasEntrega || '';
                         
                         const condSelect = document.getElementById('condicaoPagamentoSelect');
@@ -915,7 +925,6 @@
                     if (cbAlt && cbAlt.checked) {
                         hasAnyAltimetry = true;
                         const altType = area.querySelector('.area-altimetry-type').value;
-                        const altMin = area.querySelector('.area-altimetry-min').value;
                         const altCost = area.querySelector('.area-altimetry-cost').value;
                         
                         if (altType.includes('MDT')) hasAnyMDT = true;
@@ -933,7 +942,6 @@
                                 <h4 style="margin: 0 0 10px 0; font-size: 1.05em; font-weight: bold; color: #5b21b6;">Modelo de Elevação (Altimetria)</h4>
                                 <div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.95em; color: #4c1d95;">
                                     <div><strong>Produto:</strong> ${altType}</div>
-                                    <div><strong>Pedido Mínimo Exigido:</strong> ${altMin ? altMin + ' km²' : '-'}</div>
                                     <div><strong>Investimento (Altimetria):</strong> R$ ${altCostFormatted}</div>
                                 </div>
                             </div>
@@ -959,7 +967,6 @@
                             const sat = altBlock.querySelector('.alt-img-sat').value;
                             const date = altBlock.querySelector('.alt-img-date').value;
                             const res = altBlock.querySelector('.alt-img-res').value;
-                            const minArea = altBlock.querySelector('.alt-img-min-area').value;
                             const cost = altBlock.querySelector('.alt-img-cost').value;
                             const caption = altBlock.querySelector('.alt-img-caption').value || `Sugestão ${altCount} - ${areaName}`;
 
@@ -993,13 +1000,10 @@
                                 areasContentHtml += `</div>`;
                             }
 
-                            if (minArea || cost) {
+                            if (cost) {
+                                const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                 areasContentHtml += `<div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 10px; border-radius: 6px; margin-bottom: 15px;">`;
-                                if (minArea) areasContentHtml += `<div style="color: #065f46; margin-bottom: 4px; font-size: 0.9em;"><strong>Pedido Mínimo Exigido:</strong> ${minArea} km²</div>`;
-                                if (cost) {
-                                    const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                    areasContentHtml += `<div style="color: #065f46; font-size: 0.9em;"><strong>Investimento (Imagem Completa):</strong> R$ ${costFormatted} <span style="font-size: 0.85em; font-weight: normal; color: #047857;">(Extensão x Valor base por km²)</span></div>`;
-                                }
+                                areasContentHtml += `<div style="color: #065f46; font-size: 0.9em;"><strong>Investimento (Imagem Completa):</strong> R$ ${costFormatted} <span style="font-size: 0.85em; font-weight: normal; color: #047857;">(Extensão x Valor base por km²)</span></div>`;
                                 areasContentHtml += `</div>`;
                             }
 
@@ -1101,13 +1105,42 @@
 
                 // Inserir linha do Total da Proposta, se a opção estiver ativa
                 if (calcularTotal) {
-                    const totalGeralFormatado = somaTotalDaProposta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    resumoFinanceiroHtml += `
-                        <tr style="border-top: 2px solid #94a3b8; background-color: #f1f5f9;">
-                            <td style="padding: 12px 5px; color: #0f172a; text-align: right; font-size: 1.05em;"><strong>TOTAL DA PROPOSTA:</strong></td>
-                            <td style="padding: 12px 5px; text-align: right; font-weight: bold; color: #b91c1c; font-size: 1.1em; white-space: nowrap;">R$ ${totalGeralFormatado}</td>
-                        </tr>
-                    `;
+                    const percAcrescimo = parseFloat(document.getElementById('porcentagemAcrescimo').value) || 0;
+                    const motAcrescimo = document.getElementById('motivoAcrescimo').value || (percAcrescimo >= 0 ? 'Impostos/Taxas' : 'Desconto');
+                    
+                    if (percAcrescimo !== 0) {
+                        const subtotalFormatado = somaTotalDaProposta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        const valorAcrescimo = somaTotalDaProposta * (percAcrescimo / 100);
+                        const acrescimoAbsFormatado = Math.abs(valorAcrescimo).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        const totalFinal = somaTotalDaProposta + valorAcrescimo;
+                        const totalGeralFormatado = totalFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        
+                        const sinal = percAcrescimo > 0 ? '+' : '-';
+                        const corTexto = percAcrescimo > 0 ? 'color: #64748b;' : 'color: #16a34a;'; // Cinza para acréscimo, verde para desconto
+
+                        resumoFinanceiroHtml += `
+                            <tr style="border-top: 2px solid #94a3b8; background-color: #f8fafc;">
+                                <td style="padding: 12px 5px; color: #475569; text-align: right; font-size: 0.95em;">Subtotal:</td>
+                                <td style="padding: 12px 5px; text-align: right; color: #475569; font-size: 0.95em; white-space: nowrap;">R$ ${subtotalFormatado}</td>
+                            </tr>
+                            <tr style="background-color: #f8fafc;">
+                                <td style="padding: 4px 5px 12px 5px; ${corTexto} text-align: right; font-size: 0.85em;">${sinal} ${motAcrescimo} (${Math.abs(percAcrescimo)}%):</td>
+                                <td style="padding: 4px 5px 12px 5px; text-align: right; ${corTexto} font-size: 0.85em; white-space: nowrap;">${sinal} R$ ${acrescimoAbsFormatado}</td>
+                            </tr>
+                            <tr style="border-top: 2px solid #94a3b8; background-color: #f1f5f9;">
+                                <td style="padding: 12px 5px; color: #0f172a; text-align: right; font-size: 1.05em;"><strong>TOTAL DA PROPOSTA:</strong></td>
+                                <td style="padding: 12px 5px; text-align: right; font-weight: bold; color: #b91c1c; font-size: 1.1em; white-space: nowrap;">R$ ${totalGeralFormatado}</td>
+                            </tr>
+                        `;
+                    } else {
+                        const totalGeralFormatado = somaTotalDaProposta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        resumoFinanceiroHtml += `
+                            <tr style="border-top: 2px solid #94a3b8; background-color: #f1f5f9;">
+                                <td style="padding: 12px 5px; color: #0f172a; text-align: right; font-size: 1.05em;"><strong>TOTAL DA PROPOSTA:</strong></td>
+                                <td style="padding: 12px 5px; text-align: right; font-weight: bold; color: #b91c1c; font-size: 1.1em; white-space: nowrap;">R$ ${totalGeralFormatado}</td>
+                            </tr>
+                        `;
+                    }
                 }
 
                 resumoFinanceiroHtml += `
@@ -1322,9 +1355,21 @@
                     `;
                 }
 
+                let explicacaoPrecificacaoHtml = '';
+                if (hasAnyImages) {
+                    explicacaoPrecificacaoHtml = `
+                        <div style="background-color: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 8px; margin-top: 30px; margin-bottom: 10px; page-break-inside: avoid;">
+                            <p style="margin: 0; line-height: 1.5; font-size: 0.9em; color: #92400e;">
+                                <strong>Nota sobre a Precificação:</strong> As imagens são cobradas por km². No entanto, existem áreas mínimas de contratação que podem variar de <strong>1, 3, 5, 25 a 250 km²</strong>, além de valores mínimos por pedido que variam de acordo com cada satélite. Por isso, áreas muito pequenas podem apresentar valores semelhantes por se ajustarem à taxa mínima do sensor. Nós sempre avaliamos a opção que faz mais sentido e oferece o melhor custo-benefício para a sua área.
+                            </p>
+                        </div>
+                    `;
+                }
+
                 finalDoc += `
                     ${samplesHtml}
                     ${explicacaoGeorefHtml}
+                    ${explicacaoPrecificacaoHtml}
                     ${resumoFinanceiroHtml}
 
                     <div style="margin-top: 30px; margin-bottom: 25px; padding: 20px; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
