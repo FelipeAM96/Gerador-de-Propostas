@@ -42,7 +42,6 @@
             <!-- Coluna da Esquerda: Formulários -->
             <div class="left-column space-y-8 p-6 border border-gray-200 rounded-xl bg-gray-50/50">
                 
-                <!-- Ações de Rascunho -->
                 <div class="flex gap-4 mb-4">
                     <button id="saveDraftBtn" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition-colors flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
@@ -55,7 +54,6 @@
                     <input type="file" id="draftFileInput" accept=".json" class="hidden">
                 </div>
 
-                <!-- Dados Gerais -->
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">1. Dados da Proposta</h2>
                     
@@ -84,10 +82,9 @@
                     </div>
                 </div>
 
-                <!-- Gestão de Áreas e Imagens -->
                 <div id="sectionAreas">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">2. Áreas de Interesse e Imagens</h2>
-                    <p class="text-sm text-gray-600 mb-4">Adicione quantas áreas precisar. Para cada área, você pode incluir a extensão (km²), imagem de referência, dados de altimetria e sugerir opções de satélite.</p>
+                    <p class="text-sm text-gray-600 mb-4">Adicione quantas áreas precisar. As imagens serão agrupadas automaticamente por ANO no documento de acordo com a "Data" que você preencher!</p>
                     
                     <div id="areasContainer" class="space-y-6">
                         <!-- Áreas geradas dinamicamente aqui -->
@@ -98,11 +95,9 @@
                     </button>
                 </div>
 
-                <!-- Configurações Globais -->
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">3. Outras Configurações</h2>
                     
-                    <!-- Nova opção de cálculo de total da proposta -->
                     <div class="mb-5 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
                         <label class="flex items-center gap-2 cursor-pointer font-bold text-blue-900 text-sm">
                             <input type="checkbox" id="calcularTotal" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
@@ -172,7 +167,6 @@
                         <p class="text-xs text-gray-500 mt-1">Isso adicionará links de amostra na proposta.</p>
                     </div>
 
-                    <!-- Botão Laudo Técnico -->
                     <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm">
                         <label class="flex items-center gap-2 cursor-pointer font-semibold text-emerald-900 text-sm">
                             <input type="checkbox" id="hasLaudo" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
@@ -186,7 +180,6 @@
                         </div>
                     </div>
 
-                    <!-- Botão ART -->
                     <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm">
                         <label class="flex items-center gap-2 cursor-pointer font-semibold text-emerald-900 text-sm">
                             <input type="checkbox" id="hasART" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
@@ -200,7 +193,6 @@
                         </div>
                     </div>
 
-                    <!-- Botão Serviço de Georreferenciamento -->
                     <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm">
                         <label class="flex items-center gap-2 cursor-pointer font-semibold text-emerald-900 text-sm">
                             <input type="checkbox" id="hasGeoref" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
@@ -237,7 +229,6 @@
                 </button>
             </div>
 
-            <!-- Coluna da Direita: Preview e Exportação -->
             <div class="right-column space-y-6 p-6 border border-gray-200 rounded-xl bg-white shadow-sm">
                 <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Pré-visualização do Documento</h2>
                 <div id="previewOutput" class="output-area">
@@ -260,10 +251,9 @@
     <!-- Toast de Notificação -->
     <div id="toast" class="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-4 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-10 pointer-events-none z-50 flex items-center gap-3">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-        <span id="toastMsg" class="font-medium">Proposta copiada! Agora é só colar no seu email.</span>
+        <span id="toastMsg" class="font-medium">Mensagem</span>
     </div>
 
-    <!-- Bibliotecas Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.0/dist/html-docx.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
@@ -334,7 +324,6 @@
                 }, 3000);
             }
 
-            // Mostrar campos customizados de pagamento
             document.getElementById('condicaoPagamentoSelect').addEventListener('change', function() {
                 const customInput = document.getElementById('condicaoPagamentoCustom');
                 if (this.value !== 'Na confirmação do pedido') {
@@ -345,32 +334,17 @@
                 }
             });
 
-            // Lógica do Checkbox de Laudo Técnico
             document.getElementById('hasLaudo').addEventListener('change', function() {
-                const fields = document.getElementById('laudoFields');
-                if(this.checked) fields.classList.remove('hidden');
-                else fields.classList.add('hidden');
+                document.getElementById('laudoFields').classList.toggle('hidden', !this.checked);
             });
-
-            // Lógica do Checkbox de ART
             document.getElementById('hasART').addEventListener('change', function() {
-                const fields = document.getElementById('artFields');
-                if(this.checked) fields.classList.remove('hidden');
-                else fields.classList.add('hidden');
+                document.getElementById('artFields').classList.toggle('hidden', !this.checked);
             });
-
-            // Lógica do Checkbox de Georreferenciamento
             document.getElementById('hasGeoref').addEventListener('change', function() {
-                const fields = document.getElementById('georefFields');
-                if(this.checked) fields.classList.remove('hidden');
-                else fields.classList.add('hidden');
+                document.getElementById('georefFields').classList.toggle('hidden', !this.checked);
             });
-
-            // Lógica do Checkbox de Calcular Total
             document.getElementById('calcularTotal').addEventListener('change', function() {
-                const fields = document.getElementById('acrescimoFields');
-                if(this.checked) fields.classList.remove('hidden');
-                else fields.classList.add('hidden');
+                document.getElementById('acrescimoFields').classList.toggle('hidden', !this.checked);
             });
 
             window.toggleAreaAltimetry = function(cb) {
@@ -400,7 +374,6 @@
                 }
             };
 
-            // Gerenciamento de Áreas e Imagens Alternativas
             let areaIdCounter = 0;
             let altIdCounter = 0;
 
@@ -476,20 +449,19 @@
                 `;
                 document.getElementById('areasContainer').appendChild(areaDiv);
 
-                // Configurar o Drag & Drop usando SortableJS
+                // Configurar Drag & Drop nativo na lista de imagens (SortableJS)
                 const altContainer = areaDiv.querySelector('.alt-container');
                 new Sortable(altContainer, {
                     handle: '.drag-handle',
                     animation: 150,
                     ghostClass: 'dragging',
                     dragClass: 'sortable-drag',
-                    forceFallback: true, // Força o uso do mouse em vez do drag nativo
-                    fallbackTolerance: 3, // Evita cliques acidentais
+                    forceFallback: true,
+                    fallbackTolerance: 3,
                     scroll: true,
                     bubbleScroll: true
                 });
                 
-                // Preencher dados se estiver carregando de um rascunho
                 if (loadData) {
                     areaDiv.querySelector('.area-name').value = loadData.name || '';
                     areaDiv.querySelector('.area-ext').value = loadData.ext || '';
@@ -522,7 +494,6 @@
                         loadData.alts.forEach(altData => createAltImageBlock(areaDiv.querySelector('.alt-container'), altData));
                     }
                 } else {
-                    // Adiciona um bloco alternativo por padrão
                     createAltImageBlock(areaDiv.querySelector('.alt-container'));
                 }
             };
@@ -546,7 +517,7 @@
                         </div>
                         <div>
                             <label class="block text-gray-700 text-xs font-medium mb-1">Data:</label>
-                            <input type="text" class="alt-img-date w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: Recente (Últimos 30 dias)">
+                            <input type="text" class="alt-img-date w-full p-2 border border-gray-300 rounded text-sm" placeholder="Ex: 15-10-2024">
                         </div>
                         <div>
                             <label class="block text-gray-700 text-xs font-medium mb-1">Resolução:</label>
@@ -583,7 +554,6 @@
                 const costInput = altDiv.querySelector('.alt-img-cost');
                 const captionInput = altDiv.querySelector('.alt-img-caption');
                 
-                // Preencher dados se estiver carregando de um rascunho
                 if (loadData) {
                     satInput.value = loadData.sat || '';
                     dateInput.value = loadData.date || '';
@@ -603,7 +573,6 @@
                     }
                 }
 
-                // Lógica de atualização dinâmica da legenda
                 let lastPrefix = '';
                 const updateCaption = () => {
                     const area = areaNameInput.value.trim();
@@ -618,11 +587,9 @@
                     if (res) parts.push(res);
                     
                     let newPrefix = parts.join(' - ');
-                    
                     let currentCaption = captionInput.value;
                     let suffix = currentCaption;
                     
-                    // Preserva o que o usuário digitou manualmente na legenda após o prefixo automático
                     if (lastPrefix && currentCaption.startsWith(lastPrefix)) {
                         suffix = currentCaption.substring(lastPrefix.length);
                     } else if (!lastPrefix && currentCaption) {
@@ -633,14 +600,12 @@
                     lastPrefix = newPrefix;
                 };
                 
-                // Só aciona a montagem de legenda via eventos, para não sobrescrever rascunho
                 areaNameInput.addEventListener('input', updateCaption);
                 satInput.addEventListener('input', updateCaption);
                 dateInput.addEventListener('input', updateCaption);
                 resInput.addEventListener('input', updateCaption);
             };
 
-            // Lógica de Salvar e Carregar Rascunho via Arquivo JSON
             document.getElementById('saveDraftBtn').addEventListener('click', () => {
                 const draft = {
                     dataProposta: document.getElementById('dataProposta').value,
@@ -740,7 +705,7 @@
                         
                         const condSelect = document.getElementById('condicaoPagamentoSelect');
                         condSelect.value = draft.condicaoPagamentoSelect || 'Na confirmação do pedido';
-                        condSelect.dispatchEvent(new Event('change')); // aciona a lógica de exibir o input customizado
+                        condSelect.dispatchEvent(new Event('change'));
                         document.getElementById('condicaoPagamentoCustom').value = draft.condicaoPagamentoCustom || '';
 
                         const satSelect = document.getElementById('sateliteOpcoes');
@@ -748,21 +713,17 @@
                             opt.selected = (draft.sateliteOpcoes || []).includes(opt.value);
                         });
 
-                        // Limpa áreas existentes
                         document.getElementById('areasContainer').innerHTML = '';
                         areaIdCounter = 0;
                         altIdCounter = 0;
 
-                        // Recria áreas
                         if (draft.areas && draft.areas.length > 0) {
                             draft.areas.forEach(areaData => createAreaBlock(areaData));
                         } else {
-                            createAreaBlock(); // área vazia padrão
+                            createAreaBlock();
                         }
                         
-                        // Força atualização do nome do arquivo
                         document.getElementById('empresaCliente').dispatchEvent(new Event('input'));
-
                         showToast("Rascunho carregado com sucesso!");
                     } catch (error) {
                         showToast("Erro ao ler o arquivo de rascunho. Formato inválido.", true);
@@ -770,14 +731,12 @@
                     }
                 };
                 reader.readAsText(file);
-                event.target.value = ''; // Reseta o input file
+                event.target.value = '';
             });
 
-            // Inicializar a primeira área
             createAreaBlock();
             document.getElementById('addAreaBtn').addEventListener('click', () => createAreaBlock(null));
 
-            // Lógica Global de Colar Imagem
             document.addEventListener('paste', (e) => {
                 const activeZone = document.activeElement.closest('.paste-zone');
                 if (!activeZone) return;
@@ -839,7 +798,6 @@
                 return (year && month && day) ? `${day}/${month}/${year}` : '';
             }
 
-            // Atualizar o nome do arquivo Word com a Empresa Cliente
             const empresaClienteInput = document.getElementById('empresaCliente');
             const docxFilenameInput = document.getElementById('docxFilename');
             empresaClienteInput.addEventListener('input', function() {
@@ -847,7 +805,6 @@
                 docxFilenameInput.value = "Proposta Comercial Imagens - " + nomeEmpresa;
             });
 
-            // GERAÇÃO DO HTML
             document.getElementById('generatePreviewBtn').addEventListener('click', () => {
                 const dataProposta = formatarData(document.getElementById('dataProposta').value);
                 const empresaCliente = document.getElementById('empresaCliente').value || '[Empresa Cliente]';
@@ -855,7 +812,6 @@
                 const comentariosIniciais = document.getElementById('comentariosIniciais').value.trim();
                 const comentariosProposta = document.getElementById('comentariosProposta').value.trim();
                 
-                // Tratar lista global de satélites (Catálogo e Amostras)
                 const selectedSatellites = Array.from(document.getElementById('sateliteOpcoes').selectedOptions).map(opt => opt.value);
                 
                 const hasLaudo = document.getElementById('hasLaudo').checked;
@@ -866,8 +822,7 @@
                 const custoGeoref = document.getElementById('custoGeoref').value;
                 
                 const calcularTotal = document.getElementById('calcularTotal').checked;
-                
-                let somaTotalDaProposta = 0; // Variável para acumular o cálculo total
+                let somaTotalDaProposta = 0; 
 
                 let samplesHtml = '';
                 if (selectedSatellites.length > 0) {
@@ -883,9 +838,8 @@
                     samplesHtml += `</ul></div>`;
                 }
 
-                // Processar as Áreas
                 let areasContentHtml = '';
-                let arrayResumoImagens = []; // Array para capturar os dados para o Resumo Financeiro
+                let arrayResumoImagens = []; 
                 let arrayResumoAltimetria = [];
                 let hasAnyAltimetry = false;
                 let hasAnyMDT = false;
@@ -903,7 +857,6 @@
                     areasContentHtml += `<div style="margin-top: 30px; margin-bottom: 30px;">`;
                     areasContentHtml += `<h3 style="font-size: 1.25em; font-weight: bold; color: #1e3a8a; border-bottom: 2px solid #93c5fd; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase;">${areaName} <span style="font-size: 0.8em; font-weight: normal; color: #4b5563; text-transform: none;">(Extensão: ${areaExt} km²)</span></h3>`;
 
-                    // Imagem de Referência
                     const areaImgHidden = area.querySelector('.area-img-data');
                     if (areaImgHidden && areaImgHidden.getAttribute('data-image-pasted') === 'true' && areaImgHidden.value) {
                         areasContentHtml += `
@@ -914,7 +867,6 @@
                         `;
                     }
 
-                    // Processamento de Altimetria por Área
                     const cbAlt = area.querySelector('.area-has-altimetry');
                     const cbOnlyAlt = area.querySelector('.area-only-altimetry');
                     const isAreaOnlyAltimetry = cbAlt && cbAlt.checked && cbOnlyAlt && cbOnlyAlt.checked;
@@ -933,7 +885,6 @@
 
                         const altCostFormatted = altCost ? parseFloat(altCost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
                         
-                        // Somatório do total
                         if (altCost) {
                             somaTotalDaProposta += parseFloat(altCost);
                         }
@@ -956,11 +907,11 @@
                     }
 
                     if (!isAreaOnlyAltimetry) {
-                        // Imagens Alternativas
                         const altBlocks = area.querySelectorAll('.alt-image-block');
                         let altCount = 0;
+                        const imagensAgrupadasPorAno = {};
 
-                        altBlocks.forEach((altBlock, altIndex) => {
+                        altBlocks.forEach((altBlock) => {
                             const altImgHidden = altBlock.querySelector('.alt-img-data');
                             if (!altImgHidden || altImgHidden.getAttribute('data-image-pasted') !== 'true' || !altImgHidden.value) return;
                             
@@ -971,58 +922,90 @@
                             const cost = altBlock.querySelector('.alt-img-cost').value;
                             const caption = altBlock.querySelector('.alt-img-caption').value || `Sugestão ${altCount} - ${areaName}`;
 
-                            // Coletar dados para o Resumo Financeiro e Somatório
-                            if (cost) {
-                                somaTotalDaProposta += parseFloat(cost);
-                                
-                                const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                
-                                let detalhesResumo = [];
-                                if (sat) detalhesResumo.push(`Satélite: ${sat}`);
-                                if (date) detalhesResumo.push(`Data: ${date}`);
-                                if (res) detalhesResumo.push(`Resolução: ${res}`);
-                                
-                                let descricaoFinal = detalhesResumo.length > 0 ? detalhesResumo.join(' - ') : caption;
+                            // Procura um ano com 4 digitos na string digitada em "Data"
+                            const anoMatch = date.match(/\b(19|20)\d{2}\b/);
+                            const ano = anoMatch ? anoMatch[0] : 'Sem Ano Especificado';
 
-                                arrayResumoImagens.push({
-                                    area: areaName,
-                                    descricao: descricaoFinal,
-                                    valor: costFormatted
-                                });
+                            if (!imagensAgrupadasPorAno[ano]) {
+                                imagensAgrupadasPorAno[ano] = [];
                             }
 
-                            areasContentHtml += `<div style="margin-bottom: 30px; padding: 15px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; page-break-inside: avoid;">`;
-                            
-                            if (sat || date || res) {
-                                areasContentHtml += `<div style="margin-bottom: 10px; font-size: 0.95em; color: #334155;">`;
-                                if (sat) areasContentHtml += `<strong>Satélite:</strong> ${sat} &nbsp;&nbsp;|&nbsp;&nbsp; `;
-                                if (date) areasContentHtml += `<strong>Data:</strong> ${date} &nbsp;&nbsp;|&nbsp;&nbsp; `;
-                                if (res) areasContentHtml += `<strong>Resolução:</strong> ${res}`;
-                                areasContentHtml += `</div>`;
-                            }
-
-                            if (cost) {
-                                const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                areasContentHtml += `<div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 10px; border-radius: 6px; margin-bottom: 15px;">`;
-                                areasContentHtml += `<div style="color: #065f46; font-size: 0.9em;"><strong>Investimento (Imagem Completa):</strong> R$ ${costFormatted}</div>`;
-                                areasContentHtml += `</div>`;
-                            }
-
-                            areasContentHtml += `<div style="text-align: center;">`;
-                            areasContentHtml += `<img src="${altImgHidden.value}" alt="${caption}" style="border-radius: 6px; display: block; margin: 0 auto; max-width: 100%; height: auto; border: 1px solid #cbd5e1;" width="620">`;
-                            areasContentHtml += `<p style="font-size: 0.85em; text-align: center; color: #64748b; margin-top: 8px; font-style: italic;">${caption}</p>`;
-                            areasContentHtml += `</div>`;
-                            areasContentHtml += `</div>`;
+                            imagensAgrupadasPorAno[ano].push({
+                                sat, date, res, cost, caption, imgBase64: altImgHidden.value
+                            });
                         });
 
                         if (altCount === 0) {
                             areasContentHtml += `<p style="font-size: 0.9em; color: #94a3b8; font-style: italic;">Nenhuma imagem alternativa informada para esta área.</p>`;
+                        } else {
+                            // Organiza as chaves do ano (ex: 2024, 2023). O "Sem Ano..." fica pro final
+                            const anosOrdenados = Object.keys(imagensAgrupadasPorAno).sort((a, b) => {
+                                if (a === 'Sem Ano Especificado') return 1;
+                                if (b === 'Sem Ano Especificado') return -1;
+                                return parseInt(b) - parseInt(a);
+                            });
+
+                            anosOrdenados.forEach(ano => {
+                                const currentDivider = ano === 'Sem Ano Especificado' ? 'Outras Imagens / Sem Data' : `Imagens do ano de ${ano}`;
+                                
+                                areasContentHtml += `
+                                    <div style="background-color: #e0e7ff; color: #3730a3; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 1em; border-left: 4px solid #4f46e5; margin-top: 20px; margin-bottom: 15px; page-break-after: avoid;">
+                                        📅 ${currentDivider}
+                                    </div>
+                                `;
+
+                                imagensAgrupadasPorAno[ano].forEach(imgObj => {
+                                    const { sat, date, res, cost, caption, imgBase64 } = imgObj;
+                                    
+                                    if (cost) {
+                                        somaTotalDaProposta += parseFloat(cost);
+                                        
+                                        const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                        
+                                        let detalhesResumo = [];
+                                        if (sat) detalhesResumo.push(`Satélite: ${sat}`);
+                                        if (date) detalhesResumo.push(`Data: ${date}`);
+                                        if (res) detalhesResumo.push(`Resolução: ${res}`);
+                                        
+                                        let descricaoFinal = detalhesResumo.length > 0 ? detalhesResumo.join(' - ') : caption;
+                                        
+                                        arrayResumoImagens.push({
+                                            area: areaName,
+                                            divider: currentDivider, // Agrupador de ano vai para o resumo
+                                            descricao: descricaoFinal,
+                                            valor: costFormatted
+                                        });
+                                    }
+
+                                    areasContentHtml += `<div style="margin-bottom: 30px; padding: 15px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; page-break-inside: avoid;">`;
+                                    
+                                    if (sat || date || res) {
+                                        areasContentHtml += `<div style="margin-bottom: 10px; font-size: 0.95em; color: #334155;">`;
+                                        if (sat) areasContentHtml += `<strong>Satélite:</strong> ${sat} &nbsp;&nbsp;|&nbsp;&nbsp; `;
+                                        if (date) areasContentHtml += `<strong>Data:</strong> ${date} &nbsp;&nbsp;|&nbsp;&nbsp; `;
+                                        if (res) areasContentHtml += `<strong>Resolução:</strong> ${res}`;
+                                        areasContentHtml += `</div>`;
+                                    }
+
+                                    if (cost) {
+                                        const costFormatted = parseFloat(cost).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                        areasContentHtml += `<div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 10px; border-radius: 6px; margin-bottom: 15px;">`;
+                                        areasContentHtml += `<div style="color: #065f46; font-size: 0.9em;"><strong>Investimento (Imagem Completa):</strong> R$ ${costFormatted}</div>`;
+                                        areasContentHtml += `</div>`;
+                                    }
+
+                                    areasContentHtml += `<div style="text-align: center;">`;
+                                    areasContentHtml += `<img src="${imgBase64}" alt="${caption}" style="border-radius: 6px; display: block; margin: 0 auto; max-width: 100%; height: auto; border: 1px solid #cbd5e1;" width="620">`;
+                                    areasContentHtml += `<p style="font-size: 0.85em; text-align: center; color: #64748b; margin-top: 8px; font-style: italic;">${caption}</p>`;
+                                    areasContentHtml += `</div>`;
+                                    areasContentHtml += `</div>`;
+                                });
+                            });
                         }
                     }
                     areasContentHtml += `</div>`;
                 });
 
-                // Financeiro Geral
                 const diasEntrega = document.getElementById('diasEntrega').value || '[Informar]';
                 const condicaoSelect = document.getElementById('condicaoPagamentoSelect').value;
                 const condicaoCustom = document.getElementById('condicaoPagamentoCustom').value;
@@ -1039,12 +1022,43 @@
 
                 if (hasAnyImages) {
                     if (arrayResumoImagens.length > 0) {
-                        resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 10px 5px 5px 5px; font-weight: bold; color: #1e3a8a; border-bottom: 1px solid #cbd5e1;">Opções de Imagens de Satélite (Por Área):</td></tr>`;
+                        resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 10px 5px 5px 5px; font-weight: bold; color: #1e3a8a; border-bottom: 1px solid #cbd5e1; font-size: 1.05em;">Opções de Imagens de Satélite:</td></tr>`;
+                        
+                        let currentAreaRendered = '';
+                        let currentDividerRendered = '';
+
                         arrayResumoImagens.forEach(item => {
+                            if (currentAreaRendered !== item.area) {
+                                resumoFinanceiroHtml += `
+                                    <tr>
+                                        <td colspan="2" style="padding: 12px 5px 4px 5px; color: #0f172a; font-weight: bold; border-bottom: 1px solid #e2e8f0; font-size: 1em; background-color: #f8fafc;">
+                                            📍 ${item.area}
+                                        </td>
+                                    </tr>
+                                `;
+                                currentAreaRendered = item.area;
+                                currentDividerRendered = ''; 
+                            }
+
+                            if (item.divider && currentDividerRendered !== item.divider) {
+                                resumoFinanceiroHtml += `
+                                    <tr>
+                                        <td colspan="2" style="padding: 8px 5px 4px 15px; color: #4338ca; font-weight: 700; font-size: 0.9em; border-left: 3px solid #6366f1; background-color: #e0e7ff;">
+                                            📅 ${item.divider}
+                                        </td>
+                                    </tr>
+                                `;
+                                currentDividerRendered = item.divider;
+                            }
+
+                            const indentStyle = item.divider ? 'padding-left: 25px;' : 'padding-left: 15px;';
+                            
                             resumoFinanceiroHtml += `
                                 <tr style="border-bottom: 1px solid #f3f4f6;">
-                                    <td style="padding: 8px 5px; color: #4b5563; vertical-align: top;"><strong>${item.area}</strong><br><span style="font-size: 0.9em; color: #64748b;">${item.descricao}</span></td>
-                                    <td style="padding: 8px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${item.valor}</td>
+                                    <td style="padding: 6px 5px 6px 0; ${indentStyle} color: #4b5563; vertical-align: top; font-size: 0.9em;">
+                                        ${item.descricao}
+                                    </td>
+                                    <td style="padding: 6px 5px; text-align: right; font-weight: bold; color: #047857; vertical-align: middle; white-space: nowrap;">R$ ${item.valor}</td>
                                 </tr>
                             `;
                         });
@@ -1056,7 +1070,7 @@
                 }
 
                 if (arrayResumoAltimetria.length > 0) {
-                    resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #6b21a8; border-bottom: 1px solid #cbd5e1;">Modelos de Elevação (Altimetria):</td></tr>`;
+                    resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #6b21a8; border-bottom: 1px solid #cbd5e1; font-size: 1.05em;">Modelos de Elevação (Altimetria):</td></tr>`;
                     arrayResumoAltimetria.forEach(item => {
                         resumoFinanceiroHtml += `
                             <tr style="border-bottom: 1px solid #f3f4f6;">
@@ -1068,7 +1082,7 @@
                 }
                 
                 if (hasGeoref || hasLaudo || hasART) {
-                    resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #047857; border-bottom: 1px solid #cbd5e1;">Serviços Especiais:</td></tr>`;
+                    resumoFinanceiroHtml += `<tr><td colspan="2" style="padding: 15px 5px 5px 5px; font-weight: bold; color: #047857; border-bottom: 1px solid #cbd5e1; font-size: 1.05em;">Serviços Especiais:</td></tr>`;
                     
                     if (hasLaudo) {
                         if (custoLaudo) somaTotalDaProposta += parseFloat(custoLaudo);
@@ -1080,7 +1094,6 @@
                             </tr>
                         `;
                     }
-
                     if (hasART) {
                         if (custoART) somaTotalDaProposta += parseFloat(custoART);
                         const custoARTFmt = custoART ? parseFloat(custoART).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
@@ -1091,7 +1104,6 @@
                             </tr>
                         `;
                     }
-
                     if (hasGeoref) {
                         if (custoGeoref) somaTotalDaProposta += parseFloat(custoGeoref);
                         const custoGeorefFmt = custoGeoref ? parseFloat(custoGeoref).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Sob consulta';
@@ -1104,7 +1116,6 @@
                     }
                 }
 
-                // Inserir linha do Total da Proposta, se a opção estiver ativa
                 if (calcularTotal) {
                     const percAcrescimo = parseFloat(document.getElementById('porcentagemAcrescimo').value) || 0;
                     const motAcrescimo = document.getElementById('motivoAcrescimo').value || (percAcrescimo >= 0 ? 'Impostos/Taxas' : 'Desconto');
@@ -1117,7 +1128,7 @@
                         const totalGeralFormatado = totalFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         
                         const sinal = percAcrescimo > 0 ? '+' : '-';
-                        const corTexto = percAcrescimo > 0 ? 'color: #64748b;' : 'color: #16a34a;'; // Cinza para acréscimo, verde para desconto
+                        const corTexto = percAcrescimo > 0 ? 'color: #64748b;' : 'color: #16a34a;'; 
 
                         resumoFinanceiroHtml += `
                             <tr style="border-top: 2px solid #94a3b8; background-color: #f8fafc;">
@@ -1154,7 +1165,6 @@
                 `;
 
                 const engesatLogoUrl = "https://www.engesat.com.br/wp-content/uploads/2024/12/engesat-logomarca.png";
-                
                 const boxComentariosIniciais = comentariosIniciais ? `
                     <div style="margin-bottom: 25px; padding: 15px 20px; border-left: 4px solid #dc2626; background-color: #fef2f2; border-radius: 0 8px 8px 0; page-break-inside: avoid;">
                         <p style="margin: 0; color: #b91c1c; font-weight: 600; font-size: 1.05em; line-height: 1.5;">
@@ -1162,10 +1172,8 @@
                         </p>
                     </div>
                 ` : '';
-
                 const comentariosHtml = comentariosProposta ? `<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e2e8f0;"><p style="margin: 0; font-size: 0.95em; line-height: 1.4; color: #4b5563;"><strong>Especificações:</strong><br>${comentariosProposta.replace(/\n/g, '<br>')}</p></div>` : '';
 
-                // Guia Visual de Leitura
                 let iconePasso2 = '🛰️';
                 let textoPasso2 = 'Imagens/Satélites sugeridos e custos.';
                 let avisoCenario = '';
@@ -1224,7 +1232,6 @@
                     `;
                 }
 
-                // Montar Documento Final
                 let finalDoc = `
                     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px;">
                         <tr>
@@ -1410,11 +1417,9 @@
                 document.getElementById('copyHtmlBtn').classList.remove('hidden');
                 document.getElementById('downloadDocxBtn').classList.remove('hidden');
                 
-                // Rolar a tela para o preview
                 document.getElementById('previewOutput').scrollIntoView({ behavior: 'smooth' });
             });
 
-            // Exportar e Copiar
             document.getElementById('downloadDocxBtn').addEventListener('click', () => {
                 const previewHtml = document.getElementById('previewOutput').innerHTML;
                 const filename = document.getElementById('docxFilename').value.trim() || 'Proposta';
@@ -1426,15 +1431,11 @@
                 `;
                 
                 try {
-                    // O htmlDocx converte para .docx, mas pode dar erro de segurança (CORS/Tainted Canvas) 
-                    // ao tentar processar imagens locais ou externas sem cabeçalho específico.
                     const blob = htmlDocx.asBlob(docTemplate, { orientation: 'portrait', margins: { top: 720, right: 720, bottom: 720, left: 720 } });
                     saveAs(blob, filename + '.docx');
                     showToast("Documento Word baixado com sucesso!");
                 } catch (e) {
-                    console.warn("html-docx falhou (provavelmente devido a imagens). Usando fallback.", e);
-                    // Fallback nativo: exporta o HTML direto com extensão .doc
-                    // O Microsoft Word lê isso nativamente, baixando as imagens automaticamente ao abrir o arquivo.
+                    console.warn("html-docx falhou. Usando fallback.", e);
                     const fallbackBlob = new Blob(['\ufeff', docTemplate], {
                         type: 'application/msword'
                     });
