@@ -388,6 +388,14 @@
                 
                 if(cb.checked) {
                     fields.classList.remove('hidden');
+                    
+                    // Selecionar automaticamente 'Altimetria WorldDEM NEO™' na lista de catálogos
+                    const satSelect = document.getElementById('sateliteOpcoes');
+                    Array.from(satSelect.options).forEach(opt => {
+                        if (opt.value === 'Altimetria WorldDEM NEO™') {
+                            opt.selected = true;
+                        }
+                    });
                 } else {
                     fields.classList.add('hidden');
                     if(onlyAltCb) {
@@ -646,11 +654,66 @@
                 };
                 
                 areaNameInput.addEventListener('input', updateCaption);
-                satInput.addEventListener('input', updateCaption);
+                satInput.addEventListener('input', () => {
+                    updateCaption();
+                    window.autoSelectSatellites(); // Chama a auto-seleção sempre que digitar
+                });
                 dateInput.addEventListener('input', updateCaption);
                 resInput.addEventListener('input', updateCaption);
             };
 
+            // Nova função de inteligência para detectar e selecionar satélites automaticamente
+            window.autoSelectSatellites = function() {
+                const satSelect = document.getElementById('sateliteOpcoes');
+                
+                // Obter todos os satélites digitados (removendo acentos, espaços e padronizando)
+                const typedSats = Array.from(document.querySelectorAll('.alt-img-sat'))
+                    .map(input => input.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, ''))
+                    .filter(val => val.length > 2); // Só analisa palavras com mais de 2 letras
+
+                // Mapa de apelidos (variações comuns sem espaços) -> Valor EXATO da caixa de seleção
+                const aliasMap = {
+                    "planetscope": "PLANET", "planet": "PLANET",
+                    "pleiadesneo": "PLEIADES NEO", "pleiades": "PLEIADES",
+                    "worldview1": "World View 1", "wv1": "World View 1",
+                    "worldview2": "World View 2", "wv2": "World View 2",
+                    "worldview3": "World View 3", "wv3": "World View 3",
+                    "worldview4": "World View 4", "wv4": "World View 4",
+                    "legion": "Legion", "worldviewlegion": "Legion",
+                    "spot6": "SPOT 6/7", "spot7": "SPOT 6/7", "spot67": "SPOT 6/7",
+                    "spot1": "SPOT 1-2-3-4-5", "spot2": "SPOT 1-2-3-4-5", "spot3": "SPOT 1-2-3-4-5", "spot4": "SPOT 1-2-3-4-5", "spot5": "SPOT 1-2-3-4-5",
+                    "sentinel2": "Sentinel-2", "sentinel": "Sentinel-2",
+                    "landsat8": "LANDSAT 8", "landsat": "LANDSAT 8",
+                    "rapideye": "RapidEye", "geoeye": "Geoeye", "ikonos": "Ikonos",
+                    "skysat": "SKYSAT", "blacksky": "BlackSky", "superview": "SUPERVIEW",
+                    "kompsat2": "Kompsat 2", "kompsat3": "Kompsat 3", "kompsat3a": "Kompsat-3A",
+                    "aster": "Aster", "beijing": "Beijing", "vision1": "Vision-1", "vision": "Vision-1",
+                    "triplesat": "Triplesat", "terrasarx": "TerraSAR-X", "terrasar": "TerraSAR-X",
+                    "alos": "ALOS Prism", "alosprism": "ALOS Prism", "alosavnir": "ALOS AVNIR",
+                    "erosb": "Eros B", "eros": "Eros B", "formosat2": "FORMOSAT 2",
+                    "formosat": "FORMOSAT 2", "gaofen2": "Gaofen 2", "gaofen": "Gaofen 2"
+                };
+
+                typedSats.forEach(typed => {
+                    Array.from(satSelect.options).forEach(opt => {
+                        const optValNormalized = opt.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        
+                        // Match 1: O texto digitado contém o nome base da opção (ex: "planet scope" contém "planet")
+                        if (typed.includes(optValNormalized)) {
+                            opt.selected = true;
+                        }
+                        
+                        // Match 2: O texto digitado contém algum dos apelidos/abreviações mapeadas
+                        for (const [alias, realName] of Object.entries(aliasMap)) {
+                            if (typed.includes(alias) && opt.value === realName) {
+                                opt.selected = true;
+                            }
+                        }
+                    });
+                });
+            };
+
+            // Lógica de Salvar e Carregar Rascunho via Arquivo JSON
             document.getElementById('saveDraftBtn').addEventListener('click', () => {
                 const draft = {
                     dataProposta: document.getElementById('dataProposta').value,
