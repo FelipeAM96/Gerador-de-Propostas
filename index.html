@@ -324,6 +324,39 @@
                 }, 3000);
             }
 
+            // NOVA FUNÇÃO: Padronizar tamanho da imagem em um "Container" de 1622x773
+            window.padImageToBase64 = function(originalBase64, targetWidth = 1622, targetHeight = 773) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = targetWidth;
+                        canvas.height = targetHeight;
+                        const ctx = canvas.getContext('2d');
+
+                        // Fundo transparente (Se o Word colocar fundo preto por acidente, descomente as 2 linhas abaixo para forçar fundo branco)
+                        // ctx.fillStyle = '#FFFFFF';
+                        // ctx.fillRect(0, 0, targetWidth, targetHeight);
+                        ctx.clearRect(0, 0, targetWidth, targetHeight);
+
+                        // Calcula a melhor escala para a imagem caber dentro da caixa sem distorcer
+                        const scale = Math.min(targetWidth / img.width, targetHeight / img.height);
+                        const newW = img.width * scale;
+                        const newH = img.height * scale;
+                        
+                        // Centraliza a imagem no canvas
+                        const x = (targetWidth - newW) / 2;
+                        const y = (targetHeight - newH) / 2;
+
+                        ctx.drawImage(img, x, y, newW, newH);
+                        resolve(canvas.toDataURL('image/png'));
+                    };
+                    img.onerror = () => resolve(originalBase64); // Fallback de segurança
+                    img.src = originalBase64;
+                });
+            };
+
+            // Mostrar campos customizados de pagamento
             document.getElementById('condicaoPagamentoSelect').addEventListener('change', function() {
                 const customInput = document.getElementById('condicaoPagamentoCustom');
                 if (this.value !== 'Na confirmação do pedido') {
@@ -482,13 +515,19 @@
 
                     if (loadData.imgBase64) {
                         const pasteZone = areaDiv.querySelector('.paste-zone');
-                        document.getElementById(`hidden_area_${aId}`).value = loadData.imgBase64;
+                        // Exibe original temporário para não atrasar a interface na hora de carregar rascunho
                         document.getElementById(`hidden_area_${aId}`).setAttribute('data-image-pasted', 'true');
                         document.getElementById(`preview_area_${aId}`).src = loadData.imgBase64;
                         document.getElementById(`preview_area_${aId}`).classList.remove('hidden');
                         document.getElementById(`clear_btn_area_${aId}`).classList.remove('hidden');
                         pasteZone.innerHTML = '<p class="text-center text-sm font-bold text-green-700">Imagem Anexada com Sucesso!</p>';
                         pasteZone.classList.add('border-green-500', 'bg-green-50');
+
+                        // Ajusta silenciosamente para o tamanho oficial (útil se o rascunho carregado for antigo)
+                        window.padImageToBase64(loadData.imgBase64, 1622, 773).then(padded => {
+                            document.getElementById(`hidden_area_${aId}`).value = padded;
+                            document.getElementById(`preview_area_${aId}`).src = padded;
+                        });
                     }
                     if (loadData.alts && loadData.alts.length > 0) {
                         loadData.alts.forEach(altData => createAltImageBlock(areaDiv.querySelector('.alt-container'), altData));
@@ -563,16 +602,22 @@
 
                     if (loadData.imgBase64) {
                         const pasteZone = altDiv.querySelector('.paste-zone');
-                        document.getElementById(`hidden_alt_${altId}`).value = loadData.imgBase64;
                         document.getElementById(`hidden_alt_${altId}`).setAttribute('data-image-pasted', 'true');
                         document.getElementById(`preview_alt_${altId}`).src = loadData.imgBase64;
                         document.getElementById(`preview_alt_${altId}`).classList.remove('hidden');
                         document.getElementById(`clear_btn_alt_${altId}`).classList.remove('hidden');
                         pasteZone.innerHTML = '<p class="text-center text-sm font-bold text-green-700">Imagem Anexada com Sucesso!</p>';
                         pasteZone.classList.add('border-green-500', 'bg-green-50');
+
+                        // Ajusta silenciosamente para o tamanho oficial (útil se o rascunho carregado for antigo)
+                        window.padImageToBase64(loadData.imgBase64, 1622, 773).then(padded => {
+                            document.getElementById(`hidden_alt_${altId}`).value = padded;
+                            document.getElementById(`preview_alt_${altId}`).src = padded;
+                        });
                     }
                 }
 
+                // Lógica de atualização dinâmica da legenda
                 let lastPrefix = '';
                 const updateCaption = () => {
                     const area = areaNameInput.value.trim();
@@ -726,7 +771,7 @@
                         document.getElementById('empresaCliente').dispatchEvent(new Event('input'));
                         showToast("Rascunho carregado com sucesso!");
                     } catch (error) {
-                        showToast("Erro ao ler o arquivo de rascunho. Formato inválido.", true);
+                        showToast("Erro ao ler o arquivo de rascunho.", true);
                         console.error(error);
                     }
                 };
@@ -734,9 +779,11 @@
                 event.target.value = '';
             });
 
+            // Inicializar a primeira área
             createAreaBlock();
             document.getElementById('addAreaBtn').addEventListener('click', () => createAreaBlock(null));
 
+            // Lógica Global de Colar Imagem
             document.addEventListener('paste', (e) => {
                 const activeZone = document.activeElement.closest('.paste-zone');
                 if (!activeZone) return;
@@ -749,20 +796,26 @@
                         const file = item.getAsFile();
                         const reader = new FileReader();
 
-                        reader.onload = (event) => {
-                            const base64Data = event.target.result;
+                        reader.onload = async (event) => {
+                            const originalBase64 = event.target.result;
+                            
+                            activeZone.innerHTML = '<p class="text-center text-sm font-bold text-blue-600">Ajustando dimensões (1622x773)...</p>';
+                            
+                            // Chama a função para emoldurar a imagem nas proporções desejadas
+                            const paddedBase64 = await window.padImageToBase64(originalBase64, 1622, 773);
+
                             const hiddenId = activeZone.getAttribute('data-hidden-id');
                             const previewId = activeZone.getAttribute('data-preview-id');
                             const clearBtnId = activeZone.getAttribute('data-clear-btn');
                             
-                            document.getElementById(hiddenId).value = base64Data;
+                            document.getElementById(hiddenId).value = paddedBase64;
                             document.getElementById(hiddenId).setAttribute('data-image-pasted', 'true');
                             
                             const previewImg = document.getElementById(previewId);
-                            previewImg.src = base64Data;
+                            previewImg.src = paddedBase64;
                             previewImg.classList.remove('hidden');
                             
-                            activeZone.innerHTML = '<p class="text-center text-sm font-bold text-green-700">Imagem Anexada com Sucesso!</p>';
+                            activeZone.innerHTML = '<p class="text-center text-sm font-bold text-green-700">Imagem Anexada (1622x773)!</p>';
                             activeZone.classList.add('border-green-500', 'bg-green-50');
 
                             if(clearBtnId) document.getElementById(clearBtnId).classList.remove('hidden');
